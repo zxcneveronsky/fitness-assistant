@@ -1,6 +1,6 @@
 package com.example.fitness_assistant.controller;
 
-import com.example.fitness_assistant.dto.FoodDTO;
+import com.example.fitness_assistant.dto.RecordFoodDTO;
 import com.example.fitness_assistant.service.FoodService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,7 +17,7 @@ public class FoodController {
     }
 
     @GetMapping("/{barcode}")
-    public FoodDTO getFood(@PathVariable String barcode){
+    public RecordFoodDTO getFood(@PathVariable String barcode){
         return foodService.getFoodData(barcode);
     }
 
