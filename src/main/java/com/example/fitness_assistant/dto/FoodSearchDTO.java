@@ -1,6 +1,6 @@
 package com.example.fitness_assistant.dto;
 
-public record RecordFoodDTO(
+public record FoodSearchDTO(
     String name,
     String brands,
     double kcal,

@@ -4,22 +4,22 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestClient;
 
 @Repository
-public class FoodAPI {
+public class OpenFoodFactsClient {
 
     private final RestClient foodRestClient;
 
-    public FoodAPI(RestClient.Builder builder) {
+    public OpenFoodFactsClient(RestClient.Builder builder) {
         this.foodRestClient = builder
                 .baseUrl("https://world.openfoodfacts.org")
                 .build();
     }
 
-    public RecordFoodAPI getFoodResponse(String barcode){
+    public OpenFoodFactsResponse getFoodResponse(String barcode){
         try{
             return foodRestClient.get()
                     .uri("/api/v2/product/{barcode}.json", barcode)
                     .retrieve()
-                    .body(RecordFoodAPI.class);
+                    .body(OpenFoodFactsResponse.class);
         } catch (Exception e){
             System.err.println("Error"+e.getMessage());
         }
