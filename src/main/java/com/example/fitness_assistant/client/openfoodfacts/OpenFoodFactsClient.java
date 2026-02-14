@@ -1,17 +1,16 @@
-package com.example.fitness_assistant.repository;
+package com.example.fitness_assistant.client.openfoodfacts;
 
-import org.springframework.stereotype.Repository;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
-@Repository
+@Component
 public class OpenFoodFactsClient {
 
     private final RestClient foodRestClient;
 
-    public OpenFoodFactsClient(RestClient.Builder builder) {
-        this.foodRestClient = builder
-                .baseUrl("https://world.openfoodfacts.org")
-                .build();
+    public OpenFoodFactsClient(@Qualifier("offRestClient") RestClient restClient) {
+        this.foodRestClient = restClient;
     }
 
     public OpenFoodFactsResponse getFoodResponse(String barcode){
@@ -21,9 +20,9 @@ public class OpenFoodFactsClient {
                     .retrieve()
                     .body(OpenFoodFactsResponse.class);
         } catch (Exception e){
-            System.err.println("Error"+e.getMessage());
+            System.err.println("off"+e.getMessage());
+            return null;
         }
-        return null;
     }
 }
 

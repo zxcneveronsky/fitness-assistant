@@ -1,4 +1,4 @@
-package com.example.fitness_assistant.repository;
+package com.example.fitness_assistant.client.openfoodfacts;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

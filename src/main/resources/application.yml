@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: fitness-assistant
+
+api:
+  off:
+    base-url: https://world.openfoodfacts.org
+  spoonacular:
+    base-url: https://api.spoonacular.com
+    key: "INSERT YOU API - KEY"
