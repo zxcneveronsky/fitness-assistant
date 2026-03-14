@@ -1,4 +1,11 @@
 package com.example.fitness_assistant.dto;
 
-public class FoodSearchDTO {
-}
+import jakarta.persistence.Column;
+
+public record FoodSearchDTO(
+     String name,
+     String brands,
+     double kcal,
+     double proteins,
+     double fats,
+     double carbs) {}
