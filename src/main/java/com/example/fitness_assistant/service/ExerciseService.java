@@ -1,4 +1,4 @@
 package com.example.fitness_assistant.service;
 
-public class FoodSearchService {
+public class ExerciseService {
 }

@@ -1,4 +1,4 @@
 package com.example.fitness_assistant.dto;
 
-public class FoodSearchDTO {
+public class ExerciseDTO {
 }
