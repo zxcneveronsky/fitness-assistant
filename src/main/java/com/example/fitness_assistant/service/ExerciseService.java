@@ -5,6 +5,7 @@ import com.example.fitness_assistant.dto.ExerciseDTO;
 import com.example.fitness_assistant.entity.Exercise;
 import com.example.fitness_assistant.exception.ExerciseNotFoundException;
 import com.example.fitness_assistant.repository.ExerciseRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -70,6 +71,7 @@ public class ExerciseService {
         );
     }
 
+    @Transactional
     public void deleteExercise(String exerciseName) {
         exerciseRepository.deleteByExerciseName(exerciseName);
     }
