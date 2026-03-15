@@ -4,6 +4,7 @@ package com.example.fitness_assistant.controller;
 import com.example.fitness_assistant.dto.ExerciseDTO;
 import com.example.fitness_assistant.entity.Exercise;
 import com.example.fitness_assistant.service.ExerciseService;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -42,7 +43,7 @@ public class ExerciseController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Exercise addExercise(@RequestBody Exercise exercise) {
+    public Exercise addExercise(@Valid @RequestBody Exercise exercise) {
         return exerciseService.addExercise(exercise);
     }
 
