@@ -16,19 +16,22 @@ public class ExerciseService {
     public ExerciseService(ExerciseRepository exerciseRepository){
         this.exerciseRepository = exerciseRepository; }
 
+    private List<ExerciseDTO> toDTO(List<Exercise> ex){
+        return ex.stream()
+                .map(e -> new ExerciseDTO(
+                        e.getExerciseName(),
+                        e.getDescription(),
+                        List.of(new ExerciseDTO.MuscleDTO(e.getMuscleGroup(),e.getMuscleDetail()))
+                ))
+                .toList();
+    }
 
     public List<ExerciseDTO> getAllExercise(){
         List<Exercise> exercises = exerciseRepository.findAll();
         if (exercises.isEmpty()){
             throw new ExerciseNotFoundException("Ничего");
         }
-        return exercises.stream()
-                .map(exercise -> new ExerciseDTO(
-                        exercise.getExerciseName(),
-                        exercise.getDescription(),
-                        List.of(new ExerciseDTO.MuscleDTO(exercise.getMuscleGroup(),exercise.getMuscleDetail()))
-                ))
-                .toList();
+        return toDTO(exercises);
     }
 
     public List<ExerciseDTO> getExerciseName(String muscle){
@@ -36,13 +39,7 @@ public class ExerciseService {
         if (exercisesName.isEmpty()){
             throw new ExerciseNotFoundException(muscle);
         }
-        return exercisesName.stream()
-                .map(exercise -> new ExerciseDTO(
-                        exercise.getExerciseName(),
-                        exercise.getDescription(),
-                        List.of(new ExerciseDTO.MuscleDTO(exercise.getMuscleGroup(),exercise.getMuscleDetail()))
-                ))
-                .toList();
+        return toDTO(exercisesName);
     }
 
     public ExerciseDTO getMuscleName(String exerciseName){
@@ -50,13 +47,12 @@ public class ExerciseService {
         if (muscleName.isEmpty()){
             throw new ExerciseNotFoundException(exerciseName);
         }
-        List<ExerciseDTO.MuscleDTO> muscleList = muscleName.stream()
-                .map(m -> new ExerciseDTO.MuscleDTO(m.getMuscleGroup(),m.getMuscleDetail()))
-                .toList();
         return new ExerciseDTO(
                 muscleName.get(0).getExerciseName(),
                 muscleName.get(0).getDescription(),
-                muscleList
+                muscleName.stream()
+                        .map(m -> new ExerciseDTO.MuscleDTO(m.getMuscleGroup(),m.getMuscleDetail()))
+                        .toList()
         );
     }
 }
