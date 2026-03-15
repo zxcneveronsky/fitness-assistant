@@ -4,6 +4,8 @@ package com.example.fitness_assistant.controller;
 import com.example.fitness_assistant.dto.ExerciseDTO;
 import com.example.fitness_assistant.entity.Exercise;
 import com.example.fitness_assistant.service.ExerciseService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,11 +18,16 @@ public class ExerciseController {
     public ExerciseController(ExerciseService exerciseService){
         this.exerciseService = exerciseService;
     }
+
+
     @GetMapping
     public List<ExerciseDTO> getAllExercise(){
         return exerciseService.getAllExercise();
     }
-
+    @GetMapping("/paged")
+    public Page<ExerciseDTO> getAllExercisePaged(Pageable pageable) {
+        return exerciseService.getAllExercisePaged(pageable);
+    }
 
     @GetMapping("/muscle/{muscle}")
     public List<ExerciseDTO> getExercise(@PathVariable String muscle){

@@ -5,6 +5,8 @@ import com.example.fitness_assistant.dto.ExerciseDTO;
 import com.example.fitness_assistant.entity.Exercise;
 import com.example.fitness_assistant.exception.ExerciseNotFoundException;
 import com.example.fitness_assistant.repository.ExerciseRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,6 +34,18 @@ public class ExerciseService {
             throw new ExerciseNotFoundException("Ничего");
         }
         return toDTO(exercises);
+    }
+    public Page<ExerciseDTO> getAllExercisePaged(Pageable pageable) {
+        Page<ExerciseDTO> result = exerciseRepository.findAll(pageable)
+                .map(exercise -> new ExerciseDTO(
+                        exercise.getExerciseName(),
+                        exercise.getDescription(),
+                        List.of(new ExerciseDTO.MuscleDTO(exercise.getMuscleGroup(), exercise.getMuscleDetail()))
+                ));
+        if (result.isEmpty()){
+            throw new ExerciseNotFoundException("Ничего");
+        }
+        return result;
     }
 
     public List<ExerciseDTO> getExerciseName(String muscle){
