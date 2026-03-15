@@ -55,4 +55,11 @@ public class ExerciseService {
                         .toList()
         );
     }
+
+    public void deleteExercise(String exerciseName) {
+        exerciseRepository.deleteByExerciseName(exerciseName);
+    }
+    public Exercise addExercise(Exercise exercise){
+        return exerciseRepository.save(exercise);
+    }
 }

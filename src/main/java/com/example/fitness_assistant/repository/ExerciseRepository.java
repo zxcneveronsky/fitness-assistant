@@ -9,5 +9,5 @@ import java.util.Optional;
 public interface ExerciseRepository extends JpaRepository<Exercise,Long> {
     List<Exercise> findByMuscleGroupOrMuscleDetail(String muscleGroup,String muscleDetail);
     List<Exercise> findByExerciseName(String exerciseName);
-
+    void deleteByExerciseName(String exerciseName);
 }
