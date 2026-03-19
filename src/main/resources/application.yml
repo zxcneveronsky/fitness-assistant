@@ -1,12 +1,30 @@
 spring:
   application:
     name: fitness-assistant
+  profiles:
+    active: new-db  # Здесь ты выбираешь, какой профиль запустить сейчас
 
+---
+# Профиль для новой базы
+spring:
+  config:
+    activate:
+      on-profile: new-db
+  datasource:
+    url: jdbc:postgresql://localhost:5432/fitness_db
+    username: venivanimchek999
+    password: 1
+
+---
+# Профиль для старой базы
+spring:
+  config:
+    activate:
+      on-profile: old-db
   datasource:
     url: jdbc:postgresql://localhost:5432/fitness_assistant
     username: postgres
     password: ${DB_PASSWORD}
-    driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
