@@ -1,10 +1,42 @@
-HELP.md
-target/
-.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
 
-### STS ###
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+
+
+target/
+build/
+bin/
+out/
+.gradle/
+.m2/
+.mvn/wrapper/maven-wrapper.jar
+
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+cmake-build-*/
+atlassian-ide-cli.xml
+
+.vscode/
+.env
+*.env
+.history/
+
+*.log
+logs/
+*.stackdump
+core
+core.*
+
+HELP.md
 .apt_generated
 .classpath
 .factorypath
@@ -13,23 +45,12 @@ target/
 .springBeans
 .sts4-cache
 
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
+application-local.properties
+application-local.yml
+application-dev.yml
+secrets.yml
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
+!**/src/main/**/target/
+!**/src/test/**/target/
 
-### VS Code ###
-.vscode/
-.env
-*.env
+!src/main/resources/data/*.csv
