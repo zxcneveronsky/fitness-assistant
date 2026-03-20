@@ -5,6 +5,7 @@ import com.example.fitness_assistant.dto.ExerciseDTO;
 import com.example.fitness_assistant.entity.Exercise;
 import com.example.fitness_assistant.service.ExerciseService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -14,45 +15,49 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/exercises")
+@Slf4j
 public class ExerciseController {
     private final ExerciseService exerciseService;
+
     public ExerciseController(ExerciseService exerciseService){
         this.exerciseService = exerciseService;
     }
 
-
     @GetMapping
     public List<ExerciseDTO> getAllExercise(){
+        log.info("Запрос на получение всех упражнений");
         return exerciseService.getAllExercise();
     }
+
     @GetMapping("/paged")
     public Page<ExerciseDTO> getAllExercisePaged(Pageable pageable) {
+        log.info("Запрос на пагинацию: страница {}, размер {}", pageable.getPageNumber(), pageable.getPageSize());
         return exerciseService.getAllExercisePaged(pageable);
     }
 
     @GetMapping("/muscle/{muscle}")
     public List<ExerciseDTO> getExercise(@PathVariable String muscle){
+        log.info("Поиск упражнений для группы мышц: {}", muscle);
         return exerciseService.getExerciseName(muscle);
     }
 
     @GetMapping("/exercise/{exercise}")
     public ExerciseDTO getMuscle(@PathVariable String exercise){
+        log.info("Поиск информации по упражнению: {}", exercise);
         return exerciseService.getMuscleName(exercise);
     }
-
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Exercise addExercise(@Valid @RequestBody Exercise exercise) {
+        log.info("Добавление нового упражнения: {}", exercise.getExerciseName());
         return exerciseService.addExercise(exercise);
     }
 
     @DeleteMapping("/{exerciseName}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteExercise(@PathVariable String exerciseName) {
+        log.warn("Удаление упражнения: {}", exerciseName);
         exerciseService.deleteExercise(exerciseName);
     }
-
-
-
 }

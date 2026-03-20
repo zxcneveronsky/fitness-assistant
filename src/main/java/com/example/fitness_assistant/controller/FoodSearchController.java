@@ -1,31 +1,33 @@
 package com.example.fitness_assistant.controller;
 
 import com.example.fitness_assistant.dto.FoodSearchDTO;
+import com.example.fitness_assistant.entity.Food;
 import com.example.fitness_assistant.service.FoodSearchService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/food")
-@RequiredArgsConstructor
+@Slf4j
 public class FoodSearchController {
-
     private final FoodSearchService foodSearchService;
+    public FoodSearchController(FoodSearchService foodSearchService){this.foodSearchService = foodSearchService;}
 
-    /**
-     * Поиск продукта по штрихкоду.
-     * Пример запроса: GET /api/v1/food/4601234567890
-     *
-     * @param barcode Штрихкод из пути запроса
-     * @return FoodSearchDTO с данными о продукте
-     */
     @GetMapping("/{barcode}")
-    public ResponseEntity<FoodSearchDTO> getFoodByBarcode(@PathVariable String barcode) {
-        FoodSearchDTO food = foodSearchService.findFoodByBarcode(barcode);
-        return ResponseEntity.ok(food);
+    public FoodSearchDTO getFoodByBarcode(@PathVariable String barcode) {
+        log.info("Запрос на поиск продукта по Штрихкоду: '{}'", barcode);
+        return foodSearchService.findFoodByBarcode(barcode);
+    }
+
+    @PutMapping("/{barcode}")
+    public FoodSearchDTO updateFood(@PathVariable String barcode, @Valid @RequestBody Food food) {
+        log.info("Запрос на изменение данных продукта [Штрихкод: {}]", barcode);
+        return foodSearchService.updateFood(barcode, food);
     }
 }

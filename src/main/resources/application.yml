@@ -1,42 +1,29 @@
 spring:
   application:
     name: fitness-assistant
-  profiles:
-    active: new-db  # Здесь ты выбираешь, какой профиль запустить сейчас
 
----
-# Профиль для новой базы
-spring:
-  config:
-    activate:
-      on-profile: new-db
-  datasource:
-    url: jdbc:postgresql://localhost:5432/fitness_db
-    username: venivanimchek999
-    password: 1
-
----
-# Профиль для старой базы
-spring:
-  config:
-    activate:
-      on-profile: old-db
   datasource:
     url: jdbc:postgresql://localhost:5432/fitness_assistant
     username: postgres
     password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
       ddl-auto: none
+    show-sql: false
 
   flyway:
     enabled: true
     locations: classpath:db/migration
     baseline-on-migrate: true
     baseline-version: 0
-
+    placeholders:
+      csv_path: ${CSV_DATA_PATH:src/main/resources/data}
 
 logging:
   level:
     root: INFO
+    org.flywaydb: INFO
+    org.hibernate.SQL: DEBUG
+    com.example.fitness_assistant: DEBUG

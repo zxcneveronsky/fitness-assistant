@@ -16,6 +16,7 @@ public class Food {
     @NotBlank(message = "Barcode не может быть пустым")
     private String barcode;
     @Column(nullable = false)
+    @NotBlank(message = "Название продукта не может быть пустым")
     private String name;
     private String brands;
     private double kcal;

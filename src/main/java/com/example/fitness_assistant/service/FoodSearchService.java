@@ -1,35 +1,24 @@
 package com.example.fitness_assistant.service;
 
 import com.example.fitness_assistant.dto.FoodSearchDTO;
-import com.example.fitness_assistant.entity.Food; // Предполагаемое имя сущности
+import com.example.fitness_assistant.entity.Food;
 import com.example.fitness_assistant.exception.FoodNotFoundException;
 import com.example.fitness_assistant.repository.FoodRepository;
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-@Service
-public class FoodSearchService {
+import java.util.Optional;
 
+@Service
+@Slf4j
+public class FoodSearchService {
     private final FoodRepository foodRepository;
 
-    // Внедрение через конструктор в стиле ExerciseService
     public FoodSearchService(FoodRepository foodRepository) {
         this.foodRepository = foodRepository;
     }
 
-    /**
-     * Поиск продукта по штрихкоду.
-     * Возвращает DTO с данными о КБЖУ или выбрасывает исключение.
-     */
-    public FoodSearchDTO findFoodByBarcode(String barcode) {
-        return foodRepository.findByBarcode(barcode)
-                .map(this::mapToDTO)
-                .orElseThrow(() -> new FoodNotFoundException("Продукт с кодом " + barcode));
-    }
-
-    /**
-     * Приватный метод-маппер для преобразования сущности в DTO.
-     * Помогает держать основную логику чистой, как в вашем ExerciseService.
-     */
     private FoodSearchDTO mapToDTO(Food food) {
         return new FoodSearchDTO(
                 food.getName(),
@@ -39,5 +28,38 @@ public class FoodSearchService {
                 food.getFats(),
                 food.getCarbs()
         );
+    }
+
+    public FoodSearchDTO findFoodByBarcode(String barcode) {
+
+        Optional<Food> foodOptional = foodRepository.findByBarcode(barcode);
+        if (foodOptional.isEmpty()) {
+            log.warn("Продукт со штрихкодом '{}' не найден", barcode);
+            throw new FoodNotFoundException(barcode);
+        }
+        Food food = foodOptional.get();
+        log.debug("Продукт найден: {}, бренд: {}", food.getName(), food.getBrands());
+        return mapToDTO(food);
+    }
+
+
+    @Transactional
+    public FoodSearchDTO updateFood(String barcode, Food foodDetails) {
+        Food food = foodRepository.findByBarcode(barcode)
+                .orElseThrow(() -> {
+                    log.warn("Ошибка обновления: продукт не найден [Штрихкод: {}]", barcode);
+                    return new FoodNotFoundException(barcode);
+                });
+        food.setName(foodDetails.getName());
+        food.setBrands(foodDetails.getBrands());
+        food.setKcal(foodDetails.getKcal());
+        food.setProteins(foodDetails.getProteins());
+        food.setFats(foodDetails.getFats());
+        food.setCarbs(foodDetails.getCarbs());
+
+        Food updatedFood = foodRepository.save(food);
+
+        log.info("Данные продукта '{}' обновлены [Штрихкод: {}]", updatedFood.getName(), barcode);
+        return mapToDTO(updatedFood);
     }
 }
