@@ -1,6 +1,5 @@
 package com.example.fitness_assistant.controller;
 
-
 import com.example.fitness_assistant.dto.ExerciseDTO;
 import com.example.fitness_assistant.entity.Exercise;
 import com.example.fitness_assistant.service.ExerciseService;
@@ -8,6 +7,7 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,27 +24,21 @@ public class ExerciseController {
     }
 
     @GetMapping
-    public List<ExerciseDTO> getAllExercise(){
-        log.info("Запрос на получение всех упражнений");
-        return exerciseService.getAllExercise();
-    }
-
-    @GetMapping("/paged")
-    public Page<ExerciseDTO> getAllExercisePaged(Pageable pageable) {
+    public Page<ExerciseDTO> getAllExercisePaged(@PageableDefault(size = 10) Pageable pageable) {
         log.info("Запрос на пагинацию: страница {}, размер {}", pageable.getPageNumber(), pageable.getPageSize());
         return exerciseService.getAllExercisePaged(pageable);
     }
 
     @GetMapping("/muscle/{muscle}")
-    public List<ExerciseDTO> getExercise(@PathVariable String muscle){
+    public List<ExerciseDTO> getExerciseByMuscle(@PathVariable String muscle){
         log.info("Поиск упражнений для группы мышц: {}", muscle);
-        return exerciseService.getExercisesByMuscle(muscle); // было getExerciseName
+        return exerciseService.getExercisesByMuscle(muscle);
     }
 
     @GetMapping("/exercise/{exercise}")
-    public ExerciseDTO getMuscle(@PathVariable String exercise){
+    public ExerciseDTO getExerciseByName(@PathVariable String exercise){
         log.info("Поиск информации по упражнению: {}", exercise);
-        return exerciseService.getExerciseByName(exercise); // было getMuscleName
+        return exerciseService.getExerciseByName(exercise);
     }
 
     @PostMapping
@@ -59,5 +53,12 @@ public class ExerciseController {
     public void deleteExercise(@PathVariable String exerciseName) {
         log.warn("Удаление упражнения: {}", exerciseName);
         exerciseService.deleteExercise(exerciseName);
+    }
+    @GetMapping("/search")
+    public Page<ExerciseDTO> searchExercises(
+            @RequestParam String name,
+            @PageableDefault(size = 9) Pageable pageable) {
+        log.info("Поиск упражнений по запросу: '{}', страница: {}", name, pageable.getPageNumber());
+        return exerciseService.searchExercisesByName(name, pageable);
     }
 }

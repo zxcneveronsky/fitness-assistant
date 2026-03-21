@@ -17,4 +17,6 @@ public class Exercise {
     private String exerciseName;
 
     private String description;
+    @OneToMany(mappedBy = "exercise", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private java.util.List<ExerciseMuscle> muscles;
 }

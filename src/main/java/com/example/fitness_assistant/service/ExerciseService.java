@@ -35,16 +35,7 @@ public class ExerciseService {
         return new ExerciseDTO(exercise.getExerciseName(), exercise.getDescription(), muscles);
     }
 
-    public List<ExerciseDTO> getAllExercise() {
-        List<Exercise> exercises = exerciseRepository.findAll();
-        if (exercises.isEmpty()) {
-            log.warn("Список упражнений пуст");
-            throw new ExerciseNotFoundException("Ничего");
-        }
-        log.debug("Успешно извлечено упражнений: {}", exercises.size());
-        return exercises.stream().map(this::toDTO).toList();
-    }
-
+    // Оставили только пагинацию
     public Page<ExerciseDTO> getAllExercisePaged(Pageable pageable) {
         Page<Exercise> page = exerciseRepository.findAll(pageable);
         if (page.isEmpty()) {
@@ -70,11 +61,19 @@ public class ExerciseService {
     public ExerciseDTO getExerciseByName(String exerciseName) {
         Exercise exercise = exerciseRepository
                 .findByExerciseNameIgnoreCase(exerciseName)
-                .orElseThrow(() -> {
-                    log.warn("Упражнение '{}' не найдено", exerciseName);
-                    return new ExerciseNotFoundException(exerciseName);
-                });
+                .orElseThrow(() -> new ExerciseNotFoundException(exerciseName));
         return toDTO(exercise);
+    }
+    public Page<ExerciseDTO> searchExercisesByName(String name, Pageable pageable) {
+        Page<Exercise> exercisePage = exerciseRepository.findByExerciseNameContainingIgnoreCase(name, pageable);
+
+        return exercisePage.map(ex -> new ExerciseDTO(
+                ex.getExerciseName(),
+                ex.getDescription(),
+                ex.getMuscles().stream()
+                        .map(m -> new ExerciseDTO.MuscleDTO(m.getMuscleGroup(), m.getMuscleDetail()))
+                        .toList()
+        ));
     }
 
     @Transactional
@@ -87,23 +86,22 @@ public class ExerciseService {
         log.info("Упражнение {} удалено", exerciseName);
     }
 
+    @Transactional
     public Exercise addExercise(ExerciseDTO exercise) {
         Exercise savedEx = new Exercise();
         savedEx.setExerciseName(exercise.exerciseName());
         savedEx.setDescription(exercise.description());
         Exercise savedExercise = exerciseRepository.save(savedEx);
 
-        log.info("Сохранено упражнение [ID: {}, Название: {}]", savedExercise.getId(), savedExercise.getExerciseName());
         List<ExerciseMuscle> savedMuscles = exercise.muscles().stream()
-                .map(muscleList -> {
+                .map(m -> {
                     ExerciseMuscle em = new ExerciseMuscle();
                     em.setExercise(savedExercise);
-                    em.setMuscleGroup(muscleList.muscleGroup());
-                    em.setMuscleDetail(muscleList.muscleDetail());
+                    em.setMuscleGroup(m.muscleGroup());
+                    em.setMuscleDetail(m.muscleDetail());
                     return em;
                 }).toList();
         exerciseMuscleRepository.saveAll(savedMuscles);
-        log.info("Сохранено мышц: {} для упражнения [ID: {}, Название: {}]", savedMuscles.size(),savedExercise.getId(), savedExercise.getExerciseName());
         return savedExercise;
     }
 }
