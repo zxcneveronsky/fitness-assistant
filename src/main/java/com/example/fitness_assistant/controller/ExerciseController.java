@@ -38,19 +38,19 @@ public class ExerciseController {
     @GetMapping("/muscle/{muscle}")
     public List<ExerciseDTO> getExercise(@PathVariable String muscle){
         log.info("Поиск упражнений для группы мышц: {}", muscle);
-        return exerciseService.getExerciseName(muscle);
+        return exerciseService.getExercisesByMuscle(muscle); // было getExerciseName
     }
 
     @GetMapping("/exercise/{exercise}")
     public ExerciseDTO getMuscle(@PathVariable String exercise){
         log.info("Поиск информации по упражнению: {}", exercise);
-        return exerciseService.getMuscleName(exercise);
+        return exerciseService.getExerciseByName(exercise); // было getMuscleName
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Exercise addExercise(@Valid @RequestBody Exercise exercise) {
-        log.info("Добавление нового упражнения: {}", exercise.getExerciseName());
+    public Exercise addExercise(@Valid @RequestBody ExerciseDTO exercise) {
+        log.info("Добавление нового упражнения: {}", exercise.exerciseName());
         return exerciseService.addExercise(exercise);
     }
 

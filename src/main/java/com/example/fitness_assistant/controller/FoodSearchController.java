@@ -6,6 +6,7 @@ import com.example.fitness_assistant.service.FoodSearchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,17 +18,34 @@ import java.util.Optional;
 @Slf4j
 public class FoodSearchController {
     private final FoodSearchService foodSearchService;
-    public FoodSearchController(FoodSearchService foodSearchService){this.foodSearchService = foodSearchService;}
 
-    @GetMapping("/{barcode}")
-    public FoodSearchDTO getFoodByBarcode(@PathVariable String barcode) {
-        log.info("Запрос на поиск продукта по Штрихкоду: '{}'", barcode);
-        return foodSearchService.findFoodByBarcode(barcode);
+    public FoodSearchController(FoodSearchService foodSearchService) {
+        this.foodSearchService = foodSearchService;
     }
 
-    @PutMapping("/{barcode}")
-    public FoodSearchDTO updateFood(@PathVariable String barcode, @Valid @RequestBody Food food) {
-        log.info("Запрос на изменение данных продукта [Штрихкод: {}]", barcode);
-        return foodSearchService.updateFood(barcode, food);
+    @GetMapping
+    public List<FoodSearchDTO> getFoodByName(@RequestParam String name) {
+        log.info("Поиск продукта по названию: '{}'", name);
+        return foodSearchService.findFoodByName(name);
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public Food addFood(@Valid @RequestBody Food food) {
+        log.info("Добавление продукта: {}", food.getName());
+        return foodSearchService.addFood(food);
+    }
+
+    @PutMapping("/{id}")
+    public FoodSearchDTO updateFood(@PathVariable Long id, @Valid @RequestBody Food food) {
+        log.info("Обновление продукта с id: {}", id);
+        return foodSearchService.updateFood(id, food);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteFood(@PathVariable Long id) {
+        log.warn("Удаление продукта с id: {}", id);
+        foodSearchService.deleteFood(id);
     }
 }

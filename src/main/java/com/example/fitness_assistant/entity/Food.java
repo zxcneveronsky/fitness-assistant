@@ -12,9 +12,6 @@ public class Food {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true,nullable = false)
-    @NotBlank(message = "Barcode не может быть пустым")
-    private String barcode;
     @Column(nullable = false)
     @NotBlank(message = "Название продукта не может быть пустым")
     private String name;

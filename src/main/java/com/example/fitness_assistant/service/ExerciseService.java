@@ -3,7 +3,9 @@ package com.example.fitness_assistant.service;
 
 import com.example.fitness_assistant.dto.ExerciseDTO;
 import com.example.fitness_assistant.entity.Exercise;
+import com.example.fitness_assistant.entity.ExerciseMuscle;
 import com.example.fitness_assistant.exception.ExerciseNotFoundException;
+import com.example.fitness_assistant.repository.ExerciseMuscleRepository;
 import com.example.fitness_assistant.repository.ExerciseRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -12,85 +14,96 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
 @Slf4j
 @Service
 public class ExerciseService {
     private final ExerciseRepository exerciseRepository;
-    public ExerciseService(ExerciseRepository exerciseRepository){
-        this.exerciseRepository = exerciseRepository; }
+    private final ExerciseMuscleRepository exerciseMuscleRepository;
 
-    private List<ExerciseDTO> toDTO(List<Exercise> ex){
-        return ex.stream()
-                .map(e -> new ExerciseDTO(
-                        e.getExerciseName(),
-                        e.getDescription(),
-                        List.of(new ExerciseDTO.MuscleDTO(e.getMuscleGroup(),e.getMuscleDetail()))
-                ))
-                .toList();
+    public ExerciseService(ExerciseRepository exerciseRepository,
+                           ExerciseMuscleRepository exerciseMuscleRepository) {
+        this.exerciseRepository = exerciseRepository;
+        this.exerciseMuscleRepository = exerciseMuscleRepository;
     }
 
-    public List<ExerciseDTO> getAllExercise(){
+    private ExerciseDTO toDTO(Exercise exercise) {
+        List<ExerciseDTO.MuscleDTO> muscles = exerciseMuscleRepository
+                .findByExercise_ExerciseNameIgnoreCase(exercise.getExerciseName())
+                .stream()
+                .map(m -> new ExerciseDTO.MuscleDTO(m.getMuscleGroup(), m.getMuscleDetail()))
+                .toList();
+        return new ExerciseDTO(exercise.getExerciseName(), exercise.getDescription(), muscles);
+    }
+
+    public List<ExerciseDTO> getAllExercise() {
         List<Exercise> exercises = exerciseRepository.findAll();
-        if (exercises.isEmpty()){
+        if (exercises.isEmpty()) {
             log.warn("Список упражнений пуст");
             throw new ExerciseNotFoundException("Ничего");
         }
         log.debug("Успешно извлечено упражнений: {}", exercises.size());
-        return toDTO(exercises);
+        return exercises.stream().map(this::toDTO).toList();
     }
+
     public Page<ExerciseDTO> getAllExercisePaged(Pageable pageable) {
-        Page<ExerciseDTO> result = exerciseRepository.findAll(pageable)
-                .map(exercise -> new ExerciseDTO(
-                        exercise.getExerciseName(),
-                        exercise.getDescription(),
-                        List.of(new ExerciseDTO.MuscleDTO(exercise.getMuscleGroup(), exercise.getMuscleDetail()))
-                ));
-        if (result.isEmpty()){
-            log.warn("Страница {} пуста (запрос пагинации)", pageable.getPageNumber());
+        Page<Exercise> page = exerciseRepository.findAll(pageable);
+        if (page.isEmpty()) {
+            log.warn("Страница {} пуста", pageable.getPageNumber());
             throw new ExerciseNotFoundException("Ничего");
         }
-        log.debug("Возвращена страница {} из {}. Найдено элементов: {}",
-                result.getNumber(), result.getTotalPages(), result.getNumberOfElements());
-        return result;
+        return page.map(this::toDTO);
     }
 
-    public List<ExerciseDTO> getExerciseName(String muscle){
-        List<Exercise> exercisesName = exerciseRepository.findByMuscleGroupOrMuscleDetail(muscle,muscle);
-        if (exercisesName.isEmpty()){
-            log.warn("Не найдено упражнений для группы мышц: {}", muscle);
+    public List<ExerciseDTO> getExercisesByMuscle(String muscle) {
+        List<ExerciseMuscle> muscles = exerciseMuscleRepository.findByMuscleGroupIgnoreCaseOrMuscleDetailIgnoreCase(muscle, muscle);
+        if (muscles.isEmpty()) {
+            log.warn("Не найдено упражнений для мышцы: {}", muscle);
             throw new ExerciseNotFoundException(muscle);
         }
-        log.debug("Найдено {} упражнений для группы: {}", exercisesName.size(), muscle);
-        return toDTO(exercisesName);
+        return muscles.stream()
+                .map(ExerciseMuscle::getExercise)
+                .distinct()
+                .map(this::toDTO)
+                .toList();
     }
 
-    public ExerciseDTO getMuscleName(String exerciseName){
-        List<Exercise> muscleName = exerciseRepository.findByExerciseName(exerciseName);
-        if (muscleName.isEmpty()){
-            log.warn("Упражнение '{}' не найдено в базе", exerciseName);
-            throw new ExerciseNotFoundException(exerciseName);
-        }
-        ExerciseDTO resultDTO = new ExerciseDTO(
-                muscleName.get(0).getExerciseName(),
-                muscleName.get(0).getDescription(),
-                muscleName.stream()
-                        .map(m -> new ExerciseDTO.MuscleDTO(m.getMuscleGroup(),m.getMuscleDetail()))
-                        .toList()
-        );
-        log.debug("Сформированы данные для упражнения: {}, мышц: {}",
-                resultDTO.exerciseName(), resultDTO.muscles().size());
-        return resultDTO;
+    public ExerciseDTO getExerciseByName(String exerciseName) {
+        Exercise exercise = exerciseRepository
+                .findByExerciseNameIgnoreCase(exerciseName)
+                .orElseThrow(() -> {
+                    log.warn("Упражнение '{}' не найдено", exerciseName);
+                    return new ExerciseNotFoundException(exerciseName);
+                });
+        return toDTO(exercise);
     }
 
     @Transactional
     public void deleteExercise(String exerciseName) {
-        log.info("Выполнение удаления упражнения: {}", exerciseName);
-        exerciseRepository.deleteByExerciseName(exerciseName);
+        Exercise exercise = exerciseRepository
+                .findByExerciseNameIgnoreCase(exerciseName)
+                .orElseThrow(() -> new ExerciseNotFoundException(exerciseName));
+        exerciseMuscleRepository.deleteByExercise(exercise);
+        exerciseRepository.delete(exercise);
+        log.info("Упражнение {} удалено", exerciseName);
     }
-    public Exercise addExercise(Exercise exercise){
-        Exercise exerciseSaved = exerciseRepository.save(exercise);
-        log.info("Сохранено новое упражнение [ID: {}, Название: {}]", exerciseSaved.getId(), exerciseSaved.getExerciseName());
-        return exerciseSaved;
+
+    public Exercise addExercise(ExerciseDTO exercise) {
+        Exercise savedEx = new Exercise();
+        savedEx.setExerciseName(exercise.exerciseName());
+        savedEx.setDescription(exercise.description());
+        Exercise savedExercise = exerciseRepository.save(savedEx);
+
+        log.info("Сохранено упражнение [ID: {}, Название: {}]", savedExercise.getId(), savedExercise.getExerciseName());
+        List<ExerciseMuscle> savedMuscles = exercise.muscles().stream()
+                .map(muscleList -> {
+                    ExerciseMuscle em = new ExerciseMuscle();
+                    em.setExercise(savedExercise);
+                    em.setMuscleGroup(muscleList.muscleGroup());
+                    em.setMuscleDetail(muscleList.muscleDetail());
+                    return em;
+                }).toList();
+        exerciseMuscleRepository.saveAll(savedMuscles);
+        log.info("Сохранено мышц: {} для упражнения [ID: {}, Название: {}]", savedMuscles.size(),savedExercise.getId(), savedExercise.getExerciseName());
+        return savedExercise;
     }
 }
