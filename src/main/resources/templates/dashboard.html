@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Fitness Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Manrope:wght@800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #ffffff; color: #1d1d1f; overflow-x: hidden; }
+        .hero-title { font-family: 'Manrope', sans-serif; letter-spacing: -0.04em; line-height: 0.9; }
+        .glass-nav { background: rgba(255, 255, 255, 0.8); backdrop-filter: saturate(180%) blur(20px); }
+
+        .dash-card {
+            transition: all 0.5s cubic-bezier(0.15, 0.83, 0.66, 1);
+            border-radius: 2.2rem;
+            border: 1px solid #f2f2f7;
+            background: #ffffff;
+        }
+        .dash-card:hover { transform: translateY(-4px); box-shadow: 0 20px 50px rgba(0,0,0,0.05); }
+
+        .feature-card {
+            transition: all 0.5s cubic-bezier(0.15, 0.83, 0.66, 1);
+            border-radius: 2.2rem;
+            border: 1px solid #f2f2f7;
+            background: rgba(245, 245, 247, 0.4);
+        }
+        .feature-card:hover { transform: translateY(-8px); background: #fff; box-shadow: 0 30px 60px rgba(0,0,0,0.06); border-color: #0071e3; }
+        .feature-card.locked:hover { border-color: #f2f2f7; transform: translateY(-4px); }
+        .icon-gray { filter: grayscale(1); transition: all 0.5s ease; opacity: 0.5; }
+        .feature-card:hover .icon-gray { filter: grayscale(0); transform: scale(1.1); opacity: 1; }
+
+        .btn-apple { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 1.25rem; }
+        .btn-apple:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .btn-apple:active { transform: scale(0.97); }
+
+        /* Доnut chart контейнер */
+        .donut-wrap { position: relative; }
+        .donut-center {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center; pointer-events: none;
+        }
+
+        /* Слайдер */
+        input[type=range] { -webkit-appearance: none; appearance: none; height: 6px; border-radius: 3px; background: #e5e7eb; outline: none; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%; background: #0071e3; cursor: pointer; box-shadow: 0 4px 12px rgba(0,113,227,0.3); }
+
+        /* Силует человека */
+        .silhouette { opacity: 0.08; }
+
+        /* Норма кнопки */
+        .norm-btn { transition: all 0.2s ease; border-radius: 1rem; border: 2px solid #f2f2f7; cursor: pointer; }
+        .norm-btn.active { border-color: #0071e3; background: #f0f7ff; }
+        .norm-btn:hover { border-color: #0071e3; }
+
+        /* Быстрые кнопки + */
+        .quick-btn { transition: all 0.3s ease; border-radius: 1.5rem; }
+        .quick-btn:hover { transform: scale(1.05); box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .quick-btn:active { transform: scale(0.97); }
+
+        .animate__fadeOut { animation: fadeOut 0.8s forwards; }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+
+        /* Модалка обновления параметров */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(4px); z-index: 100; display: none; align-items: center; justify-content: center; padding: 1rem; }
+        .modal-overlay.open { display: flex; }
+        .modal-box { border-radius: 2rem; background: #fff; max-width: 400px; width: 100%; padding: 2rem; box-shadow: 0 40px 80px rgba(0,0,0,0.15); }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="glass-nav fixed top-0 w-full z-50 h-16 flex items-center px-4 sm:px-10 border-b border-gray-100/50">
+    <div class="w-1/2 lg:w-1/4">
+        <a href="/dashboard" class="font-extrabold text-xl tracking-tighter">Fitness<span class="text-blue-600">Assistant</span></a>
+    </div>
+    <div class="hidden lg:flex flex-1 justify-center overflow-hidden px-4">
+        <p id="motivation-text" class="animate__animated animate__fadeIn text-[10px] font-black uppercase tracking-[0.4em] text-black whitespace-nowrap">
+            Дисциплина — это твоя свобода
+        </p>
+    </div>
+    <div class="w-1/2 lg:w-1/4 flex justify-end items-center gap-3 sm:gap-5">
+        <span id="nav-email" class="hidden sm:block text-xs font-bold text-gray-400 truncate max-w-[150px]"></span>
+        <button onclick="handleLogout()" class="btn-apple bg-gray-100 text-gray-700 text-xs sm:text-sm font-bold px-4 py-2 hover:bg-gray-200">
+            Выйти
+        </button>
+    </div>
+</nav>
+
+<main class="pt-20 sm:pt-24 pb-20 px-4 sm:px-6 max-w-6xl mx-auto">
+
+    <!-- ПРИВЕТСТВИЕ -->
+    <div class="animate__animated animate__fadeInDown mb-8 sm:mb-10 pt-4">
+        <h1 class="hero-title text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tighter mb-2">
+            Привет, <span id="greeting-name" class="text-blue-600">чемпион</span> 👋
+        </h1>
+        <p class="text-gray-400 text-base sm:text-lg font-medium">Вот твой прогресс на сегодня</p>
+    </div>
+
+    <!-- БЛОК 1: ДИАГРАММЫ + СИЛУЕТ -->
+    <section class="animate__animated animate__fadeIn mb-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+
+        <!-- ВОДА -->
+        <div class="dash-card p-4 sm:p-6 lg:p-8" style="display:grid; grid-template-rows: auto 44px 1fr auto auto; gap: 0.75rem; min-height: 480px;">
+            <div class="flex justify-between items-start h-[60px]">
+                <div>
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Вода сегодня</p>
+                    <p class="text-3xl font-black text-gray-900"><span id="water-current">0</span> <span class="text-lg text-gray-400 font-medium">мл</span></p>
+                </div>
+                <button onclick="quickAddWater(250)" class="quick-btn bg-blue-50 text-blue-600 font-black text-xl w-12 h-12 flex items-center justify-center shrink-0">+</button>
+            </div>
+
+            <div class="flex gap-2 invisible" aria-hidden="true">
+                <div class="flex-1 py-2 h-full"></div>
+            </div>
+
+            <div class="donut-wrap w-36 h-36 mx-auto self-center flex items-center justify-center">
+                <canvas id="waterChart"></canvas>
+                <div class="donut-center">
+                    <p id="water-pct" class="text-2xl font-black text-gray-900">0%</p>
+                    <p class="text-[10px] text-gray-400 font-bold">из <span id="water-norm-label">2000</span></p>
+                </div>
+            </div>
+
+            <div class="flex gap-2 h-[42px]">
+                <input type="number" id="custom-water" placeholder="Добавить мл..."
+                       class="flex-1 min-w-0 bg-gray-50 border border-gray-100 rounded-xl px-3 py-2 text-sm font-medium focus:outline-none focus:border-blue-400">
+                <button onclick="applyCustomWater()" class="bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-xl hover:bg-blue-700 transition">ОК</button>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2 h-[42px]">
+                <button onclick="quickAddWater(150)" class="text-[10px] font-black bg-blue-50 text-blue-600 py-1 rounded-xl hover:bg-blue-100 transition uppercase">+150</button>
+                <button onclick="quickAddWater(250)" class="text-[10px] font-black bg-blue-50 text-blue-600 py-1 rounded-xl hover:bg-blue-100 transition uppercase">+250</button>
+                <button onclick="resetWater()" class="text-[10px] font-black bg-red-50 text-red-400 py-1 rounded-xl hover:bg-red-100 transition uppercase">Сброс</button>
+            </div>
+        </div>
+
+        <!-- КАЛОРИИ -->
+        <div class="dash-card p-4 sm:p-6 lg:p-8" style="display:grid; grid-template-rows: auto 44px 1fr auto auto; gap: 0.75rem;">
+            <!-- Зона 1: заголовок -->
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Калории сегодня</p>
+                    <p class="text-3xl font-black text-gray-900"><span id="kcal-current">0</span> <span class="text-lg text-gray-400 font-medium">ккал</span></p>
+                </div>
+                <a href="/food-tracker" class="quick-btn bg-green-50 text-green-600 font-black text-xl w-12 h-12 flex items-center justify-center shrink-0">+</a>
+            </div>
+            <!-- Зона 2: переключатели нормы -->
+            <div class="flex gap-2">
+                <button class="norm-btn active flex-1 py-2 text-[10px] font-black uppercase" id="norm-diet" onclick="setNorm('diet')">Диета</button>
+                <button class="norm-btn flex-1 py-2 text-[10px] font-black uppercase" id="norm-maintain" onclick="setNorm('maintain')">Поддержание</button>
+                <button class="norm-btn flex-1 py-2 text-[10px] font-black uppercase" id="norm-gain" onclick="setNorm('gain')">Набор</button>
+            </div>
+            <!-- Зона 3: диаграмма -->
+            <div class="donut-wrap w-36 h-36 mx-auto self-center">
+                <canvas id="kcalChart"></canvas>
+                <div class="donut-center">
+                    <p id="kcal-pct" class="text-2xl font-black text-gray-900">0%</p>
+                    <p class="text-[10px] text-gray-400 font-bold">из <span id="kcal-norm-label">2000</span></p>
+                </div>
+            </div>
+            <!-- Зона 4: поле ввода нормы -->
+            <div class="flex gap-2">
+                <input type="number" id="custom-kcal" placeholder="Своя норма..."
+                       class="flex-1 bg-gray-50 border border-gray-100 rounded-xl px-3 py-2 text-sm font-medium focus:outline-none focus:border-blue-400">
+                <button onclick="applyCustomNorm()" class="bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-xl hover:bg-blue-700 transition">ОК</button>
+            </div>
+            <!-- Зона 5: БЖУ -->
+            <div class="grid grid-cols-3 gap-2">
+                <div class="bg-blue-50/50 rounded-xl p-2 text-center">
+                    <p class="text-[9px] font-black text-blue-500 uppercase">Белки</p>
+                    <p class="text-sm font-black text-blue-600"><span id="protein-current">0</span>г</p>
+                </div>
+                <div class="bg-red-50/50 rounded-xl p-2 text-center">
+                    <p class="text-[9px] font-black text-red-500 uppercase">Жиры</p>
+                    <p class="text-sm font-black text-red-600"><span id="fat-current">0</span>г</p>
+                </div>
+                <div class="bg-green-50/50 rounded-xl p-2 text-center">
+                    <p class="text-[9px] font-black text-green-500 uppercase">Углев</p>
+                    <p class="text-sm font-black text-green-600"><span id="carb-current">0</span>г</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- СИЛУЕТ + ПАРАМЕТРЫ -->
+        <div class="dash-card p-4 sm:p-6 lg:p-8 flex flex-col sm:col-span-2 lg:col-span-1">
+            <div class="flex justify-between items-center mb-4">
+                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Параметры тела</p>
+                <button onclick="openBodyModal()" class="text-[10px] font-black text-blue-600 uppercase tracking-widest hover:opacity-70 transition">Обновить</button>
+            </div>
+            <!-- Силуэт слева во всю высоту + данные прижаты к правому краю -->
+            <div class="flex-1 flex items-stretch gap-4">
+                <!-- Силуэт — занимает левую часть -->
+                <div class="flex items-center justify-center flex-1">
+                    <svg id="silhouette-svg" viewBox="0 0 60 130" fill="currentColor" style="opacity:0.18; width:100%; max-width:80px; height:auto;">
+                        <ellipse cx="30" cy="12" rx="10" ry="12"/>
+                        <path d="M15 30 Q10 50 12 75 L20 75 L20 108 L25 108 L25 75 L35 75 L35 108 L40 108 L40 75 L48 75 Q50 50 45 30 Q40 24 30 24 Q20 24 15 30Z"/>
+                        <path d="M15 30 Q5 35 6 58 L12 56 Q13 42 18 36Z"/>
+                        <path d="M45 30 Q55 35 54 58 L48 56 Q47 42 42 36Z"/>
+                    </svg>
+                </div>
+                <!-- Данные — прижаты к правой грани -->
+                <div class="flex flex-col justify-center space-y-5 text-right">
+                    <div>
+                        <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Рост</p>
+                        <p class="text-3xl font-black text-gray-900 leading-none"><span id="profile-height">—</span> <span class="text-sm font-medium text-gray-400">см</span></p>
+                    </div>
+                    <div>
+                        <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Вес</p>
+                        <p class="text-3xl font-black text-gray-900 leading-none"><span id="profile-weight">—</span> <span class="text-sm font-medium text-gray-400">кг</span></p>
+                    </div>
+                    <div>
+                        <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Возраст</p>
+                        <p class="text-3xl font-black text-gray-900 leading-none"><span id="profile-age">—</span> <span class="text-sm font-medium text-gray-400">лет</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- БЛОК 2: ПЕРСОНАЛЬНЫЕ + СТАТИСТИКА -->
+    <section class="animate__animated animate__fadeIn animate__delay-1s mb-8 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+        <a href="/profile" class="feature-card p-5 sm:p-8 flex items-center gap-5 sm:gap-8 group">
+            <div class="text-4xl sm:text-5xl group-hover:scale-110 transition duration-500 shrink-0">👤</div>
+            <div>
+                <h3 class="font-bold text-lg sm:text-xl text-gray-900 leading-none">Персональные параметры</h3>
+                <p class="text-[10px] text-blue-500 mt-2 sm:mt-3 uppercase tracking-widest font-black">Имя, возраст, цели</p>
+            </div>
+        </a>
+        <a href="/stats" class="feature-card p-5 sm:p-8 flex items-center gap-5 sm:gap-8 group">
+            <div class="text-4xl sm:text-5xl group-hover:scale-110 transition duration-500 shrink-0">📈</div>
+            <div>
+                <h3 class="font-bold text-lg sm:text-xl text-gray-900 leading-none">Статистика прогресса</h3>
+                <p class="text-[10px] text-blue-500 mt-2 sm:mt-3 uppercase tracking-widest font-black">График веса по дням</p>
+            </div>
+        </a>
+    </section>
+
+    <!-- БЛОК 3: ПОИСК -->
+    <section class="animate__animated animate__fadeIn animate__delay-1s mb-8 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+        <a href="/explore/exercises" class="feature-card p-5 sm:p-8 flex items-center gap-5 sm:gap-8 group">
+            <div class="text-4xl sm:text-5xl group-hover:scale-110 transition duration-500 shrink-0">💪</div>
+            <div>
+                <h3 class="font-bold text-lg sm:text-xl text-gray-900 leading-none">Поиск упражнений и мышц</h3>
+                <p class="text-[10px] text-blue-500 mt-2 sm:mt-3 uppercase tracking-widest font-black">База упражнений</p>
+            </div>
+        </a>
+        <a href="/explore/food" class="feature-card p-5 sm:p-8 flex items-center gap-5 sm:gap-8 group">
+            <div class="text-4xl sm:text-5xl group-hover:scale-110 transition duration-500 shrink-0">🍎</div>
+            <div>
+                <h3 class="font-bold text-lg sm:text-xl text-gray-900 leading-none">Поиск КБЖУ продуктов</h3>
+                <p class="text-[10px] text-blue-500 mt-2 sm:mt-3 uppercase tracking-widest font-black">База продуктов</p>
+            </div>
+        </a>
+    </section>
+
+    <!-- БЛОК 4: ТРЕКЕРЫ -->
+    <section class="animate__animated animate__fadeIn animate__delay-1s mb-8 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+        <a href="/water-tracker" class="feature-card p-5 sm:p-8 flex items-center gap-5 sm:gap-8 group">
+            <div class="text-4xl sm:text-5xl group-hover:scale-110 transition duration-500 shrink-0">💧</div>
+            <div>
+                <h3 class="font-bold text-lg sm:text-xl text-gray-900 leading-none">Трекер воды</h3>
+                <p class="text-[10px] text-blue-500 mt-2 sm:mt-3 uppercase tracking-widest font-black">История потребления</p>
+            </div>
+        </a>
+        <a href="/food-tracker" class="feature-card p-5 sm:p-8 flex items-center gap-5 sm:gap-8 group">
+            <div class="text-4xl sm:text-5xl group-hover:scale-110 transition duration-500 shrink-0">🥗</div>
+            <div>
+                <h3 class="font-bold text-lg sm:text-xl text-gray-900 leading-none">Трекер калорий</h3>
+                <p class="text-[10px] text-blue-500 mt-2 sm:mt-3 uppercase tracking-widest font-black">Добавить приём пищи</p>
+            </div>
+        </a>
+    </section>
+
+    <!-- БЛОК 5: ПЛАН ТРЕНИРОВОК (заглушка) -->
+    <section class="animate__animated animate__fadeIn animate__delay-2s mb-8">
+        <div class="feature-card locked p-5 sm:p-8 flex items-center gap-5 sm:gap-8 group">
+            <div class="text-4xl sm:text-5xl icon-gray shrink-0">📅</div>
+            <div>
+                <h3 class="font-bold text-lg sm:text-xl text-gray-400 group-hover:text-gray-900 transition-colors leading-none">План тренировок</h3>
+                <p class="text-[10px] text-gray-300 mt-2 sm:mt-3 uppercase tracking-widest font-black">Скоро 🚧</p>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<!-- МОДАЛКА ОБНОВЛЕНИЯ ВЕСА/РОСТА -->
+<div class="modal-overlay" id="bodyModal">
+    <div class="modal-box animate__animated animate__fadeInUp">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="font-black text-xl text-gray-900">Обновить параметры</h2>
+            <button onclick="closeBodyModal()" class="text-gray-400 hover:text-gray-600 text-2xl font-bold">×</button>
+        </div>
+
+        <div class="mb-5">
+            <div class="flex justify-between items-center mb-2">
+                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Рост</label>
+                <span class="font-black text-xl text-gray-900"><span id="modal-height-val">170</span> см</span>
+            </div>
+            <input type="range" id="modal-height" min="140" max="220" value="170" step="1"
+                   oninput="document.getElementById('modal-height-val').textContent = this.value"
+                   class="w-full">
+        </div>
+
+        <div class="mb-8">
+            <div class="flex justify-between items-center mb-2">
+                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Вес</label>
+                <span class="font-black text-xl text-gray-900"><span id="modal-weight-val">70</span> кг</span>
+            </div>
+            <input type="range" id="modal-weight" min="40" max="180" value="70" step="1"
+                   oninput="document.getElementById('modal-weight-val').textContent = this.value"
+                   class="w-full">
+        </div>
+
+        <button onclick="saveBodyParams()" class="btn-apple bg-blue-600 text-white font-bold py-4 w-full text-base shadow-xl shadow-blue-100">
+            Сохранить
+        </button>
+    </div>
+</div>
+
+<script>
+    // ===== ДАННЫЕ =====
+    const token = localStorage.getItem('token');
+    const email = localStorage.getItem('email');
+
+    let profile = { height: null, weight: null, age: null };
+    let waterNorm = 2000;
+    let kcalNorm = 2000;
+    let currentNormType = 'diet';
+    let waterToday = 0;
+    let kcalToday = 0;
+
+    // Charts
+    let waterChartObj, kcalChartObj;
+
+    // ===== ИНИЦИАЛИЗАЦИЯ =====
+    window.onload = async () => {
+        if (!token) { window.location.href = '/login'; return; }
+
+        document.getElementById('nav-email').textContent = email || '';
+
+        startMotivation();
+        initCharts();
+        await loadProfile();
+    };
+
+    // ===== МОТИВАЦИЯ =====
+    const phrases = [
+        "Дисциплина — это твоя свобода",
+        "Каждый день — новый шанс стать лучше",
+        "Твое тело — результат твоих решений",
+        "Не ищи оправданий, ищи возможности",
+        "Будь сильнее своих отговорок"
+    ];
+    let phraseIdx = 0;
+    function startMotivation() {
+        const el = document.getElementById('motivation-text');
+        if (!el) return;
+        setInterval(() => {
+            el.classList.remove('animate__fadeIn');
+            el.classList.add('animate__fadeOut');
+            setTimeout(() => {
+                phraseIdx = (phraseIdx + 1) % phrases.length;
+                el.innerText = phrases[phraseIdx];
+                el.classList.remove('animate__fadeOut');
+                el.classList.add('animate__fadeIn');
+            }, 800);
+        }, 5000);
+    }
+
+    // ===== ЗАГРУЗКА ПРОФИЛЯ =====
+    async function loadProfile() {
+        try {
+            const res = await fetch('/api/v1/profile', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!res.ok) return;
+            const data = await res.json();
+
+            profile.height = data.height;
+            profile.weight = data.weight;
+
+            // Возраст из даты рождения
+            if (data.birthDate) {
+                const birth = new Date(data.birthDate);
+                const today = new Date();
+                profile.age = today.getFullYear() - birth.getFullYear();
+            }
+
+            // Имя в приветствии
+            const name = data.name || localStorage.getItem('userName') || '';
+            if (name) document.getElementById('greeting-name').textContent = name;
+
+            // Силуэт — женский если пол female
+            if (data.gender === 'female') {
+                const svg = document.getElementById('silhouette-svg');
+                if (svg) svg.innerHTML = `
+                    <ellipse cx="30" cy="12" rx="10" ry="12"/>
+                    <path d="M18 28 Q10 45 12 70 L19 70 L19 108 L25 108 L25 70 L35 70 L35 108 L41 108 L41 70 L48 70 Q50 45 42 28 Q37 22 30 22 Q23 22 18 28Z"/>
+                    <path d="M18 28 Q8 34 9 55 L15 53 Q15 40 20 34Z"/>
+                    <path d="M42 28 Q52 34 51 55 L45 53 Q45 40 40 34Z"/>
+                    <path d="M19 55 Q14 65 15 75 L22 73 Q21 63 22 58Z"/>
+                    <path d="M41 55 Q46 65 45 75 L38 73 Q39 63 38 58Z"/>
+                `;
+            }
+
+            // Отображаем параметры
+            document.getElementById('profile-height').textContent = data.height ? Math.round(data.height) : '—';
+            document.getElementById('profile-weight').textContent = data.weight ? Math.round(data.weight) : '—';
+            document.getElementById('profile-age').textContent = profile.age || '—';
+
+            // Обновляем слайдеры модалки
+            if (data.height) {
+                document.getElementById('modal-height').value = Math.round(data.height);
+                document.getElementById('modal-height-val').textContent = Math.round(data.height);
+            }
+            if (data.weight) {
+                document.getElementById('modal-weight').value = Math.round(data.weight);
+                document.getElementById('modal-weight-val').textContent = Math.round(data.weight);
+            }
+
+            // Рассчитываем нормы
+            calcNorms();
+
+        } catch (e) { console.error('Ошибка загрузки профиля:', e); }
+    }
+
+    // ===== РАСЧЁТ НОРМ (формула Миффлина-Сан Жеора) =====
+    function calcNorms() {
+        const w = profile.weight || 70;
+        const h = profile.height || 170;
+        const a = profile.age || 25;
+
+        // Базовый обмен (мужской по умолчанию)
+        const bmr = 10 * w + 6.25 * h - 5 * a + 5;
+        const tdee = Math.round(bmr * 1.55); // умеренная активность
+
+        const norms = {
+            diet: Math.round(tdee * 0.8),
+            maintain: tdee,
+            gain: Math.round(tdee * 1.15)
+        };
+
+        // Норма воды: 30мл на кг
+        waterNorm = Math.round(w * 30);
+        document.getElementById('water-norm-label').textContent = waterNorm;
+
+        kcalNorm = norms[currentNormType];
+        document.getElementById('kcal-norm-label').textContent = kcalNorm;
+
+        updateCharts();
+    }
+
+    function setNorm(type) {
+        currentNormType = type;
+        ['diet','maintain','gain'].forEach(t => {
+            document.getElementById(`norm-${t}`).classList.toggle('active', t === type);
+        });
+        calcNorms();
+    }
+
+    function applyCustomNorm() {
+        const val = parseInt(document.getElementById('custom-kcal').value);
+        if (val > 0) {
+            kcalNorm = val;
+            document.getElementById('kcal-norm-label').textContent = val;
+            updateCharts();
+        }
+    }
+
+    // ===== CHARTS =====
+    function initCharts() {
+        const waterCtx = document.getElementById('waterChart').getContext('2d');
+        waterChartObj = new Chart(waterCtx, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: [0, waterNorm],
+                    backgroundColor: ['#0071e3', '#f0f7ff'],
+                    borderWidth: 0,
+                    cutout: '75%'
+                }]
+            },
+            options: { plugins: { legend: { display: false }, tooltip: { enabled: false } }, animation: { duration: 600 } }
+        });
+
+        const kcalCtx = document.getElementById('kcalChart').getContext('2d');
+        kcalChartObj = new Chart(kcalCtx, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: [0, kcalNorm],
+                    backgroundColor: ['#34c759', '#f0fff4'],
+                    borderWidth: 0,
+                    cutout: '75%'
+                }]
+            },
+            options: { plugins: { legend: { display: false }, tooltip: { enabled: false } }, animation: { duration: 600 } }
+        });
+    }
+
+    function updateCharts() {
+        // Вода
+        const wPct = Math.min(Math.round((waterToday / waterNorm) * 100), 100);
+        document.getElementById('water-pct').textContent = wPct + '%';
+        document.getElementById('water-current').textContent = waterToday;
+        waterChartObj.data.datasets[0].data = [waterToday, Math.max(waterNorm - waterToday, 0)];
+        waterChartObj.update();
+
+        // Калории
+        const kPct = Math.min(Math.round((kcalToday / kcalNorm) * 100), 100);
+        document.getElementById('kcal-pct').textContent = kPct + '%';
+        document.getElementById('kcal-current').textContent = kcalToday;
+        kcalChartObj.data.datasets[0].data = [kcalToday, Math.max(kcalNorm - kcalToday, 0)];
+        kcalChartObj.update();
+    }
+
+    // ===== БЫСТРОЕ ДОБАВЛЕНИЕ ВОДЫ =====
+    function quickAddWater(ml) {
+        waterToday += ml;
+        updateCharts();
+        // TODO: сохранять на бэкенд когда будет трекер воды
+    }
+
+    function applyCustomWater() {
+        const val = parseInt(document.getElementById('custom-water').value);
+        if (val > 0) {
+            waterToday += val;
+            document.getElementById('custom-water').value = '';
+            updateCharts();
+        }
+    }
+
+    function resetWater() {
+        waterToday = 0;
+        updateCharts();
+    }
+
+    // ===== МОДАЛКА ПАРАМЕТРОВ =====
+    function openBodyModal() {
+        document.getElementById('bodyModal').classList.add('open');
+    }
+    function closeBodyModal() {
+        document.getElementById('bodyModal').classList.remove('open');
+    }
+
+    async function saveBodyParams() {
+        const weight = parseFloat(document.getElementById('modal-weight').value);
+        const height = parseFloat(document.getElementById('modal-height').value);
+
+        try {
+            const res = await fetch('/api/v1/profile/body', {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ weight, height })
+            });
+            if (!res.ok) throw new Error();
+
+            profile.weight = weight;
+            profile.height = height;
+
+            document.getElementById('profile-height').textContent = Math.round(height);
+            document.getElementById('profile-weight').textContent = Math.round(weight);
+
+            calcNorms();
+            closeBodyModal();
+        } catch (e) {
+            alert('Ошибка сохранения');
+        }
+    }
+
+    // ===== ВЫХОД =====
+    function handleLogout() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('email');
+        localStorage.removeItem('role');
+        localStorage.removeItem('userName');
+        window.location.href = '/';
+    }
+</script>
+</body>
+</html>

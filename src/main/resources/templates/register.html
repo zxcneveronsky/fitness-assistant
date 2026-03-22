@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация | Fitness Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Manrope:wght@800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #ffffff; color: #1d1d1f; overflow-x: hidden; }
+        .hero-title { font-family: 'Manrope', sans-serif; letter-spacing: -0.04em; line-height: 0.9; }
+        .glass-nav { background: rgba(255, 255, 255, 0.8); backdrop-filter: saturate(180%) blur(20px); }
+
+        .input-field {
+            transition: all 0.3s ease;
+            background: #f5f5f7;
+            border: 1px solid transparent;
+            border-radius: 1rem;
+        }
+        .input-field:focus {
+            background: #ffffff;
+            border-color: #0071e3;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.1);
+        }
+        .input-field.error {
+            border-color: #ff3b30;
+            box-shadow: 0 0 0 4px rgba(255, 59, 48, 0.1);
+        }
+
+        .auth-card {
+            border-radius: 2.2rem;
+            border: 1px solid #f2f2f7;
+            background: rgba(245, 245, 247, 0.4);
+        }
+
+        .btn-apple {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 1.25rem;
+        }
+        .btn-apple:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .btn-apple:active { transform: scale(0.97); }
+        .btn-apple:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        .error-box {
+            border-radius: 1rem;
+            background: #fff2f2;
+            border: 1px solid #ffdddd;
+        }
+
+        .strength-bar {
+            height: 4px;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="glass-nav fixed top-0 w-full z-50 h-16 flex items-center px-4 sm:px-10 border-b border-gray-100/50">
+    <div class="w-1/2 sm:w-1/4">
+        <a href="javascript:void(0)" onclick="goHome()" class="font-extrabold text-xl tracking-tighter">Fitness<span class="text-blue-600">Assistant</span></a>
+    </div>
+    <div class="hidden sm:flex w-2/4 justify-center">
+        <p class="text-[10px] font-black uppercase tracking-[0.4em] text-black whitespace-nowrap">
+            Начни свой путь сегодня
+        </p>
+    </div>
+    <div class="w-1/2 sm:w-1/4 flex justify-end">
+        <a href="/login" class="text-sm font-bold text-blue-600 hover:opacity-70 transition">Войти →</a>
+    </div>
+</nav>
+
+<main class="pt-24 sm:pt-32 pb-20 flex flex-col items-center text-center px-4 sm:px-6">
+
+    <div class="animate__animated animate__fadeInDown mb-3">
+        <span class="text-[9px] font-black text-gray-300 uppercase tracking-[0.5em]">Создать аккаунт</span>
+    </div>
+
+    <h1 class="animate__animated animate__fadeInDown hero-title text-5xl sm:text-7xl font-extrabold mb-4 tracking-tighter">
+        Регистрация
+    </h1>
+
+    <p class="animate__animated animate__fadeInUp text-lg sm:text-xl font-bold text-gray-700 mb-10 tracking-tight">
+        Один шаг до твоего прогресса
+    </p>
+
+    <!-- Карточка формы -->
+    <div class="animate__animated animate__fadeIn animate__delay-1s auth-card w-full max-w-md p-6 sm:p-10 text-left">
+
+        <!-- Ошибка -->
+        <div id="error-box" class="error-box hidden px-5 py-4 mb-6">
+            <p id="error-text" class="text-red-600 text-sm font-bold"></p>
+        </div>
+
+        <!-- Email -->
+        <div class="mb-5">
+            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block">Email</label>
+            <input type="email" id="email" placeholder="you@example.com"
+                   class="input-field w-full px-5 py-4 text-base font-medium">
+        </div>
+
+        <!-- Пароль -->
+        <div class="mb-3">
+            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block">Пароль</label>
+            <input type="password" id="password" placeholder="Минимум 6 символов"
+                   oninput="checkStrength(this.value)"
+                   class="input-field w-full px-5 py-4 text-base font-medium">
+        </div>
+
+        <!-- Индикатор силы пароля -->
+        <div class="flex gap-1 mb-5">
+            <div id="bar1" class="strength-bar flex-1 bg-gray-200"></div>
+            <div id="bar2" class="strength-bar flex-1 bg-gray-200"></div>
+            <div id="bar3" class="strength-bar flex-1 bg-gray-200"></div>
+        </div>
+
+        <!-- Повтор пароля -->
+        <div class="mb-8">
+            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block">Повтори пароль</label>
+            <input type="password" id="password2" placeholder="••••••••"
+                   class="input-field w-full px-5 py-4 text-base font-medium">
+        </div>
+
+        <!-- Кнопка -->
+        <button id="register-btn" onclick="handleRegister()"
+                class="btn-apple bg-blue-600 text-white text-base font-bold px-8 py-5 w-full shadow-2xl shadow-blue-100">
+            Создать аккаунт
+        </button>
+
+        <div class="mt-6 text-center">
+            <span class="text-sm text-gray-400 font-medium">Уже есть аккаунт? </span>
+            <a href="/login" class="text-sm font-bold text-blue-600 hover:opacity-70 transition">Войти</a>
+        </div>
+
+    </div>
+
+</main>
+
+<script>
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') handleRegister();
+    });
+
+    function checkStrength(password) {
+        const bars = [
+            document.getElementById('bar1'),
+            document.getElementById('bar2'),
+            document.getElementById('bar3')
+        ];
+
+        bars.forEach(b => b.style.background = '#e5e7eb');
+
+        if (password.length === 0) return;
+
+        let strength = 0;
+        if (password.length >= 6) strength++;
+        if (password.length >= 10) strength++;
+        if (/[A-Z]/.test(password) && /[0-9]/.test(password)) strength++;
+
+        const colors = ['#ff3b30', '#ff9500', '#34c759'];
+        for (let i = 0; i < strength; i++) {
+            bars[i].style.background = colors[strength - 1];
+        }
+    }
+
+    async function handleRegister() {
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        const password2 = document.getElementById('password2').value;
+        const btn = document.getElementById('register-btn');
+
+        document.getElementById('error-box').classList.add('hidden');
+
+        if (!email || !password || !password2) {
+            showError('Заполни все поля');
+            return;
+        }
+
+        if (password !== password2) {
+            showError('Пароли не совпадают');
+            document.getElementById('password2').classList.add('error');
+            return;
+        }
+
+        if (password.length < 6) {
+            showError('Пароль минимум 6 символов');
+            return;
+        }
+
+        document.getElementById('password2').classList.remove('error');
+        btn.disabled = true;
+        btn.textContent = 'Создаём аккаунт...';
+
+        try {
+            const res = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                showError(data.error || 'Ошибка регистрации');
+                return;
+            }
+
+            // Сохраняем токен
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('email', data.email);
+            localStorage.setItem('role', data.role);
+
+            // Редирект на главную
+            window.location.href = '/setup-profile';
+
+        } catch (e) {
+            showError('Сервер недоступен');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Создать аккаунт';
+        }
+    }
+
+    function goHome() {
+        try {
+            const token = localStorage.getItem('token');
+            if (token) {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                if (payload.exp * 1000 > Date.now()) { window.location.href = '/dashboard'; return; }
+            }
+        } catch (e) {}
+        window.location.href = '/';
+    }
+
+    // Если уже залогинен — на dashboard
+    window.onload = () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (token) {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                if (payload.exp * 1000 > Date.now()) { window.location.href = '/dashboard'; }
+            }
+        } catch (e) {}
+    };
+
+    function showError(msg) {
+        const errorBox = document.getElementById('error-box');
+        const errorText = document.getElementById('error-text');
+        errorText.textContent = msg;
+        errorBox.classList.remove('hidden');
+    }
+</script>
+</body>
+</html>

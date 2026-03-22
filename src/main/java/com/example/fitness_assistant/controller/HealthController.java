@@ -22,9 +22,10 @@ public class HealthController {
 
     @GetMapping
     public Map<String, Object> getHealth() {
+        String dbStatus = getDatabaseStatus();
         return Map.of(
-                "status", "UP",
-                "database", getDatabaseStatus(),
+                "status", dbStatus.equals("UP") ? "UP" : "DEGRADED",
+                "database", dbStatus,
                 "timestamp", LocalDateTime.now().toString(),
                 "application", "Fitness Assistant",
                 "version", "1.0.0"

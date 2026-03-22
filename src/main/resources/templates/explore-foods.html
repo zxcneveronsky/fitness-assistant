@@ -12,116 +12,101 @@
         .glass-nav { background: rgba(255, 255, 255, 0.8); backdrop-filter: saturate(180%) blur(20px); }
         .search-input { transition: all 0.3s ease; background: #f5f5f7; border: 1px solid transparent; }
         .search-input:focus { background: #ffffff; border-color: #0071e3; outline: none; box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.1); }
-        .food-card { border-radius: 2.2rem; border: 1px solid #f2f2f7; background: #ffffff; transition: all 0.3s ease; min-height: 400px; }
+        .food-card { border-radius: 2.2rem; border: 1px solid #f2f2f7; background: #ffffff; transition: all 0.3s ease; }
         .food-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.04); border-color: #0071e3; }
-
-        /* Для плавной смены мотивации */
         .animate__fadeOut { animation: fadeOut 0.8s forwards; }
         @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
     </style>
 </head>
-<body class="pt-24 text-left">
-
-<nav class="glass-nav fixed top-0 w-full z-50 h-16 flex items-center px-10 border-b border-gray-100/50">
-    <div class="w-1/4 flex items-center gap-4">
-        <a href="/" class="font-extrabold text-xl tracking-tighter hover:opacity-70 transition text-black no-underline">
+<body class="pt-20 sm:pt-24 text-left">
+<nav class="glass-nav fixed top-0 w-full z-50 h-16 flex items-center px-4 sm:px-10 border-b border-gray-100/50">
+    <div class="w-1/2 lg:w-1/4 flex items-center gap-2 sm:gap-4">
+        <a href="javascript:void(0)" onclick="goHome()" class="font-extrabold text-lg sm:text-xl tracking-tighter hover:opacity-70 transition text-black shrink-0">
             Fitness<span class="text-blue-600">Assistant</span>
         </a>
-        <div class="h-4 w-px bg-gray-200 mx-2"></div>
-        <span class="text-sm font-semibold text-gray-500 tracking-tight whitespace-nowrap">База продуктов</span>
+        <div class="h-4 w-px bg-gray-200 mx-1 sm:mx-2 shrink-0"></div>
+        <span class="text-xs sm:text-sm font-semibold text-gray-500 tracking-tight whitespace-nowrap">База продуктов</span>
     </div>
-
-    <div class="w-2/4 flex justify-center overflow-hidden">
+    <div class="hidden lg:flex flex-1 justify-center overflow-hidden px-4">
         <p id="motivation-text" class="animate__animated animate__fadeIn text-[10px] font-black uppercase tracking-[0.4em] text-black whitespace-nowrap">
             Человек — самое мощное существо на планете
         </p>
     </div>
-
-    <div class="w-1/4 flex justify-end">
+    <div class="hidden lg:flex w-1/4 justify-end">
         <span class="text-[9px] font-black text-gray-300 uppercase tracking-widest">ПОИСК КБЖУ ПРОДУКТОВ</span>
     </div>
 </nav>
-
-<main class="max-w-6xl mx-auto px-6">
-    <header class="mb-12 animate__animated animate__fadeIn">
-        <h1 class="text-5xl md:text-6xl font-extrabold tracking-tighter mb-4 text-gray-900">Что сегодня в меню?</h1>
-        <p class="text-gray-400 text-lg font-medium">Исследуй базу данных для построения идеального питания.</p>
+<main class="max-w-6xl mx-auto px-4 sm:px-6">
+    <header class="mb-8 sm:mb-12 animate__animated animate__fadeIn">
+        <h1 class="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tighter mb-3 sm:mb-4 text-gray-900">Что сегодня в меню?</h1>
+        <p class="text-gray-400 text-base sm:text-lg font-medium">Исследуй базу данных для построения идеального питания.</p>
     </header>
-
-    <section class="mb-14 animate__animated animate__fadeIn">
+    <section class="mb-10 sm:mb-14 animate__animated animate__fadeIn">
         <form th:action="@{/explore/food}" method="get" class="relative">
-            <input type="text" name="name" th:value="${param.name}"
-                   placeholder="Введите название продукта..."
-                   class="search-input w-full p-6 pl-14 rounded-3xl text-xl font-medium" autocomplete="off">
-            <div class="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input type="text" name="name" th:value="${param.name}" placeholder="Введите название продукта..."
+                   class="search-input w-full p-4 sm:p-6 pl-12 sm:pl-14 rounded-2xl sm:rounded-3xl text-base sm:text-xl font-medium" autocomplete="off">
+            <div class="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 text-gray-400">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
             </div>
         </form>
     </section>
-
-    <section id="foodGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-20">
-        <div th:each="food : ${foods}" class="food-card p-8 flex flex-col justify-between group animate__animated animate__fadeIn">
+    <section id="foodGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 pb-16 sm:pb-20">
+        <div th:each="food : ${foods}" class="food-card p-5 sm:p-8 flex flex-col justify-between group animate__animated animate__fadeIn">
             <div class="mb-4 text-center">
                 <span class="text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase tracking-widest inline-block mb-3" th:text="${food.brands()}">Бренд</span>
-                <h3 class="font-bold text-2xl text-gray-900 leading-tight" th:text="${food.name()}">Название</h3>
-                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-4">на 100г продукта</p>
+                <h3 class="font-bold text-xl sm:text-2xl text-gray-900 leading-tight" th:text="${food.name()}">Название</h3>
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-3">на 100г продукта</p>
             </div>
-
-            <div class="grid grid-cols-2 gap-3 w-full mt-2 text-left">
-                <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100">
+            <div class="grid grid-cols-2 gap-2 sm:gap-3 w-full mt-2 text-left">
+                <div class="bg-gray-50 p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-gray-100">
                     <p class="text-[9px] font-black text-gray-400 uppercase mb-1">Калории</p>
-                    <p class="text-xl font-bold text-gray-900"><span th:text="${food.kcal()}">0</span> <span class="text-xs font-medium text-gray-400">ккал</span></p>
+                    <p class="text-lg sm:text-xl font-bold text-gray-900"><span th:text="${food.kcal()}">0</span> <span class="text-xs font-medium text-gray-400">ккал</span></p>
                 </div>
-                <div class="bg-blue-50/30 p-4 rounded-2xl border border-blue-50">
+                <div class="bg-blue-50/30 p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-blue-50">
                     <p class="text-[9px] font-black text-blue-500 uppercase mb-1">Белки</p>
-                    <p class="text-xl font-bold text-blue-600" th:text="${food.proteins()}">0</p>
+                    <p class="text-lg sm:text-xl font-bold text-blue-600" th:text="${food.proteins()}">0</p>
                 </div>
-                <div class="bg-red-50/30 p-4 rounded-2xl border border-red-50">
+                <div class="bg-red-50/30 p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-red-50">
                     <p class="text-[9px] font-black text-red-500 uppercase mb-1">Жиры</p>
-                    <p class="text-xl font-bold text-red-600" th:text="${food.fats()}">0</p>
+                    <p class="text-lg sm:text-xl font-bold text-red-600" th:text="${food.fats()}">0</p>
                 </div>
-                <div class="bg-green-50/30 p-4 rounded-2xl border border-green-50">
+                <div class="bg-green-50/30 p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-green-50">
                     <p class="text-[9px] font-black text-green-500 uppercase mb-1">Углеводы</p>
-                    <p class="text-xl font-bold text-green-600" th:text="${food.carbs()}">0</p>
+                    <p class="text-lg sm:text-xl font-bold text-green-600" th:text="${food.carbs()}">0</p>
                 </div>
             </div>
         </div>
-
-        <div th:if="${#lists.isEmpty(foods) and param.name != null and !#strings.isEmpty(param.name)}"
-             class="col-span-full py-20 text-center animate__animated animate__fadeIn">
-            <div class="text-6xl mb-4">🔍</div>
-            <p class="text-gray-400 text-xl font-bold uppercase tracking-tight">Продукт <span class="text-blue-600" th:text="'«' + ${param.name} + '»'"></span> не найден</p>
+        <div th:if="${#lists.isEmpty(foods) and param.name != null and !#strings.isEmpty(param.name)}" class="col-span-full py-16 sm:py-20 text-center animate__animated animate__fadeIn">
+            <div class="text-5xl sm:text-6xl mb-4">🔍</div>
+            <p class="text-gray-400 text-lg sm:text-xl font-bold uppercase tracking-tight">Продукт <span class="text-blue-600" th:text="'«' + ${param.name} + '»'"></span> не найден</p>
             <a href="/explore/food" class="text-blue-600 font-extrabold mt-6 inline-block hover:opacity-70 transition text-sm uppercase tracking-widest">Очистить поиск</a>
         </div>
-
-        <div th:if="${param.name == null or #strings.isEmpty(param.name)}" class="col-span-full py-32 text-center animate__animated animate__fadeIn">
+        <div th:if="${param.name == null or #strings.isEmpty(param.name)}" class="col-span-full py-24 sm:py-32 text-center animate__animated animate__fadeIn">
             <p class="text-gray-400 text-sm font-bold uppercase tracking-[0.2em]">Введите название продукта выше, чтобы начать поиск</p>
         </div>
     </section>
 </main>
-
 <script>
-    /* СКРИПТ МОТИВАЦИИ */
-    const phrases = [
-        "Еда — это топливо, а не награда",
-        "Ты — то, что ты ешь",
-        "Заботься о своем теле, это единственное место, где тебе жить",
-        "Пресс делается на кухне",
-        "Каждый прием пищи — это выбор в пользу здоровья"
-    ];
+    function goHome() {
+        try {
+            const token = localStorage.getItem('token');
+            if (token) {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                if (payload.exp * 1000 > Date.now()) { window.location.href = '/dashboard'; return; }
+            }
+        } catch (e) {}
+        window.location.href = '/';
+    }
+
+    const phrases = ["Еда — это топливо, а не награда","Ты — то, что ты ешь","Заботься о своем теле, это единственное место, где тебе жить","Пресс делается на кухне","Каждый прием пищи — это выбор в пользу здоровья"];
     let i = 0;
     const textEl = document.getElementById('motivation-text');
-    setInterval(() => {
-        textEl.classList.remove('animate__fadeIn');
-        textEl.classList.add('animate__fadeOut');
-        setTimeout(() => {
-            i = (i + 1) % phrases.length;
-            textEl.innerText = phrases[i];
-            textEl.classList.remove('animate__fadeOut');
-            textEl.classList.add('animate__fadeIn');
-        }, 800);
-    }, 5000);
+    if (textEl) {
+        setInterval(() => {
+            textEl.classList.remove('animate__fadeIn'); textEl.classList.add('animate__fadeOut');
+            setTimeout(() => { i = (i + 1) % phrases.length; textEl.innerText = phrases[i]; textEl.classList.remove('animate__fadeOut'); textEl.classList.add('animate__fadeIn'); }, 800);
+        }, 5000);
+    }
 </script>
-
 </body>
 </html>

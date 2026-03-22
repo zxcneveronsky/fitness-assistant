@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @Entity
 @Table(name = "exercise")
@@ -17,6 +19,6 @@ public class Exercise {
     private String exerciseName;
 
     private String description;
-    @OneToMany(mappedBy = "exercise", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private java.util.List<ExerciseMuscle> muscles;
+    @OneToMany(mappedBy = "exercise", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<ExerciseMuscle> muscles;
 }

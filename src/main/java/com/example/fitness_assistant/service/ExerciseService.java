@@ -9,6 +9,8 @@ import com.example.fitness_assistant.repository.ExerciseMuscleRepository;
 import com.example.fitness_assistant.repository.ExerciseRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -27,15 +29,12 @@ public class ExerciseService {
     }
 
     private ExerciseDTO toDTO(Exercise exercise) {
-        List<ExerciseDTO.MuscleDTO> muscles = exerciseMuscleRepository
-                .findByExercise_ExerciseNameIgnoreCase(exercise.getExerciseName())
-                .stream()
+        List<ExerciseDTO.MuscleDTO> muscles = exercise.getMuscles().stream()
                 .map(m -> new ExerciseDTO.MuscleDTO(m.getMuscleGroup(), m.getMuscleDetail()))
                 .toList();
         return new ExerciseDTO(exercise.getExerciseName(), exercise.getDescription(), muscles);
     }
-
-    // Оставили только пагинацию
+    @Cacheable(value = "exercises", key = "#pageable.pageNumber + '-' + #pageable.pageSize")
     public Page<ExerciseDTO> getAllExercisePaged(Pageable pageable) {
         Page<Exercise> page = exerciseRepository.findAll(pageable);
         if (page.isEmpty()) {
@@ -44,39 +43,34 @@ public class ExerciseService {
         }
         return page.map(this::toDTO);
     }
-
-    public List<ExerciseDTO> getExercisesByMuscle(String muscle) {
-        List<ExerciseMuscle> muscles = exerciseMuscleRepository.findByMuscleGroupIgnoreCaseOrMuscleDetailIgnoreCase(muscle, muscle);
-        if (muscles.isEmpty()) {
+    @Cacheable(value = "exercisesByMuscle", key = "#muscle + '-' + #pageable.pageNumber")
+    public Page<ExerciseDTO> getExercisesByMuscle(String muscle, Pageable pageable) {
+        Page<Exercise> exercises = exerciseMuscleRepository
+                .findDistinctExercisesByMuscle(muscle, pageable);
+        if (exercises.isEmpty()) {
             log.warn("Не найдено упражнений для мышцы: {}", muscle);
             throw new ExerciseNotFoundException(muscle);
         }
-        return muscles.stream()
-                .map(ExerciseMuscle::getExercise)
-                .distinct()
-                .map(this::toDTO)
-                .toList();
+        return exercises.map(this::toDTO);
     }
-
+    @Cacheable(value = "exerciseByName", key = "#exerciseName.toLowerCase()")
     public ExerciseDTO getExerciseByName(String exerciseName) {
         Exercise exercise = exerciseRepository
                 .findByExerciseNameIgnoreCase(exerciseName)
                 .orElseThrow(() -> new ExerciseNotFoundException(exerciseName));
         return toDTO(exercise);
     }
+    @Cacheable(value = "exercisesSearch", key = "#name.toLowerCase() + '-' + #pageable.pageNumber")
     public Page<ExerciseDTO> searchExercisesByName(String name, Pageable pageable) {
-        Page<Exercise> exercisePage = exerciseRepository.findByExerciseNameContainingIgnoreCase(name, pageable);
-
-        return exercisePage.map(ex -> new ExerciseDTO(
-                ex.getExerciseName(),
-                ex.getDescription(),
-                ex.getMuscles().stream()
-                        .map(m -> new ExerciseDTO.MuscleDTO(m.getMuscleGroup(), m.getMuscleDetail()))
-                        .toList()
-        ));
+        Page<Exercise> byMuscle = exerciseMuscleRepository.findDistinctExercisesByMuscle(name, pageable);
+        if (!byMuscle.isEmpty()) {
+            return byMuscle.map(this::toDTO);
+        }
+        return exerciseRepository
+                .findByExerciseNameContainingIgnoreCase(name, pageable)
+                .map(this::toDTO);
     }
-
-    @Transactional
+    @CacheEvict(value = {"exercises", "exercisesByMuscle", "exerciseByName", "exercisesSearch"}, allEntries = true)    @Transactional
     public void deleteExercise(String exerciseName) {
         Exercise exercise = exerciseRepository
                 .findByExerciseNameIgnoreCase(exerciseName)
@@ -85,15 +79,15 @@ public class ExerciseService {
         exerciseRepository.delete(exercise);
         log.info("Упражнение {} удалено", exerciseName);
     }
-
+    @CacheEvict(value = {"exercises", "exercisesByMuscle", "exerciseByName", "exercisesSearch"}, allEntries = true)
     @Transactional
-    public Exercise addExercise(ExerciseDTO exercise) {
+    public ExerciseDTO addExercise(ExerciseDTO dto) {
         Exercise savedEx = new Exercise();
-        savedEx.setExerciseName(exercise.exerciseName());
-        savedEx.setDescription(exercise.description());
+        savedEx.setExerciseName(dto.exerciseName());
+        savedEx.setDescription(dto.description());
         Exercise savedExercise = exerciseRepository.save(savedEx);
 
-        List<ExerciseMuscle> savedMuscles = exercise.muscles().stream()
+        List<ExerciseMuscle> savedMuscles = dto.muscles().stream()
                 .map(m -> {
                     ExerciseMuscle em = new ExerciseMuscle();
                     em.setExercise(savedExercise);
@@ -102,6 +96,7 @@ public class ExerciseService {
                     return em;
                 }).toList();
         exerciseMuscleRepository.saveAll(savedMuscles);
-        return savedExercise;
+
+        return toDTO(savedExercise); // возвращаем DTO, не Entity
     }
 }

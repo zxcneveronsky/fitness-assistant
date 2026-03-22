@@ -30,9 +30,11 @@ public class ExerciseController {
     }
 
     @GetMapping("/muscle/{muscle}")
-    public List<ExerciseDTO> getExerciseByMuscle(@PathVariable String muscle){
+    public Page<ExerciseDTO> getExerciseByMuscle(
+            @PathVariable String muscle,
+            @PageableDefault(size = 10) Pageable pageable) {
         log.info("Поиск упражнений для группы мышц: {}", muscle);
-        return exerciseService.getExercisesByMuscle(muscle);
+        return exerciseService.getExercisesByMuscle(muscle, pageable);
     }
 
     @GetMapping("/exercise/{exercise}")
@@ -43,8 +45,7 @@ public class ExerciseController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Exercise addExercise(@Valid @RequestBody ExerciseDTO exercise) {
-        log.info("Добавление нового упражнения: {}", exercise.exerciseName());
+    public ExerciseDTO addExercise(@Valid @RequestBody ExerciseDTO exercise) {
         return exerciseService.addExercise(exercise);
     }
 

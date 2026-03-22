@@ -15,6 +15,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -57,6 +58,8 @@ public class DataInitializer implements ApplicationRunner {
             exerciseMuscleRepository.deleteAll();
             exerciseRepository.deleteAll();
 
+            List<ExerciseMuscle> musclesToSave = new ArrayList<>();
+
             for (String[] line : lines) {
                 String muscleGroup = line[0];
                 String muscleDetail = line[1];
@@ -76,24 +79,27 @@ public class DataInitializer implements ApplicationRunner {
                 muscle.setExercise(exercise);
                 muscle.setMuscleGroup(muscleGroup);
                 muscle.setMuscleDetail(muscleDetail);
-                exerciseMuscleRepository.save(muscle);
+                musclesToSave.add(muscle);
             }
+
+            exerciseMuscleRepository.saveAll(musclesToSave);
             log.info("Загружено упражнений: {}", exerciseRepository.count());
         }
     }
 
+    @Transactional
     public void loadFood() throws Exception {
         ClassPathResource resource = new ClassPathResource("data/food.csv");
 
         try (CSVReader reader = new CSVReader(new InputStreamReader(resource.getInputStream()))) {
             List<String[]> lines = reader.readAll();
-            lines.remove(0);
+            lines.removeFirst();
 
             if (foodRepository.count() == lines.size()) return;
 
             foodRepository.deleteAll();
 
-            for (String[] line : lines) {
+            List<Food> foods = lines.stream().map(line -> {
                 Food food = new Food();
                 food.setName(line[0]);
                 food.setBrands(line[1]);
@@ -101,8 +107,10 @@ public class DataInitializer implements ApplicationRunner {
                 food.setProteins(Double.parseDouble(line[3]));
                 food.setFats(Double.parseDouble(line[4]));
                 food.setCarbs(Double.parseDouble(line[5]));
-                foodRepository.save(food);
-            }
+                return food;
+            }).toList();
+
+            foodRepository.saveAll(foods);
             log.info("Загружено продуктов: {}", foodRepository.count());
         }
     }

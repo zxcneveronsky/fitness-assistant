@@ -6,11 +6,11 @@ import com.example.fitness_assistant.exception.FoodNotFoundException;
 import com.example.fitness_assistant.repository.FoodRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 @Slf4j
@@ -31,33 +31,29 @@ public class FoodSearchService {
                 food.getCarbs()
         );
     }
-
-    public List<FoodSearchDTO> findFoodByName(String name) {
-        List<Food> foods = foodRepository.findByNameContainingIgnoreCase(name);
+    @Cacheable(value = "foods", key = "#name.toLowerCase() + '-' + #pageable.pageNumber")
+    public Page<FoodSearchDTO> findFoodByName(String name, Pageable pageable) {
+        Page<Food> foods = foodRepository.findByNameContainingIgnoreCase(name, pageable);
         if (foods.isEmpty()) {
             log.warn("Продукт '{}' не найден", name);
             throw new FoodNotFoundException(name);
         }
-        log.debug("Найдено продуктов: {}", foods.size());
-        List<FoodSearchDTO> result = new ArrayList<>();
-        for (Food food : foods) {
-            result.add(mapToDTO(food));
-        }
-        return result;
+        log.debug("Найдено продуктов: {}", foods.getTotalElements());
+        return foods.map(this::mapToDTO);
     }
-
+    @CacheEvict(value = "foods", allEntries = true)
     public Food addFood(Food food) {
         Food saved = foodRepository.save(food);
         log.info("Добавлен продукт: {}", saved.getName());
         return saved;
     }
-
+    @CacheEvict(value = "foods", allEntries = true)
     @Transactional
     public void deleteFood(Long id) {
         foodRepository.deleteById(id);
         log.info("Удалён продукт с id: {}", id);
     }
-
+    @CacheEvict(value = "foods", allEntries = true)
     @Transactional
     public FoodSearchDTO updateFood(Long id, Food foodDetails) {
         Food food = foodRepository.findById(id)

@@ -4,14 +4,12 @@ import com.example.fitness_assistant.dto.FoodSearchDTO;
 import com.example.fitness_assistant.entity.Food;
 import com.example.fitness_assistant.service.FoodSearchService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/food")
@@ -24,9 +22,11 @@ public class FoodSearchController {
     }
 
     @GetMapping
-    public List<FoodSearchDTO> getFoodByName(@RequestParam String name) {
+    public Page<FoodSearchDTO> getFoodByName(
+            @RequestParam String name,
+            @PageableDefault(size = 20) Pageable pageable) {
         log.info("Поиск продукта по названию: '{}'", name);
-        return foodSearchService.findFoodByName(name);
+        return foodSearchService.findFoodByName(name, pageable);
     }
 
     @PostMapping

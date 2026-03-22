@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Check — FitnessAssistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Manrope:wght@800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #ffffff; color: #1d1d1f; overflow-x: hidden; }
+        .hero-title { font-family: 'Manrope', sans-serif; letter-spacing: -0.04em; line-height: 0.9; }
+        .glass-nav { background: rgba(255, 255, 255, 0.8); backdrop-filter: saturate(180%) blur(20px); }
+
+        .btn-apple { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 1.25rem; }
+        .btn-apple:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+
+        .status-card {
+            transition: all 0.5s cubic-bezier(0.15, 0.83, 0.66, 1);
+            border-radius: 2.2rem;
+            border: 1px solid #f2f2f7;
+            background: rgba(245, 245, 247, 0.4);
+        }
+        .status-card:hover {
+            transform: translateY(-8px);
+            background: #fff;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.06);
+        }
+
+        .status-up { border-color: #34c759; }
+        .status-up:hover { border-color: #34c759; }
+        .status-down { border-color: #ff3b30; }
+        .status-down:hover { border-color: #ff3b30; }
+
+        .dot-pulse {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: #34c759;
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+        .dot-pulse.down { background: #ff3b30; animation: none; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(52,199,89,0.5); }
+            50% { opacity: 0.9; transform: scale(1.15); box-shadow: 0 0 0 6px rgba(52,199,89,0); }
+        }
+
+        .raw-block {
+            border-radius: 1.5rem;
+            border: 1px solid #f2f2f7;
+            background: #fafafa;
+            font-family: 'Courier New', monospace;
+        }
+
+        .refresh-btn {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 1.25rem;
+        }
+        .refresh-btn:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .refresh-btn:active { transform: scale(0.97); }
+
+        .spin { animation: spin 0.7s linear; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<nav class="glass-nav fixed top-0 w-full z-50 h-16 flex items-center px-10 border-b border-gray-100/50">
+    <div class="w-1/4">
+        <a href="/" class="font-extrabold text-xl tracking-tighter">Fitness<span class="text-blue-600">Assistant</span></a>
+    </div>
+    <div class="w-2/4 flex justify-center">
+        <p class="text-[10px] font-black uppercase tracking-[0.4em] text-black whitespace-nowrap">
+            Статус системы
+        </p>
+    </div>
+    <div class="w-1/4 flex justify-end">
+        <span class="text-[9px] font-black text-gray-300 uppercase tracking-widest">МОНИТОРИНГ РАБОТЫ ПЛАТФОРМЫ</span>
+    </div>
+</nav>
+
+<main class="pt-32 pb-32 flex flex-col items-center text-center px-6">
+
+    <div class="animate__animated animate__fadeInDown mb-3">
+        <span class="text-[9px] font-black text-gray-300 uppercase tracking-[0.5em]">СТАТУС РАБОТЫ</span>
+    </div>
+
+    <h1 class="animate__animated animate__fadeInDown hero-title text-7xl md:text-8xl font-extrabold mb-5 tracking-tighter">
+        Health Check
+    </h1>
+
+    <p class="animate__animated animate__fadeInUp text-xl md:text-2xl font-bold text-gray-700 mb-10 tracking-tight">
+        Мониторинг состояния сервиса
+    </p>
+
+    <!-- Overall status badge -->
+    <div id="overall-badge" class="animate__animated animate__fadeIn animate__delay-1s mb-14 flex items-center gap-3 bg-green-50 border border-green-200 rounded-2xl px-8 py-4">
+        <span id="badge-dot" class="dot-pulse"></span>
+        <span id="badge-text" class="text-green-700 font-black text-sm uppercase tracking-widest">Загрузка...</span>
+    </div>
+
+    <!-- Status cards grid -->
+    <section class="animate__animated animate__fadeIn animate__delay-1s w-full max-w-4xl px-4 mb-12">
+        <div class="flex items-center gap-6 mb-10">
+            <div class="h-px bg-gray-100 flex-1"></div>
+            <span class="text-[9px] font-black text-gray-300 uppercase tracking-[0.5em]">Компоненты системы</span>
+            <div class="h-px bg-gray-100 flex-1"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+
+            <!-- Application -->
+            <div class="status-card p-8 flex items-center gap-6 group">
+                <div class="text-5xl">⚙️</div>
+                <div class="flex-1">
+                    <h3 class="font-bold text-xl text-gray-900 leading-none mb-1">Приложение</h3>
+                    <p id="card-app-name" class="text-[10px] text-gray-400 uppercase tracking-widest font-black mb-3">—</p>
+                    <div class="flex items-center gap-2">
+                        <span id="card-app-status" class="dot-pulse"></span>
+                        <span id="card-app-label" class="text-sm font-bold text-gray-400">Загрузка...</span>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span id="card-app-version" class="text-[10px] font-black text-gray-300 uppercase tracking-widest">v—</span>
+                </div>
+            </div>
+
+            <!-- Database -->
+            <div class="status-card p-8 flex items-center gap-6 group">
+                <div class="text-5xl">🗄️</div>
+                <div class="flex-1">
+                    <h3 class="font-bold text-xl text-gray-900 leading-none mb-1">База данных</h3>
+                    <p class="text-[10px] text-gray-400 uppercase tracking-widest font-black mb-3">PostgreSQL</p>
+                    <div class="flex items-center gap-2">
+                        <span id="card-db-status" class="dot-pulse"></span>
+                        <span id="card-db-label" class="text-sm font-bold text-gray-400">Загрузка...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timestamp -->
+            <div class="status-card p-8 flex items-center gap-6 group">
+                <div class="text-5xl">🕐</div>
+                <div class="flex-1">
+                    <h3 class="font-bold text-xl text-gray-900 leading-none mb-1">Время сервера</h3>
+                    <p id="card-timestamp" class="text-[10px] text-gray-400 uppercase tracking-widest font-black mb-3">—</p>
+                    <p class="text-sm font-bold text-gray-400">UTC / Серверное время</p>
+                </div>
+            </div>
+
+            <!-- Last refresh -->
+            <div class="status-card p-8 flex items-center gap-6 group">
+                <div class="text-5xl">🔄</div>
+                <div class="flex-1">
+                    <h3 class="font-bold text-xl text-gray-900 leading-none mb-1">Последнее обновление</h3>
+                    <p id="card-refreshed" class="text-[10px] text-gray-400 uppercase tracking-widest font-black mb-3">—</p>
+                    <p class="text-sm font-bold text-gray-400">Локальное время браузера</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Actions -->
+    <div class="animate__animated animate__fadeInUp animate__delay-2s flex flex-col sm:flex-row gap-6 mb-16">
+        <div class="flex flex-col items-center group">
+            <button onclick="loadHealth()" id="refresh-btn"
+                    class="refresh-btn bg-blue-600 text-white text-base font-bold px-12 py-5 shadow-2xl shadow-blue-100 flex items-center gap-3">
+                <span id="refresh-icon">↻</span>
+                Обновить статус
+            </button>
+            <span class="mt-4 text-[9px] font-black text-gray-300 uppercase tracking-widest group-hover:text-blue-500 transition-colors">
+                Запрос к /api/health
+            </span>
+        </div>
+        <div class="flex flex-col items-center group">
+            <a href="/" class="refresh-btn bg-white border border-gray-200 text-black text-base font-bold px-12 py-5 hover:bg-gray-50">
+                На главную
+            </a>
+            <span class="mt-4 text-[9px] font-black text-gray-300 uppercase tracking-widest group-hover:text-black transition-colors">
+                Вернуться назад
+            </span>
+        </div>
+    </div>
+
+    <!-- Raw JSON -->
+    <section class="animate__animated animate__fadeIn animate__delay-2s w-full max-w-3xl px-4">
+        <div class="flex items-center gap-6 mb-6">
+            <div class="h-px bg-gray-100 flex-1"></div>
+            <span class="text-[9px] font-black text-gray-300 uppercase tracking-[0.5em]">Raw JSON Response</span>
+            <div class="h-px bg-gray-100 flex-1"></div>
+        </div>
+        <div class="raw-block p-8 text-left text-sm text-gray-500 leading-relaxed overflow-x-auto">
+            <pre id="raw-json">Загрузка...</pre>
+        </div>
+    </section>
+
+</main>
+
+<script>
+    async function loadHealth() {
+        const btn = document.getElementById('refresh-btn');
+        const icon = document.getElementById('refresh-icon');
+
+        btn.disabled = true;
+        icon.classList.add('spin');
+        icon.textContent = '↻';
+
+        try {
+            const res = await fetch('/api/health');
+            const data = await res.json();
+
+            // Raw JSON
+            document.getElementById('raw-json').textContent = JSON.stringify(data, null, 2);
+
+            // Overall badge
+            const isUp = data.status === 'UP';
+            const badge = document.getElementById('overall-badge');
+            const badgeDot = document.getElementById('badge-dot');
+            const badgeText = document.getElementById('badge-text');
+
+            badge.className = `animate__animated animate__fadeIn mb-14 flex items-center gap-3 rounded-2xl px-8 py-4 border ${isUp ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`;
+            badgeDot.className = `dot-pulse${isUp ? '' : ' down'}`;
+            badgeText.className = `font-black text-sm uppercase tracking-widest ${isUp ? 'text-green-700' : 'text-red-600'}`;
+            badgeText.textContent = isUp ? 'Все системы работают' : 'Обнаружены проблемы';
+
+            // App card
+            document.getElementById('card-app-name').textContent = data.application || '—';
+            document.getElementById('card-app-version').textContent = data.version ? `v${data.version}` : 'v—';
+            const appUp = data.status === 'UP';
+            document.getElementById('card-app-status').className = `dot-pulse${appUp ? '' : ' down'}`;
+            document.getElementById('card-app-label').textContent = appUp ? 'Работает' : 'Недоступно';
+            document.getElementById('card-app-label').className = `text-sm font-bold ${appUp ? 'text-green-600' : 'text-red-500'}`;
+
+            // DB card
+            const dbUp = data.database === 'UP';
+            document.getElementById('card-db-status').className = `dot-pulse${dbUp ? '' : ' down'}`;
+            document.getElementById('card-db-label').textContent = dbUp ? 'Подключена' : 'Недоступна';
+            document.getElementById('card-db-label').className = `text-sm font-bold ${dbUp ? 'text-green-600' : 'text-red-500'}`;
+
+            // Timestamp
+            if (data.timestamp) {
+                const dt = new Date(data.timestamp);
+                document.getElementById('card-timestamp').textContent = dt.toLocaleString('ru-RU', {
+                    year: 'numeric', month: '2-digit', day: '2-digit',
+                    hour: '2-digit', minute: '2-digit', second: '2-digit'
+                });
+            }
+
+            // Last refresh
+            document.getElementById('card-refreshed').textContent = new Date().toLocaleTimeString('ru-RU');
+
+        } catch (e) {
+            document.getElementById('raw-json').textContent = `Ошибка: ${e.message}`;
+            document.getElementById('badge-text').textContent = 'Сервис недоступен';
+            document.getElementById('overall-badge').className = 'animate__animated animate__fadeIn mb-14 flex items-center gap-3 bg-red-50 border border-red-200 rounded-2xl px-8 py-4';
+            document.getElementById('badge-dot').className = 'dot-pulse down';
+        } finally {
+            btn.disabled = false;
+            setTimeout(() => { icon.classList.remove('spin'); icon.textContent = '↻'; }, 700);
+        }
+    }
+
+    // Auto-load on page open
+    loadHealth();
+    // Auto-refresh every 30 seconds
+    setInterval(loadHealth, 30000);
+</script>
+</body>
+</html>

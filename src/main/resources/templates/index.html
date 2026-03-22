@@ -33,131 +33,159 @@
 </head>
 <body>
 
-<nav class="glass-nav fixed top-0 w-full z-50 h-16 flex items-center px-10 border-b border-gray-100/50">
-    <div class="w-1/4">
+<!-- NAV: на мобиле скрываем мотивацию, оставляем только лого -->
+<nav class="glass-nav fixed top-0 w-full z-50 h-16 flex items-center px-4 sm:px-10 border-b border-gray-100/50">
+    <div class="w-1/2 sm:w-1/4">
         <span class="font-extrabold text-xl tracking-tighter">Fitness<span class="text-blue-600">Assistant</span></span>
     </div>
-    <div class="w-2/4 flex justify-center overflow-hidden">
+    <!-- Мотивация скрыта на мобиле -->
+    <div class="hidden sm:flex w-2/4 justify-center overflow-hidden">
         <p id="motivation-text" class="animate__animated animate__fadeIn text-[10px] font-black uppercase tracking-[0.4em] text-black whitespace-nowrap">
             Человек — самое мощное существо на планете
         </p>
     </div>
-    <div class="w-1/4"></div>
+    <div class="w-1/2 sm:w-1/4"></div>
 </nav>
 
-<main class="pt-32 pb-32 flex flex-col items-center text-center px-6">
+<main class="pt-24 sm:pt-32 pb-20 sm:pb-32 flex flex-col items-center text-center px-4 sm:px-6">
 
-    <h1 class="animate__animated animate__fadeInDown hero-title text-7xl md:text-8xl font-extrabold mb-5 tracking-tighter">
+    <h1 class="animate__animated animate__fadeInDown hero-title text-5xl sm:text-7xl md:text-8xl font-extrabold mb-4 sm:mb-5 tracking-tighter">
         Приветствую
     </h1>
 
-    <p class="animate__animated animate__fadeInUp text-xl md:text-3xl font-bold text-gray-700 mb-10 tracking-tight">
+    <p class="animate__animated animate__fadeInUp text-lg sm:text-xl md:text-3xl font-bold text-gray-700 mb-6 sm:mb-10 tracking-tight">
         Твой прогресс начинается здесь
     </p>
 
-    <div class="animate__animated animate__fadeIn animate__delay-1s max-w-2xl mb-14">
-        <p class="text-gray-500 text-base md:text-lg font-medium leading-relaxed px-4">
+    <div class="animate__animated animate__fadeIn animate__delay-1s max-w-2xl mb-10 sm:mb-14">
+        <p class="text-gray-500 text-sm sm:text-base md:text-lg font-medium leading-relaxed px-2 sm:px-4">
             <span class="text-blue-600 font-semibold">FitnessAssistant</span> — единая платформа, объединяющая в себе всё:
             от умного поиска упражнений и КБЖУ продуктов до детального отслеживания прогресса.
             Система нацелена на комфорт и простоту контроля своего тренировочного процесса.
         </p>
-        <p class="mt-4 text-gray-900 text-lg md:text-xl font-bold tracking-tight">
+        <p class="mt-4 text-gray-900 text-base sm:text-lg md:text-xl font-bold tracking-tight">
             Все, что нужно — уже внутри.
         </p>
     </div>
 
-    <div class="animate__animated animate__fadeInUp animate__delay-1s flex flex-col sm:flex-row gap-8 mb-28">
+    <!-- Кнопки: на мобиле убираем дублирование с навбаром, делаем компактнее -->
+    <div class="animate__animated animate__fadeInUp animate__delay-1s flex flex-col sm:flex-row gap-4 sm:gap-8 mb-16 sm:mb-28 w-full sm:w-auto px-4 sm:px-0">
         <div class="flex flex-col items-center group">
-            <a href="/register" class="btn-apple bg-blue-600 text-white text-lg font-bold px-16 py-6 shadow-2xl shadow-blue-100">
+            <a href="/register" class="btn-apple bg-blue-600 text-white text-base sm:text-lg font-bold px-10 sm:px-16 py-4 sm:py-6 shadow-2xl shadow-blue-100 w-full sm:w-auto text-center">
                 Регистрация
             </a>
-            <span class="mt-4 text-[9px] font-black text-gray-300 uppercase tracking-widest group-hover:text-blue-500 transition-colors">
-                    Начать свой путь сегодня
-                </span>
+            <span class="mt-3 text-[9px] font-black text-gray-300 uppercase tracking-widest group-hover:text-blue-500 transition-colors">
+                Начать свой путь сегодня
+            </span>
         </div>
-
         <div class="flex flex-col items-center group">
-            <a href="/login" class="btn-apple bg-white border border-gray-200 text-black text-lg font-bold px-16 py-6 hover:bg-gray-50">
+            <a href="/login" class="btn-apple bg-white border border-gray-200 text-black text-base sm:text-lg font-bold px-10 sm:px-16 py-4 sm:py-6 hover:bg-gray-50 w-full sm:w-auto text-center">
                 Вход
             </a>
-            <span class="mt-4 text-[9px] font-black text-gray-300 uppercase tracking-widest group-hover:text-black transition-colors">
-                    Продолжить начатое
-                </span>
+            <span class="mt-3 text-[9px] font-black text-gray-300 uppercase tracking-widest group-hover:text-black transition-colors">
+                Продолжить начатое
+            </span>
         </div>
     </div>
 
-    <section class="animate__animated animate__fadeIn animate__delay-2s w-full max-w-5xl px-4">
-        <div class="flex items-center gap-6 mb-12">
+    <section class="animate__animated animate__fadeIn animate__delay-2s w-full max-w-5xl px-2 sm:px-4">
+        <div class="flex items-center gap-4 sm:gap-6 mb-8 sm:mb-12">
             <div class="h-px bg-gray-100 flex-1"></div>
-            <span class="text-[9px] font-black text-gray-300 uppercase tracking-[0.5em]">Возможности системы</span>
+            <span class="text-[9px] font-black text-gray-300 uppercase tracking-[0.3em] sm:tracking-[0.5em] whitespace-nowrap">Возможности системы</span>
             <div class="h-px bg-gray-100 flex-1"></div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 text-left">
-            <a href="/explore/exercises" class="feature-card p-8 flex items-center gap-8 group">
-                <div class="text-5xl group-hover:scale-110 transition duration-500">💪</div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 md:gap-8 text-left">
+
+            <!-- Ряд 1: поиск — доступно без регистрации -->
+            <a href="/explore/exercises" class="feature-card p-5 sm:p-8 flex items-center gap-5 sm:gap-8 group">
+                <div class="text-4xl sm:text-5xl group-hover:scale-110 transition duration-500 shrink-0">💪</div>
                 <div>
-                    <h3 class="font-bold text-xl text-gray-900 leading-none">Поиск упражнений и мышц</h3>
-                    <p class="text-[10px] text-blue-500 mt-3 uppercase tracking-widest font-black">Доступно без регистрации</p>
+                    <h3 class="font-bold text-lg sm:text-xl text-gray-900 leading-none">Поиск упражнений и мышц</h3>
+                    <p class="text-[10px] text-blue-500 mt-2 sm:mt-3 uppercase tracking-widest font-black">Доступно без регистрации</p>
                 </div>
             </a>
-            <a href="/explore/food" class="feature-card p-8 flex items-center gap-8 group">
-                <div class="text-5xl group-hover:scale-110 transition duration-500">🍎</div>
+            <a href="/explore/food" class="feature-card p-5 sm:p-8 flex items-center gap-5 sm:gap-8 group">
+                <div class="text-4xl sm:text-5xl group-hover:scale-110 transition duration-500 shrink-0">🍎</div>
                 <div>
-                    <h3 class="font-bold text-xl text-gray-900 leading-none">Поиск КБЖУ продуктов</h3>
-                    <p class="text-[10px] text-blue-500 mt-3 uppercase tracking-widest font-black">Доступно без регистрации</p>
+                    <h3 class="font-bold text-lg sm:text-xl text-gray-900 leading-none">Поиск КБЖУ продуктов</h3>
+                    <p class="text-[10px] text-blue-500 mt-2 sm:mt-3 uppercase tracking-widest font-black">Доступно без регистрации</p>
                 </div>
             </a>
 
-            <div class="feature-card p-8 flex items-center gap-8 group border-dashed">
-                <div class="text-5xl icon-gray">💧</div>
+            <!-- Ряд 2: трекеры -->
+            <div class="feature-card p-5 sm:p-8 flex items-center gap-5 sm:gap-8 group border-dashed">
+                <div class="text-4xl sm:text-5xl icon-gray shrink-0">💧</div>
                 <div>
-                    <h3 class="font-bold text-xl text-gray-400 group-hover:text-gray-900 transition-colors leading-none">Трекер потребления воды</h3>
-                    <p class="text-[10px] text-gray-300 mt-3 uppercase tracking-widest font-black">Требует регистрации 🔒</p>
+                    <h3 class="font-bold text-lg sm:text-xl text-gray-400 group-hover:text-gray-900 transition-colors leading-none">Трекер потребления воды</h3>
+                    <p class="text-[10px] text-gray-300 mt-2 sm:mt-3 uppercase tracking-widest font-black">Требует регистрации 🔒</p>
                 </div>
             </div>
-            <div class="feature-card p-8 flex items-center gap-8 group border-dashed">
-                <div class="text-5xl icon-gray">🥗</div>
+            <div class="feature-card p-5 sm:p-8 flex items-center gap-5 sm:gap-8 group border-dashed">
+                <div class="text-4xl sm:text-5xl icon-gray shrink-0">🥗</div>
                 <div>
-                    <h3 class="font-bold text-xl text-gray-400 group-hover:text-gray-900 transition-colors leading-none">Трекер потребления калорий</h3>
-                    <p class="text-[10px] text-gray-300 mt-3 uppercase tracking-widest font-black">Требует регистрации 🔒</p>
-                </div>
-            </div>
-
-            <div class="feature-card p-8 flex items-center gap-8 group border-dashed">
-                <div class="text-5xl icon-gray">🧮</div>
-                <div>
-                    <h3 class="font-bold text-xl text-gray-400 group-hover:text-gray-900 transition-colors leading-none">Калькулятор КБЖУ</h3>
-                    <p class="text-[10px] text-gray-300 mt-3 uppercase tracking-widest font-black">Требует регистрации 🔒</p>
-                </div>
-            </div>
-            <div class="feature-card p-8 flex items-center gap-8 group border-dashed">
-                <div class="text-5xl icon-gray">📈</div>
-                <div>
-                    <h3 class="font-bold text-xl text-gray-400 group-hover:text-gray-900 transition-colors leading-none">Статистика прогресса</h3>
-                    <p class="text-[10px] text-gray-300 mt-3 uppercase tracking-widest font-black">Требует регистрации 🔒</p>
+                    <h3 class="font-bold text-lg sm:text-xl text-gray-400 group-hover:text-gray-900 transition-colors leading-none">Трекер потребления калорий</h3>
+                    <p class="text-[10px] text-gray-300 mt-2 sm:mt-3 uppercase tracking-widest font-black">Требует регистрации 🔒</p>
                 </div>
             </div>
 
-            <div class="feature-card p-8 flex items-center gap-8 group border-dashed">
-                <div class="text-5xl icon-gray">📅</div>
+            <!-- Ряд 3: калькуляторы -->
+            <div class="feature-card p-5 sm:p-8 flex items-center gap-5 sm:gap-8 group border-dashed">
+                <div class="text-4xl sm:text-5xl icon-gray shrink-0">🏋️</div>
                 <div>
-                    <h3 class="font-bold text-xl text-gray-400 group-hover:text-gray-900 transition-colors leading-none">План тренировок</h3>
-                    <p class="text-[10px] text-gray-300 mt-3 uppercase tracking-widest font-black">Требует регистрации 🔒</p>
+                    <h3 class="font-bold text-lg sm:text-xl text-gray-400 group-hover:text-gray-900 transition-colors leading-none">Калькулятор рабочих весов</h3>
+                    <p class="text-[10px] text-gray-300 mt-2 sm:mt-3 uppercase tracking-widest font-black">Требует регистрации 🔒</p>
                 </div>
             </div>
-            <div class="feature-card p-8 flex items-center gap-8 group border-dashed">
-                <div class="text-5xl icon-gray">👤</div>
+            <div class="feature-card p-5 sm:p-8 flex items-center gap-5 sm:gap-8 group border-dashed">
+                <div class="text-4xl sm:text-5xl icon-gray shrink-0">🧮</div>
                 <div>
-                    <h3 class="font-bold text-xl text-gray-400 group-hover:text-gray-900 transition-colors leading-none">Персональные параметры</h3>
-                    <p class="text-[10px] text-gray-300 mt-3 uppercase tracking-widest font-black">Требует регистрации 🔒</p>
+                    <h3 class="font-bold text-lg sm:text-xl text-gray-400 group-hover:text-gray-900 transition-colors leading-none">Калькулятор КБЖУ</h3>
+                    <p class="text-[10px] text-gray-300 mt-2 sm:mt-3 uppercase tracking-widest font-black">Требует регистрации 🔒</p>
                 </div>
             </div>
+
+            <!-- Ряд 4: персональные + статистика -->
+            <div class="feature-card p-5 sm:p-8 flex items-center gap-5 sm:gap-8 group border-dashed">
+                <div class="text-4xl sm:text-5xl icon-gray shrink-0">👤</div>
+                <div>
+                    <h3 class="font-bold text-lg sm:text-xl text-gray-400 group-hover:text-gray-900 transition-colors leading-none">Персональные параметры</h3>
+                    <p class="text-[10px] text-gray-300 mt-2 sm:mt-3 uppercase tracking-widest font-black">Требует регистрации 🔒</p>
+                </div>
+            </div>
+            <div class="feature-card p-5 sm:p-8 flex items-center gap-5 sm:gap-8 group border-dashed">
+                <div class="text-4xl sm:text-5xl icon-gray shrink-0">📈</div>
+                <div>
+                    <h3 class="font-bold text-lg sm:text-xl text-gray-400 group-hover:text-gray-900 transition-colors leading-none">Статистика прогресса</h3>
+                    <p class="text-[10px] text-gray-300 mt-2 sm:mt-3 uppercase tracking-widest font-black">Требует регистрации 🔒</p>
+                </div>
+            </div>
+
+            <!-- Ряд 5: план тренировок — на всю ширину -->
+            <div class="feature-card p-5 sm:p-8 flex items-center gap-5 sm:gap-8 group border-dashed sm:col-span-2">
+                <div class="text-4xl sm:text-5xl icon-gray shrink-0">📅</div>
+                <div>
+                    <h3 class="font-bold text-lg sm:text-xl text-gray-400 group-hover:text-gray-900 transition-colors leading-none">План тренировок</h3>
+                    <p class="text-[10px] text-gray-300 mt-2 sm:mt-3 uppercase tracking-widest font-black">Требует регистрации 🔒</p>
+                </div>
+            </div>
+
         </div>
     </section>
 </main>
 
 <script>
+    // Если залогинен — на dashboard
+    (function() {
+        try {
+            const token = localStorage.getItem('token');
+            if (token) {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                if (payload.exp * 1000 > Date.now()) { window.location.href = '/dashboard'; }
+            }
+        } catch (e) {}
+    })();
+
     const phrases = [
         "Человек — самое мощное существо на планете",
         "Кто другой добьется вершин, если не ты?",
@@ -167,16 +195,18 @@
     ];
     let i = 0;
     const textEl = document.getElementById('motivation-text');
-    setInterval(() => {
-        textEl.classList.remove('animate__fadeIn');
-        textEl.classList.add('animate__fadeOut');
-        setTimeout(() => {
-            i = (i + 1) % phrases.length;
-            textEl.innerText = phrases[i];
-            textEl.classList.remove('animate__fadeOut');
-            textEl.classList.add('animate__fadeIn');
-        }, 800);
-    }, 5000);
+    if (textEl) {
+        setInterval(() => {
+            textEl.classList.remove('animate__fadeIn');
+            textEl.classList.add('animate__fadeOut');
+            setTimeout(() => {
+                i = (i + 1) % phrases.length;
+                textEl.innerText = phrases[i];
+                textEl.classList.remove('animate__fadeOut');
+                textEl.classList.add('animate__fadeIn');
+            }, 800);
+        }, 5000);
+    }
 </script>
 </body>
 </html>

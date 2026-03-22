@@ -29,4 +29,10 @@ public class GlobalExceptionHandler {
                         FieldError::getDefaultMessage
                 ));
     }
+
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleRuntime(RuntimeException e) {
+        return Map.of("error", e.getMessage());
+    }
 }

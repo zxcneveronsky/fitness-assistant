@@ -12,99 +12,90 @@
         .glass-nav { background: rgba(255, 255, 255, 0.8); backdrop-filter: saturate(180%) blur(20px); }
         .search-input { transition: all 0.3s ease; background: #f5f5f7; border: 1px solid transparent; }
         .search-input:focus { background: #ffffff; border-color: #0071e3; outline: none; box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.1); }
-        .exercise-card { transition: all 0.5s cubic-bezier(0.15, 0.83, 0.66, 1); border-radius: 2.2rem; border: 1px solid #f2f2f7; background: #ffffff; min-height: 420px; display: flex; flex-direction: column; justify-content: space-between; }
+        .exercise-card { transition: all 0.5s cubic-bezier(0.15, 0.83, 0.66, 1); border-radius: 2.2rem; border: 1px solid #f2f2f7; background: #ffffff; min-height: 380px; display: flex; flex-direction: column; justify-content: space-between; }
         .exercise-card:hover { transform: translateY(-8px); box-shadow: 0 30px 60px rgba(0,0,0,0.06); border-color: #0071e3; }
         .muscle-chip { transition: all 0.2s ease; cursor: pointer; user-select: none; }
         .muscle-chip.active { background: #1d1d1f !important; color: #ffffff !important; }
         .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-
+        .filters-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+        .filters-scroll::-webkit-scrollbar { display: none; }
         .animate__fadeOut { animation: fadeOut 0.8s forwards; }
         @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
     </style>
 </head>
-<body class="pt-24 text-left">
-
-<nav class="glass-nav fixed top-0 w-full z-50 h-16 flex items-center px-10 border-b border-gray-100/50">
-    <div class="w-1/4 flex items-center gap-4">
-        <a href="/" class="font-extrabold text-xl tracking-tighter hover:opacity-70 transition text-black no-underline">Fitness<span class="text-blue-600">Assistant</span></a>
-        <div class="h-4 w-px bg-gray-200 mx-2"></div>
-        <span class="text-sm font-semibold text-gray-400 tracking-tight whitespace-nowrap">База упражнений</span>
+<body class="pt-20 sm:pt-24 text-left">
+<nav class="glass-nav fixed top-0 w-full z-50 h-16 flex items-center px-4 sm:px-10 border-b border-gray-100/50">
+    <div class="w-1/2 lg:w-1/4 flex items-center gap-2 sm:gap-4 min-w-0">
+        <a href="javascript:void(0)" onclick="goHome()" class="font-extrabold text-lg sm:text-xl tracking-tighter hover:opacity-70 transition text-black shrink-0">
+            Fitness<span class="text-blue-600">Assistant</span>
+        </a>
+        <div class="h-4 w-px bg-gray-200 mx-1 sm:mx-2 shrink-0"></div>
+        <span class="text-xs sm:text-sm font-semibold text-gray-400 tracking-tight whitespace-nowrap">База упражнений</span>
     </div>
-
-    <div class="w-2/4 flex justify-center overflow-hidden">
+    <div class="hidden lg:flex flex-1 justify-center overflow-hidden px-4">
         <p id="motivation-text" class="animate__animated animate__fadeIn text-[10px] font-black uppercase tracking-[0.4em] text-black whitespace-nowrap">
             Дисциплина — это мост между целью и достижением
         </p>
     </div>
-
-    <div class="w-1/4 flex justify-end">
+    <div class="hidden lg:flex w-1/4 justify-end">
         <span class="text-[9px] font-black text-gray-300 uppercase tracking-widest">ПОИСК УПРАЖНЕНИЙ</span>
     </div>
-
 </nav>
-
-<main class="max-w-6xl mx-auto px-6">
-    <header class="mb-12 animate__animated animate__fadeIn">
-        <h1 class="text-5xl md:text-6xl font-extrabold tracking-tighter mb-4 text-gray-900">Найди свое упражнение</h1>
-        <p class="text-gray-400 text-lg font-medium">Исследуй базу данных для построения идеального тренировочного плана.</p>
+<main class="max-w-6xl mx-auto px-4 sm:px-6">
+    <header class="mb-8 sm:mb-12 animate__animated animate__fadeIn">
+        <h1 class="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tighter mb-3 sm:mb-4 text-gray-900">Найди своё упражнение</h1>
+        <p class="text-gray-400 text-base sm:text-lg font-medium">Исследуй базу данных для построения идеального тренировочного плана.</p>
     </header>
-
-    <section class="mb-14 animate__animated animate__fadeIn">
-        <div class="relative mb-8">
-            <input type="text" id="exerciseSearch" placeholder="Поиск по всей базе..."
-                   class="search-input w-full p-6 pl-14 rounded-3xl text-xl font-medium" autocomplete="off">
-            <div class="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+    <section class="mb-10 sm:mb-14 animate__animated animate__fadeIn">
+        <div class="relative mb-5 sm:mb-8">
+            <input type="text" id="exerciseSearch" placeholder="Введите название упражнения или мышцы..."
+                   class="search-input w-full p-4 sm:p-6 pl-12 sm:pl-14 rounded-2xl sm:rounded-3xl text-base sm:text-xl font-medium" autocomplete="off">
+            <div class="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 text-gray-400">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
             </div>
         </div>
-
-        <div class="flex flex-wrap gap-3" id="filterContainer">
-            <div class="muscle-chip active px-6 py-3 rounded-full bg-gray-100 text-sm font-bold text-gray-500" data-muscle="Все">Все</div>
-            <div class="muscle-chip px-6 py-3 rounded-full bg-gray-100 text-sm font-bold text-gray-500" data-muscle="Грудь">Грудь</div>
-            <div class="muscle-chip px-6 py-3 rounded-full bg-gray-100 text-sm font-bold text-gray-500" data-muscle="Бицепс">Бицепс</div>
-            <div class="muscle-chip px-6 py-3 rounded-full bg-gray-100 text-sm font-bold text-gray-500" data-muscle="Трицепс">Трицепс</div>
-            <div class="muscle-chip px-6 py-3 rounded-full bg-gray-100 text-sm font-bold text-gray-500" data-muscle="Ноги">Ноги</div>
-            <div class="muscle-chip px-6 py-3 rounded-full bg-gray-100 text-sm font-bold text-gray-500" data-muscle="Плечи">Плечи</div>
-            <div class="muscle-chip px-6 py-3 rounded-full bg-gray-100 text-sm font-bold text-gray-500" data-muscle="Спина">Спина</div>
-            <div class="muscle-chip px-6 py-3 rounded-full bg-gray-100 text-sm font-bold text-gray-500" data-muscle="Все тело">Все тело</div>
+        <div class="filters-scroll">
+            <div class="flex gap-2 sm:gap-3 w-max sm:w-auto sm:flex-wrap" id="filterContainer">
+                <div class="muscle-chip active px-4 sm:px-6 py-2 sm:py-3 rounded-full bg-gray-100 text-xs sm:text-sm font-bold text-gray-500 whitespace-nowrap" data-muscle="Все">Все</div>
+                <div class="muscle-chip px-4 sm:px-6 py-2 sm:py-3 rounded-full bg-gray-100 text-xs sm:text-sm font-bold text-gray-500 whitespace-nowrap" data-muscle="Грудь">Грудь</div>
+                <div class="muscle-chip px-4 sm:px-6 py-2 sm:py-3 rounded-full bg-gray-100 text-xs sm:text-sm font-bold text-gray-500 whitespace-nowrap" data-muscle="Бицепс">Бицепс</div>
+                <div class="muscle-chip px-4 sm:px-6 py-2 sm:py-3 rounded-full bg-gray-100 text-xs sm:text-sm font-bold text-gray-500 whitespace-nowrap" data-muscle="Трицепс">Трицепс</div>
+                <div class="muscle-chip px-4 sm:px-6 py-2 sm:py-3 rounded-full bg-gray-100 text-xs sm:text-sm font-bold text-gray-500 whitespace-nowrap" data-muscle="Ноги">Ноги</div>
+                <div class="muscle-chip px-4 sm:px-6 py-2 sm:py-3 rounded-full bg-gray-100 text-xs sm:text-sm font-bold text-gray-500 whitespace-nowrap" data-muscle="Плечи">Плечи</div>
+                <div class="muscle-chip px-4 sm:px-6 py-2 sm:py-3 rounded-full bg-gray-100 text-xs sm:text-sm font-bold text-gray-500 whitespace-nowrap" data-muscle="Спина">Спина</div>
+                <div class="muscle-chip px-4 sm:px-6 py-2 sm:py-3 rounded-full bg-gray-100 text-xs sm:text-sm font-bold text-gray-500 whitespace-nowrap" data-muscle="Все тело">Все тело</div>
+            </div>
         </div>
     </section>
-
-    <section id="exerciseGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-10 min-h-[500px]"></section>
-
-    <div id="paginationControls" class="flex justify-center items-center gap-6 pb-20">
-        <button id="prevBtn" class="page-btn px-8 py-4 bg-gray-100 rounded-2xl font-bold hover:bg-gray-200 transition">← Назад</button>
-        <span class="font-black text-xl text-gray-900" id="currentPageDisplay">0</span>
-        <button id="nextBtn" class="page-btn px-8 py-4 bg-gray-100 rounded-2xl font-bold hover:bg-gray-200 transition">Вперед →</button>
+    <section id="exerciseGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 pb-6 min-h-[400px]"></section>
+    <div id="paginationControls" class="flex justify-center items-center gap-4 sm:gap-6 py-10 sm:pb-20">
+        <button id="prevBtn" class="page-btn px-5 sm:px-8 py-3 sm:py-4 bg-gray-100 rounded-xl sm:rounded-2xl font-bold text-sm sm:text-base hover:bg-gray-200 transition">← Назад</button>
+        <span class="font-black text-lg sm:text-xl text-gray-900" id="currentPageDisplay">1</span>
+        <button id="nextBtn" class="page-btn px-5 sm:px-8 py-3 sm:py-4 bg-gray-100 rounded-xl sm:rounded-2xl font-bold text-sm sm:text-base hover:bg-gray-200 transition">Вперед →</button>
     </div>
 </main>
-
 <script>
-    /* МОТИВАЦИЯ */
-    const phrases = [
-        "Дисциплина — это мост между целью и достижением",
-        "Боль временна, триумф вечен",
-        "Твое тело может всё, это твой разум нужно убедить",
-        "Не ищи оправданий, ищи возможности",
-        "Будь сильнее своих самых сильных отговорок"
-    ];
+    function goHome() {
+        try {
+            const token = localStorage.getItem('token');
+            if (token) {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                if (payload.exp * 1000 > Date.now()) { window.location.href = '/dashboard'; return; }
+            }
+        } catch (e) {}
+        window.location.href = '/';
+    }
+
+    const phrases = ["Дисциплина — это мост между целью и достижением","Боль временна, триумф вечен","Твое тело может всё, это твой разум нужно убедить","Не ищи оправданий, ищи возможности","Будь сильнее своих самых сильных отговорок"];
     let phraseIndex = 0;
     const textEl = document.getElementById('motivation-text');
-
     function startMotivation() {
         setInterval(() => {
-            textEl.classList.remove('animate__fadeIn');
-            textEl.classList.add('animate__fadeOut');
-            setTimeout(() => {
-                phraseIndex = (phraseIndex + 1) % phrases.length;
-                textEl.innerText = phrases[phraseIndex];
-                textEl.classList.remove('animate__fadeOut');
-                textEl.classList.add('animate__fadeIn');
-            }, 800);
+            textEl.classList.remove('animate__fadeIn'); textEl.classList.add('animate__fadeOut');
+            setTimeout(() => { phraseIndex = (phraseIndex + 1) % phrases.length; textEl.innerText = phrases[phraseIndex]; textEl.classList.remove('animate__fadeOut'); textEl.classList.add('animate__fadeIn'); }, 800);
         }, 5000);
     }
 
-    /* ЛОГИКА ДАННЫХ */
     let currentPage = 0;
     const pageSize = 9;
     let currentMuscle = "Все";
@@ -113,108 +104,55 @@
     async function loadData(page = 0, muscle = "Все", query = "") {
         let url = `/api/v1/exercises?page=${page}&size=${pageSize}&sort=exerciseName,asc`;
         const paginationUI = document.getElementById('paginationControls');
-
-        // Логика формирования URL в зависимости от фильтров
-        if (query.length > 0) {
-            url = `/api/v1/exercises/search?name=${encodeURIComponent(query)}&page=${page}&size=${pageSize}`;
-            paginationUI.classList.remove('hidden');
-        } else if (muscle !== "Все") {
-            url = `/api/v1/exercises/muscle/${muscle}`;
-            paginationUI.classList.add('hidden'); // Бэкенд возвращает List для мышц, скрываем пагинацию
-        } else {
-            paginationUI.classList.remove('hidden');
-        }
-
+        if (query.length > 0) { url = `/api/v1/exercises/search?name=${encodeURIComponent(query)}&page=${page}&size=${pageSize}`; paginationUI.classList.remove('hidden'); }
+        else if (muscle !== "Все") { url = `/api/v1/exercises/muscle/${encodeURIComponent(muscle)}?page=${page}&size=${pageSize}`; paginationUI.classList.remove('hidden'); }
+        else { paginationUI.classList.remove('hidden'); }
         try {
             const response = await fetch(url);
             const data = await response.json();
-
-            // Если пришел Page объект (с полем content) или обычный массив
             const exercises = data.content ? data.content : data;
-
             renderGrid(exercises);
-            if (data.content) {
-                updatePagination(data);
-            }
-        } catch (e) {
-            console.error("Ошибка загрузки:", e);
-        }
+            if (data.content) updatePagination(data);
+        } catch (e) { console.error("Ошибка загрузки:", e); }
     }
 
     function renderGrid(exercises) {
         const grid = document.getElementById('exerciseGrid');
-        if (!exercises || exercises.length === 0) {
-            grid.innerHTML = `<div class="col-span-full py-20 text-center text-gray-400 font-bold uppercase tracking-widest">Ничего не найдено</div>`;
-            return;
-        }
+        if (!exercises || exercises.length === 0) { grid.innerHTML = `<div class="col-span-full py-20 text-center text-gray-400 font-bold uppercase tracking-widest">Ничего не найдено</div>`; return; }
         grid.innerHTML = exercises.map(ex => `
-            <div class="exercise-card p-9 group animate__animated animate__fadeIn">
+            <div class="exercise-card p-6 sm:p-9 group animate__animated animate__fadeIn">
                 <div>
-                    <div class="text-4xl mb-6 group-hover:scale-110 transition duration-500">🏋️‍♂️</div>
-                    <h3 class="font-bold text-2xl text-gray-900 mb-6 leading-tight">${ex.exerciseName}</h3>
-                    <div class="mb-8">
-                        <div class="flex justify-between mb-3 px-1 text-[9px] font-black uppercase tracking-widest">
-                            <span class="text-blue-600">Главная</span>
-                            <span class="text-gray-400">Детали</span>
-                        </div>
-                        <div class="space-y-2">
-                            ${ex.muscles.map(m => `
-                                <div class="flex items-center justify-between border-b border-gray-50 pb-2 last:border-0">
-                                    <span class="text-[11px] font-bold text-gray-900 bg-blue-50 px-3 py-1.5 rounded-lg">${m.muscleGroup}</span>
-                                    <span class="text-[11px] font-bold text-gray-600 bg-gray-50 px-3 py-1.5 rounded-lg">${m.muscleDetail}</span>
-                                </div>
-                            `).join('')}
-                        </div>
+                    <div class="text-3xl sm:text-4xl mb-4 sm:mb-6 group-hover:scale-110 transition duration-500">🏋️‍♂️</div>
+                    <h3 class="font-bold text-xl sm:text-2xl text-gray-900 mb-4 sm:mb-6 leading-tight">${ex.exerciseName}</h3>
+                    <div class="mb-5 sm:mb-8">
+                        <div class="flex justify-between mb-2 sm:mb-3 px-1 text-[9px] font-black uppercase tracking-widest"><span class="text-blue-600">Главная</span><span class="text-gray-400">Детали</span></div>
+                        <div class="space-y-2">${ex.muscles.map(m => `<div class="flex items-center justify-between border-b border-gray-50 pb-2 last:border-0"><span class="text-[10px] sm:text-[11px] font-bold text-gray-900 bg-blue-50 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg">${m.muscleGroup}</span><span class="text-[10px] sm:text-[11px] font-bold text-gray-600 bg-gray-50 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg">${m.muscleDetail}</span></div>`).join('')}</div>
                     </div>
                 </div>
-                <p class="text-gray-400 text-sm font-medium leading-relaxed line-clamp-3">${ex.description || 'Описание в разработке...'}</p>
-            </div>
-        `).join('');
+                <p class="text-gray-400 text-xs sm:text-sm font-medium leading-relaxed line-clamp-3">${ex.description || 'Описание в разработке...'}</p>
+            </div>`).join('');
     }
 
     function updatePagination(data) {
         currentPage = data.number;
-        document.getElementById('currentPageDisplay').innerText = currentPage;
+        document.getElementById('currentPageDisplay').innerText = currentPage + 1;
         document.getElementById('prevBtn').disabled = data.first;
         document.getElementById('nextBtn').disabled = data.last;
     }
 
-    // Фильтры по мышцам
     document.querySelectorAll('.muscle-chip').forEach(chip => {
-        chip.onclick = function() {
+        chip.onclick = function () {
             document.querySelectorAll('.muscle-chip').forEach(c => c.classList.remove('active'));
-            this.classList.add('active');
-            currentMuscle = this.getAttribute('data-muscle');
-            document.getElementById('exerciseSearch').value = ""; // Очищаем поиск при смене категории
-            loadData(0, currentMuscle);
+            this.classList.add('active'); currentMuscle = this.getAttribute('data-muscle');
+            document.getElementById('exerciseSearch').value = ""; currentPage = 0; loadData(0, currentMuscle);
         };
     });
 
-    // Пагинация
-    document.getElementById('prevBtn').onclick = () => {
-        const query = document.getElementById('exerciseSearch').value;
-        loadData(currentPage - 1, currentMuscle, query);
-    };
-    document.getElementById('nextBtn').onclick = () => {
-        const query = document.getElementById('exerciseSearch').value;
-        loadData(currentPage + 1, currentMuscle, query);
-    };
+    document.getElementById('prevBtn').onclick = () => loadData(currentPage - 1, currentMuscle, document.getElementById('exerciseSearch').value);
+    document.getElementById('nextBtn').onclick = () => loadData(currentPage + 1, currentMuscle, document.getElementById('exerciseSearch').value);
+    document.getElementById('exerciseSearch').oninput = (e) => { clearTimeout(searchTimeout); searchTimeout = setTimeout(() => { currentPage = 0; loadData(0, "Все", e.target.value); }, 400); };
 
-    // ПОИСК ПО ВСЕЙ БАЗЕ (SERVER-SIDE)
-    document.getElementById('exerciseSearch').oninput = (e) => {
-        const query = e.target.value;
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
-            currentPage = 0;
-            // При поиске сбрасываем фильтр мышц на "Все" для полноты картины
-            loadData(0, "Все", query);
-        }, 400);
-    };
-
-    window.onload = () => {
-        loadData(0);
-        startMotivation();
-    };
+    window.onload = () => { loadData(0); startMotivation(); };
 </script>
 </body>
 </html>
