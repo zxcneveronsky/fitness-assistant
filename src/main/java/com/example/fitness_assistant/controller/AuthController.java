@@ -18,37 +18,16 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-@Tag(name = "Аутентификация", description = "Регистрация и вход пользователей")
 public class AuthController {
 
     private final AuthService authService;
 
-    @Operation(
-            summary = "Регистрация нового пользователя",
-            description = "Создаёт аккаунт и возвращает JWT-токен. Токен действует 24 часа."
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Пользователь зарегистрирован",
-                    content = @Content(schema = @Schema(implementation = AuthResponse.class))),
-            @ApiResponse(responseCode = "400", description = "Email уже занят или данные невалидны",
-                    content = @Content(schema = @Schema(example = "{\"error\": \"Пользователь с таким email уже существует\"}")))
-    })
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public AuthResponse register(@Valid @RequestBody RegisterRequest request) {
         return authService.register(request);
     }
 
-    @Operation(
-            summary = "Вход в систему",
-            description = "Проверяет email и пароль, возвращает JWT-токен."
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Успешный вход",
-                    content = @Content(schema = @Schema(implementation = AuthResponse.class))),
-            @ApiResponse(responseCode = "400", description = "Неверный email или пароль",
-                    content = @Content(schema = @Schema(example = "{\"error\": \"Неверный пароль\"}")))
-    })
     @PostMapping("/login")
     public AuthResponse login(@Valid @RequestBody LoginRequest request) {
         return authService.login(request);

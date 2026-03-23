@@ -33,6 +33,7 @@ public class SecurityConfig {
                         .requestMatchers("/setup-profile", "/dashboard").permitAll()
                         .requestMatchers("/css/**", "/js/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/actuator/health").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

@@ -29,9 +29,29 @@ spring:
 jwt:
   secret: ${JWT_SECRET}
 
+app:
+  init-data:
+    directory: data/
+
 logging:
   level:
     root: INFO
     org.flywaydb: INFO
-    org.hibernate.SQL: DEBUG
+    org.hibernate.SQL: INFO
+    org.hibernate.orm.jdbc.bind: INFO
     com.example.fitness_assistant: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics
+  endpoint:
+    health:
+      show-details: always
+      group:
+        readiness:
+          include: db
+  health:
+    db:
+      enabled: true

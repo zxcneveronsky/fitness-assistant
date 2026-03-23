@@ -2,24 +2,12 @@ package com.example.fitness_assistant.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Продукт питания с КБЖУ на 100г")
 public record FoodSearchDTO(
-
-        @Schema(description = "Название продукта", example = "Гречка варёная")
+        Long id, // Обязательно добавь!
         String name,
-
-        @Schema(description = "Производитель или бренд", example = "Увелка")
         String brands,
-
-        @Schema(description = "Калорийность на 100г", example = "92.0")
         double kcal,
-
-        @Schema(description = "Белки на 100г в граммах", example = "3.5")
         double proteins,
-
-        @Schema(description = "Жиры на 100г в граммах", example = "0.6")
         double fats,
-
-        @Schema(description = "Углеводы на 100г в граммах", example = "19.9")
         double carbs
 ) {}

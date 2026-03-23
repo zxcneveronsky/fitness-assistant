@@ -20,14 +20,8 @@ public class UserProfileService {
 
     public UserProfileDTO getProfile(String email) {
         return userProfileRepository.findByUser_Email(email)
-                .map(p -> new UserProfileDTO(
-                        p.getName(),
-                        p.getBirthDate(),
-                        p.getWeight(),
-                        p.getHeight(),
-                        p.getGender()
-                ))
-                .orElse(new UserProfileDTO(null, null, null, null, null));
+                .map(UserProfileDTO::fromEntity)
+                .orElseGet(() -> UserProfileDTO.fromEntity(null));
     }
 
     @Transactional
@@ -44,7 +38,7 @@ public class UserProfileService {
         profile.setBirthDate(dto.birthDate());
         profile.setWeight(dto.weight());
         profile.setHeight(dto.height());
-        profile.setGender(dto.gender());  // теперь сохраняется
+        profile.setGender(dto.gender());
 
         userProfileRepository.save(profile);
         log.info("Профиль обновлён для: {}", email);

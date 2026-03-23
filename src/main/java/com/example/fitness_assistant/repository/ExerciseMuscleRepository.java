@@ -11,9 +11,10 @@ import org.springframework.data.repository.query.Param;
 
 public interface ExerciseMuscleRepository extends JpaRepository<ExerciseMuscle, Long> {
 
-    @EntityGraph(attributePaths = "muscles")
-    @Query("SELECT DISTINCT em.exercise FROM ExerciseMuscle em " +
-            "WHERE LOWER(em.muscleGroup) = LOWER(:muscle) OR LOWER(em.muscleDetail) = LOWER(:muscle)")
+    @Query("SELECT DISTINCT e FROM Exercise e " +
+            "JOIN FETCH e.muscles m " +
+            "WHERE LOWER(m.muscleGroup) LIKE LOWER(CONCAT('%', :muscle, '%')) " +
+            "OR LOWER(m.muscleDetail) LIKE LOWER(CONCAT('%', :muscle, '%'))")
     Page<Exercise> findDistinctExercisesByMuscle(@Param("muscle") String muscle, Pageable pageable);
 
     void deleteByExercise(Exercise exercise);

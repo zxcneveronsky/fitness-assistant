@@ -30,7 +30,6 @@ public class OpenApiConfig {
                         .contact(new Contact()
                                 .name("Стафеев Григорий, Синянский Вениамин, Онучин Тимофей")
                                 .email("fitness-assistant@130.ru")))
-                // Добавляем кнопку Authorize в Swagger UI для JWT
                 .addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))
                 .components(new Components()
                         .addSecuritySchemes("Bearer Authentication", new SecurityScheme()

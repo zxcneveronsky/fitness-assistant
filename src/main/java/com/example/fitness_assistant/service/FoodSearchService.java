@@ -25,6 +25,7 @@ public class FoodSearchService {
 
     private FoodSearchDTO toDTO(Food food) {
         return new FoodSearchDTO(
+                food.getId(),
                 food.getName(),
                 food.getBrands(),
                 food.getKcal(),
@@ -48,7 +49,7 @@ public class FoodSearchService {
 
     @Cacheable(value = "foods", key = "#name.toLowerCase() + '-' + #pageable.pageNumber")
     public Page<FoodSearchDTO> findFoodByName(String name, Pageable pageable) {
-        Page<Food> foods = foodRepository.findByNameContainingIgnoreCase(name, pageable);
+        Page<Food> foods = foodRepository.findByNameContainingIgnoreCaseOrBrandsContainingIgnoreCase(name, name, pageable);
         if (foods.isEmpty()) {
             log.warn("Продукт '{}' не найден", name);
             throw new FoodNotFoundException(name);
@@ -62,7 +63,6 @@ public class FoodSearchService {
     public FoodSearchDTO addFood(FoodCreateDTO dto) {
         Food saved = foodRepository.save(toEntity(dto));
         log.info("Добавлен продукт: {}", saved.getName());
-        // Возвращаем DTO, не entity — контроллер не должен видеть entity
         return toDTO(saved);
     }
 

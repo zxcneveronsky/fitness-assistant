@@ -205,17 +205,21 @@
 
         btn.disabled = true;
         icon.classList.add('spin');
-        icon.textContent = '↻';
 
         try {
-            const res = await fetch('/api/health');
+            // 1. Делаем запрос к Actuator
+            const res = await fetch('/actuator/health');
             const data = await res.json();
 
-            // Raw JSON
+            // 2. Отображаем Raw JSON
             document.getElementById('raw-json').textContent = JSON.stringify(data, null, 2);
 
-            // Overall badge
+            // 3. Логика статусов
             const isUp = data.status === 'UP';
+            // В Actuator статус БД лежит в components.db.status
+            const dbUp = data.components && data.components.db && data.components.db.status === 'UP';
+
+            // --- Обновляем Главный Бейдж ---
             const badge = document.getElementById('overall-badge');
             const badgeDot = document.getElementById('badge-dot');
             const badgeText = document.getElementById('badge-text');
@@ -225,46 +229,42 @@
             badgeText.className = `font-black text-sm uppercase tracking-widest ${isUp ? 'text-green-700' : 'text-red-600'}`;
             badgeText.textContent = isUp ? 'Все системы работают' : 'Обнаружены проблемы';
 
-            // App card
-            document.getElementById('card-app-name').textContent = data.application || '—';
-            document.getElementById('card-app-version').textContent = data.version ? `v${data.version}` : 'v—';
-            const appUp = data.status === 'UP';
-            document.getElementById('card-app-status').className = `dot-pulse${appUp ? '' : ' down'}`;
-            document.getElementById('card-app-label').textContent = appUp ? 'Работает' : 'Недоступно';
-            document.getElementById('card-app-label').className = `text-sm font-bold ${appUp ? 'text-green-600' : 'text-red-500'}`;
+            // --- Обновляем карточку Приложения ---
+            // Actuator по умолчанию не шлет имя/версию в /health, пока не настроишь /info
+            document.getElementById('card-app-name').textContent = 'Fitness Assistant';
+            document.getElementById('card-app-version').textContent = 'v1.0.0';
+            document.getElementById('card-app-status').className = `dot-pulse${isUp ? '' : ' down'}`;
+            document.getElementById('card-app-label').textContent = isUp ? 'Работает' : 'Ошибка';
+            document.getElementById('card-app-label').className = `text-sm font-bold ${isUp ? 'text-green-600' : 'text-red-500'}`;
 
-            // DB card
-            const dbUp = data.database === 'UP';
+            // --- Обновляем карточку БД ---
             document.getElementById('card-db-status').className = `dot-pulse${dbUp ? '' : ' down'}`;
-            document.getElementById('card-db-label').textContent = dbUp ? 'Подключена' : 'Недоступна';
+            document.getElementById('card-db-label').textContent = dbUp ? 'Подключена' : 'Ошибка связи';
             document.getElementById('card-db-label').className = `text-sm font-bold ${dbUp ? 'text-green-600' : 'text-red-500'}`;
 
-            // Timestamp
-            if (data.timestamp) {
-                const dt = new Date(data.timestamp);
-                document.getElementById('card-timestamp').textContent = dt.toLocaleString('ru-RU', {
-                    year: 'numeric', month: '2-digit', day: '2-digit',
-                    hour: '2-digit', minute: '2-digit', second: '2-digit'
-                });
-            }
-
-            // Last refresh
+            // --- Время сервера и Обновление ---
+            // Берем время из заголовков ответа или текущее, так как Actuator не шлет timestamp в кратком health
+            const serverTime = new Date().toLocaleString('ru-RU');
+            document.getElementById('card-timestamp').textContent = serverTime;
             document.getElementById('card-refreshed').textContent = new Date().toLocaleTimeString('ru-RU');
 
         } catch (e) {
+            console.error(e);
             document.getElementById('raw-json').textContent = `Ошибка: ${e.message}`;
             document.getElementById('badge-text').textContent = 'Сервис недоступен';
             document.getElementById('overall-badge').className = 'animate__animated animate__fadeIn mb-14 flex items-center gap-3 bg-red-50 border border-red-200 rounded-2xl px-8 py-4';
             document.getElementById('badge-dot').className = 'dot-pulse down';
         } finally {
             btn.disabled = false;
-            setTimeout(() => { icon.classList.remove('spin'); icon.textContent = '↻'; }, 700);
+            setTimeout(() => {
+                icon.classList.remove('spin');
+            }, 700);
         }
     }
 
-    // Auto-load on page open
-    loadHealth();
-    // Auto-refresh every 30 seconds
+    // Запуск при загрузке
+    document.addEventListener('DOMContentLoaded', loadHealth);
+    // Авто-рефреш каждые 30 сек
     setInterval(loadHealth, 30000);
 </script>
 </body>

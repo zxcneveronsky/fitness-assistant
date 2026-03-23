@@ -102,19 +102,44 @@
     let searchTimeout = null;
 
     async function loadData(page = 0, muscle = "Все", query = "") {
-        let url = `/api/v1/exercises?page=${page}&size=${pageSize}&sort=exerciseName,asc`;
-        const paginationUI = document.getElementById('paginationControls');
-        if (query.length > 0) { url = `/api/v1/exercises/search?name=${encodeURIComponent(query)}&page=${page}&size=${pageSize}`; paginationUI.classList.remove('hidden'); }
-        else if (muscle !== "Все") { url = `/api/v1/exercises/muscle/${encodeURIComponent(muscle)}?page=${page}&size=${pageSize}`; paginationUI.classList.remove('hidden'); }
-        else { paginationUI.classList.remove('hidden'); }
-        try {
-            const response = await fetch(url);
-            const data = await response.json();
-            const exercises = data.content ? data.content : data;
-            renderGrid(exercises);
-            if (data.content) updatePagination(data);
-        } catch (e) { console.error("Ошибка загрузки:", e); }
+    let url;
+    const paginationUI = document.getElementById('paginationControls');
+
+    // 1. Формируем правильный URL
+    if (query.length > 0) {
+        url = `/api/v1/exercises/search?name=${encodeURIComponent(query)}&page=${page}&size=${pageSize}`;
+    } else if (muscle !== "Все") {
+        url = `/api/v1/exercises/muscle/${encodeURIComponent(muscle)}?page=${page}&size=${pageSize}`;
+    } else {
+        url = `/api/v1/exercises?page=${page}&size=${pageSize}&sort=exerciseName,asc`;
     }
+
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Ошибка при загрузке данных');
+
+        const data = await response.json();
+
+        // 2. ГЛАВНАЯ ПРАВКА: Вытаскиваем данные из .content
+        // Spring Page возвращает объект, где упражнения лежат в поле content
+        let exercises = [];
+        if (data && data.content) {
+            exercises = data.content;
+            updatePagination(data); // Обновляем кнопки страниц
+            paginationUI.classList.remove('hidden');
+        } else if (Array.isArray(data)) {
+            exercises = data;
+            paginationUI.classList.add('hidden');
+        }
+
+        // 3. Рисуем сетку
+        renderGrid(exercises);
+
+    } catch (e) {
+        console.error("Ошибка загрузки:", e);
+        renderGrid([]); // Покажет "Ничего не найдено"
+    }
+}
 
     function renderGrid(exercises) {
         const grid = document.getElementById('exerciseGrid');

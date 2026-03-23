@@ -13,10 +13,10 @@ import java.util.Optional;
 public interface ExerciseRepository extends JpaRepository<Exercise, Long> {
 
     @EntityGraph(attributePaths = "muscles")
-    Page<Exercise> findAll(Pageable pageable);
+    Optional<Exercise> findById(Long id);
 
     @EntityGraph(attributePaths = "muscles")
-    Optional<Exercise> findByExerciseNameIgnoreCase(String exerciseName);
+    Page<Exercise> findAll(Pageable pageable);
 
     @EntityGraph(attributePaths = "muscles")
     Page<Exercise> findByExerciseNameContainingIgnoreCase(String exerciseName, Pageable pageable);

@@ -191,31 +191,19 @@
                 <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Параметры тела</p>
                 <button onclick="openBodyModal()" class="text-[10px] font-black text-blue-600 uppercase tracking-widest hover:opacity-70 transition">Обновить</button>
             </div>
-            <!-- Силуэт слева во всю высоту + данные прижаты к правому краю -->
-            <div class="flex-1 flex items-stretch gap-4">
-                <!-- Силуэт — занимает левую часть -->
-                <div class="flex items-center justify-center flex-1">
-                    <svg id="silhouette-svg" viewBox="0 0 60 130" fill="currentColor" style="opacity:0.18; width:100%; max-width:80px; height:auto;">
-                        <ellipse cx="30" cy="12" rx="10" ry="12"/>
-                        <path d="M15 30 Q10 50 12 75 L20 75 L20 108 L25 108 L25 75 L35 75 L35 108 L40 108 L40 75 L48 75 Q50 50 45 30 Q40 24 30 24 Q20 24 15 30Z"/>
-                        <path d="M15 30 Q5 35 6 58 L12 56 Q13 42 18 36Z"/>
-                        <path d="M45 30 Q55 35 54 58 L48 56 Q47 42 42 36Z"/>
-                    </svg>
+
+            <div class="flex-1 flex flex-col justify-center space-y-6">
+                <div class="flex justify-between items-end border-b border-gray-50 pb-2">
+                    <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Рост</p>
+                    <p class="text-3xl font-black text-gray-900 leading-none"><span id="profile-height">—</span> <span class="text-sm font-medium text-gray-400">см</span></p>
                 </div>
-                <!-- Данные — прижаты к правой грани -->
-                <div class="flex flex-col justify-center space-y-5 text-right">
-                    <div>
-                        <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Рост</p>
-                        <p class="text-3xl font-black text-gray-900 leading-none"><span id="profile-height">—</span> <span class="text-sm font-medium text-gray-400">см</span></p>
-                    </div>
-                    <div>
-                        <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Вес</p>
-                        <p class="text-3xl font-black text-gray-900 leading-none"><span id="profile-weight">—</span> <span class="text-sm font-medium text-gray-400">кг</span></p>
-                    </div>
-                    <div>
-                        <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Возраст</p>
-                        <p class="text-3xl font-black text-gray-900 leading-none"><span id="profile-age">—</span> <span class="text-sm font-medium text-gray-400">лет</span></p>
-                    </div>
+                <div class="flex justify-between items-end border-b border-gray-50 pb-2">
+                    <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Вес</p>
+                    <p class="text-3xl font-black text-gray-900 leading-none"><span id="profile-weight">—</span> <span class="text-sm font-medium text-gray-400">кг</span></p>
+                </div>
+                <div class="flex justify-between items-end">
+                    <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Возраст</p>
+                    <p class="text-3xl font-black text-gray-900 leading-none"><span id="profile-age">—</span> <span class="text-sm font-medium text-gray-400">лет</span></p>
                 </div>
             </div>
         </div>

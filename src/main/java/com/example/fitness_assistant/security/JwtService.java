@@ -12,10 +12,6 @@ import java.util.Date;
 @Service
 public class JwtService {
 
-    // Секрет читается из переменной окружения JWT_SECRET.
-    // Раньше был захардкожен в коде — это критическая уязвимость:
-    // любой кто видит репозиторий может подделать любой токен.
-    // В IntelliJ: Edit Configurations → Environment variables → JWT_SECRET=...
     @Value("${jwt.secret}")
     private String secret;
 
@@ -26,7 +22,6 @@ public class JwtService {
     }
 
     public String generateToken(String email, String role) {
-        // Новый API jjwt 0.12+ — без deprecated методов
         return Jwts.builder()
                 .subject(email)
                 .claim("role", role)
@@ -52,7 +47,7 @@ public class JwtService {
         }
     }
 
-    private Claims getClaims(String token) {
+    public Claims getClaims(String token) {
         return Jwts.parser()
                 .verifyWith(getKey())
                 .build()
