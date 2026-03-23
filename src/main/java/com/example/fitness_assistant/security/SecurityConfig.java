@@ -29,11 +29,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/health").permitAll()
                         .requestMatchers("/api/v1/exercises/**").permitAll()
                         .requestMatchers("/api/v1/food/**").permitAll()
-                        .requestMatchers("/", "/explore/**", "/login", "/register").permitAll()
+                        .requestMatchers("/", "/explore/**", "/login", "/register", "/health-status").permitAll()
                         .requestMatchers("/setup-profile", "/dashboard").permitAll()
                         .requestMatchers("/css/**", "/js/**").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated()
-
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 

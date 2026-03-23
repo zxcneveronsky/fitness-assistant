@@ -8,6 +8,7 @@ import com.example.fitness_assistant.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,11 +24,13 @@ public class UserProfileService {
                         p.getName(),
                         p.getBirthDate(),
                         p.getWeight(),
-                        p.getHeight()
+                        p.getHeight(),
+                        p.getGender()
                 ))
-                .orElse(new UserProfileDTO(null, null, null, null));
+                .orElse(new UserProfileDTO(null, null, null, null, null));
     }
 
+    @Transactional
     public UserProfileDTO saveProfile(String email, UserProfileDTO dto) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
@@ -41,13 +44,14 @@ public class UserProfileService {
         profile.setBirthDate(dto.birthDate());
         profile.setWeight(dto.weight());
         profile.setHeight(dto.height());
+        profile.setGender(dto.gender());  // теперь сохраняется
 
         userProfileRepository.save(profile);
         log.info("Профиль обновлён для: {}", email);
-
         return dto;
     }
 
+    @Transactional
     public UserProfileDTO updateWeightHeight(String email, Double weight, Double height) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"));

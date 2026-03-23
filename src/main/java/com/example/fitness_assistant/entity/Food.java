@@ -1,20 +1,20 @@
 package com.example.fitness_assistant.entity;
 
-
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
 @Table(name = "food")
 @Entity
 public class Food {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(nullable = false)
-    @NotBlank(message = "Название продукта не может быть пустым")
     private String name;
+
     private String brands;
     private double kcal;
     private double proteins;

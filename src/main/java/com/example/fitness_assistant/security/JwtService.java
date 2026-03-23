@@ -2,30 +2,37 @@ package com.example.fitness_assistant.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.security.Key;
+import javax.crypto.SecretKey;
 import java.util.Date;
 
 @Service
 public class JwtService {
 
-    private static final String SECRET = "fitness-assistant-super-secret-key-2024-very-long";
-    private static final long EXPIRATION = 1000 * 60 * 60 * 24; // 24 часа
+    // Секрет читается из переменной окружения JWT_SECRET.
+    // Раньше был захардкожен в коде — это критическая уязвимость:
+    // любой кто видит репозиторий может подделать любой токен.
+    // В IntelliJ: Edit Configurations → Environment variables → JWT_SECRET=...
+    @Value("${jwt.secret}")
+    private String secret;
 
-    private Key getKey() {
-        return Keys.hmacShaKeyFor(SECRET.getBytes());
+    private static final long EXPIRATION_MS = 1000L * 60 * 60 * 24; // 24 часа
+
+    private SecretKey getKey() {
+        return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
     public String generateToken(String email, String role) {
+        // Новый API jjwt 0.12+ — без deprecated методов
         return Jwts.builder()
-                .setSubject(email)
+                .subject(email)
                 .claim("role", role)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
-                .signWith(getKey(), SignatureAlgorithm.HS256)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + EXPIRATION_MS))
+                .signWith(getKey())
                 .compact();
     }
 
@@ -46,10 +53,10 @@ public class JwtService {
     }
 
     private Claims getClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getKey())
+        return Jwts.parser()
+                .verifyWith(getKey())
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
     }
 }

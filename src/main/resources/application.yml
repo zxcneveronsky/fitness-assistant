@@ -9,6 +9,7 @@ spring:
     driver-class-name: org.postgresql.Driver
 
   jpa:
+    open-in-view: false
     hibernate:
       ddl-auto: none
     show-sql: false
@@ -18,8 +19,15 @@ spring:
     locations: classpath:db/migration
     baseline-on-migrate: true
     baseline-version: 0
-    placeholders:
-      csv_path: ${CSV_DATA_PATH:src/main/resources/data}
+
+
+  cache:
+    type: caffeine
+    caffeine:
+      spec: maximumSize=1000,expireAfterWrite=10m
+
+jwt:
+  secret: ${JWT_SECRET}
 
 logging:
   level:

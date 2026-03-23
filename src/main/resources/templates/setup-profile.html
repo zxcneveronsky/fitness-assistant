@@ -244,35 +244,42 @@
     let selectedGender = 'male';
 
     function goStep(step) {
-        // Валидация при переходе
-        if (currentStep === 1 && step === 2) {
-            const name = document.getElementById('name').value.trim();
-            if (!name) {
-                document.getElementById('name').style.borderColor = '#ff3b30';
-                document.getElementById('name').style.boxShadow = '0 0 0 4px rgba(255,59,48,0.1)';
-                return;
-            }
-            document.getElementById('name').style.borderColor = '';
-            document.getElementById('name').style.boxShadow = '';
+    // Валидация при переходе вперёд
+    if (currentStep === 1 && step === 2) {
+        const name = document.getElementById('name').value.trim();
+        if (!name) {
+            document.getElementById('name').style.borderColor = '#ff3b30';
+            document.getElementById('name').style.boxShadow = '0 0 0 4px rgba(255,59,48,0.1)';
+            return;
         }
-
-        // Обновляем степпер
-        document.getElementById(`dot-${currentStep}`).classList.remove('active');
-        document.getElementById(`dot-${currentStep}`).classList.add('done');
-        if (step < currentStep) {
-            document.getElementById(`dot-${currentStep}`).classList.remove('done');
-            document.getElementById(`dot-${currentStep}`).classList.add('');
-        }
-
-        // Скрываем текущий, показываем новый
-        document.getElementById(`step-${currentStep}`).classList.remove('active');
-        document.getElementById(`step-${step}`).classList.add('active', 'animate__animated', 'animate__fadeIn');
-        document.getElementById(`dot-${step}`).classList.add('active');
-        document.getElementById(`dot-${step}`).classList.remove('done');
-
-        currentStep = step;
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        document.getElementById('name').style.borderColor = '';
+        document.getElementById('name').style.boxShadow = '';
     }
+
+    // Убираем активность с текущей точки
+    const currentDot = document.getElementById(`dot-${currentStep}`);
+    currentDot.classList.remove('active');
+
+    if (step > currentStep) {
+        // Идём вперёд — текущая становится done
+        currentDot.classList.add('done');
+    } else {
+        // Идём назад — текущая сбрасывается полностью
+        currentDot.classList.remove('done');
+        // Предыдущая тоже сбрасывает done и становится active
+        document.getElementById(`dot-${step}`).classList.remove('done');
+    }
+
+    // Скрываем текущий шаг
+    document.getElementById(`step-${currentStep}`).classList.remove('active');
+
+    // Показываем новый шаг
+    document.getElementById(`step-${step}`).classList.add('active', 'animate__animated', 'animate__fadeIn');
+    document.getElementById(`dot-${step}`).classList.add('active');
+
+    currentStep = step;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
     function selectGender(gender) {
         selectedGender = gender;
@@ -303,7 +310,7 @@
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify({ name, birthDate, weight, height })
+                body: JSON.stringify({ name, birthDate, weight, height,gender: selectedGender.toUpperCase()})
             });
 
             if (!res.ok) throw new Error('Ошибка сохранения');

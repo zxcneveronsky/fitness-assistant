@@ -1,6 +1,5 @@
 package com.example.fitness_assistant.service;
 
-
 import com.example.fitness_assistant.dto.ExerciseDTO;
 import com.example.fitness_assistant.entity.Exercise;
 import com.example.fitness_assistant.entity.ExerciseMuscle;
@@ -16,9 +15,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
 @Slf4j
 @Service
 public class ExerciseService {
+
     private final ExerciseRepository exerciseRepository;
     private final ExerciseMuscleRepository exerciseMuscleRepository;
 
@@ -34,15 +35,16 @@ public class ExerciseService {
                 .toList();
         return new ExerciseDTO(exercise.getExerciseName(), exercise.getDescription(), muscles);
     }
+
     @Cacheable(value = "exercises", key = "#pageable.pageNumber + '-' + #pageable.pageSize")
     public Page<ExerciseDTO> getAllExercisePaged(Pageable pageable) {
+        // Раньше пустая страница бросала ExerciseNotFoundException —
+        // запрашивать несуществующую страницу не ошибка, это просто пустой результат.
         Page<Exercise> page = exerciseRepository.findAll(pageable);
-        if (page.isEmpty()) {
-            log.warn("Страница {} пуста", pageable.getPageNumber());
-            throw new ExerciseNotFoundException("Ничего");
-        }
+        log.debug("Загружено упражнений на странице {}: {}", pageable.getPageNumber(), page.getNumberOfElements());
         return page.map(this::toDTO);
     }
+
     @Cacheable(value = "exercisesByMuscle", key = "#muscle + '-' + #pageable.pageNumber")
     public Page<ExerciseDTO> getExercisesByMuscle(String muscle, Pageable pageable) {
         Page<Exercise> exercises = exerciseMuscleRepository
@@ -53,6 +55,7 @@ public class ExerciseService {
         }
         return exercises.map(this::toDTO);
     }
+
     @Cacheable(value = "exerciseByName", key = "#exerciseName.toLowerCase()")
     public ExerciseDTO getExerciseByName(String exerciseName) {
         Exercise exercise = exerciseRepository
@@ -60,6 +63,7 @@ public class ExerciseService {
                 .orElseThrow(() -> new ExerciseNotFoundException(exerciseName));
         return toDTO(exercise);
     }
+
     @Cacheable(value = "exercisesSearch", key = "#name.toLowerCase() + '-' + #pageable.pageNumber")
     public Page<ExerciseDTO> searchExercisesByName(String name, Pageable pageable) {
         Page<Exercise> byMuscle = exerciseMuscleRepository.findDistinctExercisesByMuscle(name, pageable);
@@ -70,24 +74,27 @@ public class ExerciseService {
                 .findByExerciseNameContainingIgnoreCase(name, pageable)
                 .map(this::toDTO);
     }
-    @CacheEvict(value = {"exercises", "exercisesByMuscle", "exerciseByName", "exercisesSearch"}, allEntries = true)    @Transactional
+
+    @CacheEvict(value = {"exercises", "exercisesByMuscle", "exerciseByName", "exercisesSearch"}, allEntries = true)
+    @Transactional
     public void deleteExercise(String exerciseName) {
         Exercise exercise = exerciseRepository
                 .findByExerciseNameIgnoreCase(exerciseName)
                 .orElseThrow(() -> new ExerciseNotFoundException(exerciseName));
         exerciseMuscleRepository.deleteByExercise(exercise);
         exerciseRepository.delete(exercise);
-        log.info("Упражнение {} удалено", exerciseName);
+        log.info("Упражнение '{}' удалено", exerciseName);
     }
+
     @CacheEvict(value = {"exercises", "exercisesByMuscle", "exerciseByName", "exercisesSearch"}, allEntries = true)
     @Transactional
     public ExerciseDTO addExercise(ExerciseDTO dto) {
-        Exercise savedEx = new Exercise();
-        savedEx.setExerciseName(dto.exerciseName());
-        savedEx.setDescription(dto.description());
-        Exercise savedExercise = exerciseRepository.save(savedEx);
+        Exercise exercise = new Exercise();
+        exercise.setExerciseName(dto.exerciseName());
+        exercise.setDescription(dto.description());
+        Exercise savedExercise = exerciseRepository.save(exercise);
 
-        List<ExerciseMuscle> savedMuscles = dto.muscles().stream()
+        List<ExerciseMuscle> muscles = dto.muscles().stream()
                 .map(m -> {
                     ExerciseMuscle em = new ExerciseMuscle();
                     em.setExercise(savedExercise);
@@ -95,8 +102,12 @@ public class ExerciseService {
                     em.setMuscleDetail(m.muscleDetail());
                     return em;
                 }).toList();
-        exerciseMuscleRepository.saveAll(savedMuscles);
+        exerciseMuscleRepository.saveAll(muscles);
 
-        return toDTO(savedExercise); // возвращаем DTO, не Entity
+        return new ExerciseDTO(
+                savedExercise.getExerciseName(),
+                savedExercise.getDescription(),
+                dto.muscles()
+        );
     }
 }

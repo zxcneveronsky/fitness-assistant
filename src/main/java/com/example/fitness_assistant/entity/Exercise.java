@@ -10,6 +10,7 @@ import java.util.List;
 @Entity
 @Table(name = "exercise")
 public class Exercise {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,6 +20,7 @@ public class Exercise {
     private String exerciseName;
 
     private String description;
-    @OneToMany(mappedBy = "exercise", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+
+    @OneToMany(mappedBy = "exercise", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ExerciseMuscle> muscles;
 }

@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,9 +21,12 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
+    // @Transactional нужен — register делает existsByEmail + save.
+    // Без него при падении между двумя операциями возможно частичное состояние.
+    @Transactional
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.email())) {
-            throw new RuntimeException("Пользователь с таким email уже существует");
+            throw new IllegalArgumentException("Пользователь с таким email уже существует");
         }
 
         User user = new User();
@@ -39,10 +43,10 @@ public class AuthService {
 
     public AuthResponse login(LoginRequest request) {
         User user = userRepository.findByEmail(request.email())
-                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+                .orElseThrow(() -> new IllegalArgumentException("Пользователь не найден"));
 
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {
-            throw new RuntimeException("Неверный пароль");
+            throw new IllegalArgumentException("Неверный пароль");
         }
 
         log.info("Пользователь вошёл: {}", request.email());
