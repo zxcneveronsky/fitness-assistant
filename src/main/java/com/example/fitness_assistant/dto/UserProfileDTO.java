@@ -1,7 +1,6 @@
 package com.example.fitness_assistant.dto;
 
 import com.example.fitness_assistant.entity.UserProfile.Gender;
-import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;
 

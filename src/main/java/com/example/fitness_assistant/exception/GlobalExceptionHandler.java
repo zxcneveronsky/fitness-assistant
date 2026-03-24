@@ -1,6 +1,6 @@
 package com.example.fitness_assistant.exception;
 
-import jakarta.validation.ConstraintViolationException; // ВАЖНО: импорт должен быть jakarta
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;

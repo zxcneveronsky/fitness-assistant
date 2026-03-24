@@ -25,13 +25,11 @@ public class FoodSearchController {
     private final FoodSearchService foodSearchService;
 
     @GetMapping
-    public Page<FoodSearchDTO> getFoodByName(
-            @RequestParam
+    public Page<FoodSearchDTO> getFoodByName(@RequestParam
             @NotBlank(message = "Запрос не может быть пустым")
             @Size(min = 2, max = 50, message = "Длина запроса от 2 до 50 символов")
             String name,
             @PageableDefault(size = 20) Pageable pageable) {
-
         log.info("Поиск продукта по названию: '{}'", name);
         return foodSearchService.findFoodByName(name, pageable);
     }
@@ -44,10 +42,7 @@ public class FoodSearchController {
     }
 
     @PutMapping("/{id}")
-    public FoodSearchDTO updateFood(
-            @PathVariable Long id,
-            @Valid @RequestBody FoodCreateDTO dto) {
-
+    public FoodSearchDTO updateFood(@PathVariable Long id, @Valid @RequestBody FoodCreateDTO dto) {
         log.info("Обновление продукта с id: {}", id);
         return foodSearchService.updateFood(id, dto);
     }

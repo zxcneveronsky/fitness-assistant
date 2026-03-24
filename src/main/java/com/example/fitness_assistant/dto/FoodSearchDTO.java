@@ -1,9 +1,7 @@
 package com.example.fitness_assistant.dto;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-
 public record FoodSearchDTO(
-        Long id, // Обязательно добавь!
+        Long id,
         String name,
         String brands,
         double kcal,

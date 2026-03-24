@@ -35,7 +35,6 @@ public class FoodSearchService {
         );
     }
 
-    // Конвертация FoodCreateDTO → Food entity
     private Food toEntity(FoodCreateDTO dto) {
         Food food = new Food();
         food.setName(dto.name());
