@@ -10,6 +10,7 @@ public record ExerciseDTO(
         Long id,
         @NotBlank(message = "Название не может быть пустым")
         String exerciseName,
+        @NotBlank(message = "Описание не может быть пустым")
         String description,
         @NotNull @NotEmpty @Valid
         List<MuscleDTO> muscles
@@ -17,6 +18,7 @@ public record ExerciseDTO(
     public record MuscleDTO(
             @NotBlank(message = "Название главной мышцы не может быть пустым")
             String muscleGroup,
+            @NotBlank(message = "Название детальной мышцы не может быть пустым")
             String muscleDetail
     ) {}
 }

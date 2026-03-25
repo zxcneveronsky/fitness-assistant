@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 @Data
-@Table(name = "food")
 @Entity
+@Table(name = "food")
 public class Food {
 
     @Id
@@ -15,9 +15,20 @@ public class Food {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = true)
     private String brands;
+
+    @Column(nullable = false)
     private double kcal;
+
+    @Column(nullable = false)
     private double proteins;
+
+    @Column(nullable = false)
     private double fats;
+
+    @Column(nullable = false)
     private double carbs;
+
+    public Food() {}
 }

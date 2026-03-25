@@ -105,33 +105,36 @@
     let lastQuery = '';
 
     async function loadFood(page = 0, query = '') {
-        if (!query || query.trim().length === 0) {
-            // Нет запроса — показываем подсказку
-            document.getElementById('emptyState').classList.remove('hidden');
-            document.getElementById('foodGrid').classList.add('hidden');
-            document.getElementById('paginationControls').classList.add('hidden');
+    if (!query || query.trim().length === 0) {
+        document.getElementById('emptyState').classList.remove('hidden');
+        document.getElementById('foodGrid').classList.add('hidden');
+        document.getElementById('paginationControls').classList.add('hidden');
+        return;
+    }
+
+    try {
+        const url = `/api/v1/food?name=${encodeURIComponent(query)}&page=${page}&size=${pageSize}`;
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error('Ошибка сервера');
+        }
+
+        const data = await response.json();
+
+        if (!data.content || data.content.length === 0) {
+            renderNotFound(query);        // показываем "ничего не найдено"
             return;
         }
 
-        try {
-            const url = `/api/v1/food?name=${encodeURIComponent(query)}&page=${page}&size=${pageSize}`;
-            const response = await fetch(url);
+        renderGrid(data.content, query);
+        updatePagination(data);
 
-            // 404 — продукт не найден
-            if (response.status === 404) {
-                renderNotFound(query);
-                return;
-            }
-
-            const data = await response.json();
-            renderGrid(data.content, query);
-            updatePagination(data);
-
-        } catch (e) {
-            console.error('Ошибка загрузки:', e);
-            renderNotFound(query);
-        }
+    } catch (e) {
+        console.error('Ошибка загрузки:', e);
+        renderNotFound(query);
     }
+}
 
     function renderGrid(foods, query) {
         const grid = document.getElementById('foodGrid');

@@ -34,6 +34,11 @@ public class FoodSearchController {
         return foodSearchService.findFoodByName(name, pageable);
     }
 
+    @GetMapping("/{id}")
+    public FoodSearchDTO getFoodById(@PathVariable Long id) {
+        return foodSearchService.getFoodById(id);
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public FoodSearchDTO addFood(@Valid @RequestBody FoodCreateDTO dto) {

@@ -8,6 +8,7 @@ import com.example.fitness_assistant.repository.ExerciseMuscleRepository;
 import com.example.fitness_assistant.repository.ExerciseRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ExerciseService {
@@ -30,6 +32,13 @@ public class ExerciseService {
         return new ExerciseDTO(e.getId(), e.getExerciseName(), e.getDescription(), muscles);
     }
 
+    private Exercise toEntity(ExerciseDTO dto) {
+        Exercise exercise = new Exercise();
+        exercise.setExerciseName(dto.exerciseName());
+        exercise.setDescription(dto.description() != null ? dto.description() : "");
+        return exercise;
+    }
+
     @Cacheable(value = "exercises", key = "#pageable.pageNumber")
     public Page<ExerciseDTO> getAllExercisePaged(Pageable pageable) {
         return exerciseRepo.findAll(pageable).map(this::toDTO);
@@ -37,18 +46,21 @@ public class ExerciseService {
 
     @Cacheable(value = "exercise", key = "#id")
     public ExerciseDTO getExerciseById(Long id) {
-        return exerciseRepo.findById(id).map(this::toDTO)
+        return exerciseRepo.findById(id)
+                .map(this::toDTO)
                 .orElseThrow(() -> new ExerciseNotFoundException("ID: " + id));
     }
 
     @Cacheable(value = "exercisesSearch", key = "#query.toLowerCase() + '-' + #pageable.pageNumber")
     public Page<ExerciseDTO> searchExercises(String query, Pageable pageable) {
-        Page<Exercise> byMuscle = muscleRepo.findDistinctExercisesByMuscle(query, pageable);
-        if (!byMuscle.isEmpty()) return byMuscle.map(this::toDTO);
-        return exerciseRepo.findByExerciseNameContainingIgnoreCase(query, pageable).map(this::toDTO);
+        if (query == null || query.trim().isEmpty()) {
+            return Page.empty(pageable);
+        }
+        Page<Exercise> exercises = exerciseRepo.searchExercises(query, pageable);
+        return exercises.map(this::toDTO);
     }
 
-    @Cacheable(value = "exercisesByMuscle", key = "#muscle + '-' + #pageable.pageNumber")
+    @Cacheable(value = "exercisesByMuscle", key = "#muscle.toLowerCase() + '-' + #pageable.pageNumber")
     public Page<ExerciseDTO> getExercisesByMuscle(String muscle, Pageable pageable) {
         return muscleRepo.findDistinctExercisesByMuscle(muscle, pageable).map(this::toDTO);
     }
@@ -56,40 +68,49 @@ public class ExerciseService {
     @Transactional
     @CacheEvict(value = {"exercises", "exercise", "exercisesSearch", "exercisesByMuscle"}, allEntries = true)
     public ExerciseDTO addExercise(ExerciseDTO dto) {
-        Exercise e = new Exercise();
-        e.setExerciseName(dto.exerciseName());
-        e.setDescription(dto.description());
-        Exercise saved = exerciseRepo.save(e);
+        Exercise exercise = toEntity(dto);
+        Exercise saved = exerciseRepo.save(exercise);
         saveMuscles(dto.muscles(), saved);
-        return getExerciseById(saved.getId());
+        log.info("Добавлено упражнение: {}", saved.getExerciseName());
+        return toDTO(saved);
     }
 
     @Transactional
     @CacheEvict(value = {"exercises", "exercise", "exercisesSearch", "exercisesByMuscle"}, allEntries = true)
     public ExerciseDTO updateExercise(Long id, ExerciseDTO dto) {
-        Exercise e = exerciseRepo.findById(id).orElseThrow(() -> new ExerciseNotFoundException("ID: " + id));
-        e.setExerciseName(dto.exerciseName());
-        e.setDescription(dto.description());
-        muscleRepo.deleteByExercise(e);
-        saveMuscles(dto.muscles(), e);
-        return toDTO(exerciseRepo.save(e));
+        Exercise exercise = exerciseRepo.findById(id)
+                .orElseThrow(() -> new ExerciseNotFoundException("ID: " + id));
+        exercise.setExerciseName(dto.exerciseName());
+        exercise.setDescription(dto.description() != null ? dto.description() : "");
+        muscleRepo.deleteByExercise(exercise);
+        saveMuscles(dto.muscles(), exercise);
+        Exercise saved = exerciseRepo.save(exercise);
+        log.info("Обновлено упражнение: {} (id={})", saved.getExerciseName(), id);
+        return toDTO(saved);
     }
 
     @Transactional
     @CacheEvict(value = {"exercises", "exercise", "exercisesSearch", "exercisesByMuscle"}, allEntries = true)
     public void deleteExercise(Long id) {
-        if (!exerciseRepo.existsById(id)) throw new ExerciseNotFoundException("ID: " + id);
+        Exercise exercise = exerciseRepo.findById(id)
+                .orElseThrow(() -> new ExerciseNotFoundException("ID: " + id));
+        muscleRepo.deleteByExercise(exercise);
         exerciseRepo.deleteById(id);
+        log.info("Удалено упражнение с id: {}", id);
     }
 
-    private void saveMuscles(List<ExerciseDTO.MuscleDTO> dtos, Exercise e) {
-        var list = dtos.stream().map(d -> {
+
+    private void saveMuscles(List<ExerciseDTO.MuscleDTO> dtos, Exercise exercise) {
+        if (dtos == null || dtos.isEmpty()) {
+            return;
+        }
+        var muscleEntities = dtos.stream().map(dto -> {
             ExerciseMuscle em = new ExerciseMuscle();
-            em.setExercise(e);
-            em.setMuscleGroup(d.muscleGroup());
-            em.setMuscleDetail(d.muscleDetail());
+            em.setExercise(exercise);
+            em.setMuscleGroup(dto.muscleGroup());
+            em.setMuscleDetail(dto.muscleDetail() != null ? dto.muscleDetail() : "");
             return em;
         }).toList();
-        muscleRepo.saveAll(list);
+        muscleRepo.saveAll(muscleEntities);
     }
 }

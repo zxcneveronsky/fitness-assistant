@@ -1,6 +1,5 @@
 package com.example.fitness_assistant.entity;
 
-
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -8,11 +7,12 @@ import lombok.Data;
 @Entity
 @Table(name = "exercise_muscle")
 public class ExerciseMuscle {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "exercise_id", nullable = false)
     private Exercise exercise;
 
@@ -21,4 +21,6 @@ public class ExerciseMuscle {
 
     @Column(nullable = false)
     private String muscleDetail;
+
+    public ExerciseMuscle() {}
 }

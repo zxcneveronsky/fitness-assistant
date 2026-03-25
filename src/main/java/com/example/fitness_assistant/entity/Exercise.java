@@ -1,9 +1,9 @@
 package com.example.fitness_assistant.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -16,11 +16,15 @@ public class Exercise {
     private Long id;
 
     @Column(nullable = false)
-    @NotBlank(message = "Название упражнения не может быть пустым")
     private String exerciseName;
 
     private String description;
 
-    @OneToMany(mappedBy = "exercise", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<ExerciseMuscle> muscles;
+    @OneToMany(mappedBy = "exercise",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY)
+    private List<ExerciseMuscle> muscles = new ArrayList<>();
+
+    public Exercise() {}
 }

@@ -18,7 +18,8 @@ public class ExerciseController {
     private final ExerciseService exerciseService;
 
     @GetMapping
-    public Page<ExerciseDTO> getAllExercisePaged(@PageableDefault(size = 10) Pageable pageable) {
+    public Page<ExerciseDTO> getAllExercisePaged(
+            @PageableDefault(size = 10) Pageable pageable) {
         return exerciseService.getAllExercisePaged(pageable);
     }
 
@@ -28,24 +29,30 @@ public class ExerciseController {
     }
 
     @GetMapping("/muscle/{muscle}")
-    public Page<ExerciseDTO> getExerciseByMuscle(@PathVariable String muscle, @PageableDefault(size = 10) Pageable pageable) {
+    public Page<ExerciseDTO> getExercisesByMuscle(
+            @PathVariable String muscle,
+            @PageableDefault(size = 10) Pageable pageable) {
         return exerciseService.getExercisesByMuscle(muscle, pageable);
     }
 
     @GetMapping("/search")
-    public Page<ExerciseDTO> searchExercises(@RequestParam String name, @PageableDefault(size = 9) Pageable pageable) {
+    public Page<ExerciseDTO> searchExercises(
+            @RequestParam String name,
+            @PageableDefault(size = 9) Pageable pageable) {
         return exerciseService.searchExercises(name, pageable);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ExerciseDTO addExercise(@Valid @RequestBody ExerciseDTO exercise) {
-        return exerciseService.addExercise(exercise);
+    public ExerciseDTO addExercise(@Valid @RequestBody ExerciseDTO dto) {
+        return exerciseService.addExercise(dto);
     }
 
     @PutMapping("/{id}")
-    public ExerciseDTO updateExercise(@PathVariable Long id, @Valid @RequestBody ExerciseDTO exercise) {
-        return exerciseService.updateExercise(id, exercise);
+    public ExerciseDTO updateExercise(
+            @PathVariable Long id,
+            @Valid @RequestBody ExerciseDTO dto) {
+        return exerciseService.updateExercise(id, dto);
     }
 
     @DeleteMapping("/{id}")
