@@ -33,8 +33,6 @@ atlassian-ide-cli.xml
 *.log
 logs/
 *.stackdump
-core
-core.*
 
 HELP.md
 .apt_generated
