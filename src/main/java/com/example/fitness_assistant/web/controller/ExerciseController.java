@@ -30,7 +30,7 @@ public class ExerciseController {
     private final ExerciseWebMapper exerciseWebMapper;
 
     @GetMapping
-    public Page<ExerciseResponse> getAllExercise(@PageableDefault(size = 9) Pageable pageable) {
+    public Page<ExerciseResponse> getAllExercises(@PageableDefault(size = 9) Pageable pageable) {
         return getAllExercisesUseCase.getAllExercises(pageable)
                 .map(exerciseWebMapper::toResponse);
     }

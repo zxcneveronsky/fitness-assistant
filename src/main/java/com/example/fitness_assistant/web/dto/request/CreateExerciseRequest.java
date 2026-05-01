@@ -20,14 +20,10 @@ public record CreateExerciseRequest(
         @NotNull(message = "Список мышц не может быть пустым")
         @NotEmpty(message = "Список мышц не может быть пустым")
         @Valid
-        List<CreateMuscleRequest> muscles
+        List<CreateMuscleRequest> musclesId
 ) {
     public record CreateMuscleRequest(
             @NotNull(message = "ID мышцы не может быть пустым")
-            @NotBlank(message = "ID мышцы не может быть пустым")
-            Long id,
-            @NotNull(message = "Название мышцы не может быть пустым")
-            @NotBlank(message = "Название мышцы не может быть пустым")
-            String name
+            Long id
     ) {}
 }

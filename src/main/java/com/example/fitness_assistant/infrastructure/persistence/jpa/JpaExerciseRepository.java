@@ -16,4 +16,5 @@ public interface JpaExerciseRepository extends JpaRepository<ExerciseEntity, Lon
         OR LOWER(m.name) LIKE LOWER(CONCAT('%', :query, '%'))
         """)
     Page<ExerciseEntity> searchExercise(@Param("query") String query, Pageable pageable);
+
 }

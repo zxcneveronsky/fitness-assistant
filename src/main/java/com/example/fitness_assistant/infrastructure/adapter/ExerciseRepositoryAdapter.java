@@ -1,6 +1,7 @@
 package com.example.fitness_assistant.infrastructure.adapter;
 
 import com.example.fitness_assistant.core.model.Exercise;
+import com.example.fitness_assistant.core.model.Muscle;
 import com.example.fitness_assistant.core.repository.ExerciseRepository;
 import com.example.fitness_assistant.infrastructure.persistence.entity.ExerciseEntity;
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaExerciseRepository;

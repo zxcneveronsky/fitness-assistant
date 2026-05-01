@@ -17,14 +17,13 @@ public class CreateUserProfileUseCase {
     private final UserRepository userRepository;
 
     @Transactional
-    public UserProfile saveProfile(UserProfile userProfile) {
+    public UserProfile createUserProfile(UserProfile userProfile) {
         Long userId = userProfile.getId();
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException(userId);
         }
-        User user = userRepository.getReferenceById(userProfile.getId());
+        User user = userRepository.getReferenceById(userId);
         userProfile.setUser(user);
-        userProfile.setId(null);
         return userProfileRepository.save(userProfile);
     }
 }

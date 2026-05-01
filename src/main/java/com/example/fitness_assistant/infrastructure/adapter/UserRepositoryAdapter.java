@@ -3,7 +3,6 @@ package com.example.fitness_assistant.infrastructure.adapter;
 import com.example.fitness_assistant.core.model.User;
 import com.example.fitness_assistant.core.repository.UserRepository;
 import com.example.fitness_assistant.infrastructure.mapper.UserMapper;
-import com.example.fitness_assistant.infrastructure.persistence.entity.UserEntity;
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -15,7 +14,7 @@ import java.util.Optional;
 public class UserRepositoryAdapter implements UserRepository {
 
     private final JpaUserRepository jpaUserRepository;
-    private final UserMapper userEntityMapper;
+    private final UserMapper userMapper;
 
     @Override
     public boolean existsByEmail(String email) {
@@ -30,18 +29,18 @@ public class UserRepositoryAdapter implements UserRepository {
     @Override
     public Optional<User> findByEmail(String email) {
         return jpaUserRepository.findByEmail(email)
-                .map(userEntityMapper::toDomain);
+                .map(userMapper::toDomain);
     }
 
     @Override
     public Optional<User> findById(Long id) {
         return jpaUserRepository.findById(id)
-                .map(userEntityMapper::toDomain);
+                .map(userMapper::toDomain);
     }
 
     @Override
     public User save(User user) {
-        return userEntityMapper.toDomain(jpaUserRepository.save(userEntityMapper.toEntity(user)));
+        return userMapper.toDomain(jpaUserRepository.save(userMapper.toEntity(user)));
     }
 
     @Override
@@ -51,6 +50,6 @@ public class UserRepositoryAdapter implements UserRepository {
 
     @Override
     public User getReferenceById(Long id) {
-        return userEntityMapper.toDomain(jpaUserRepository.getReferenceById(id));
+        return userMapper.toDomain(jpaUserRepository.getReferenceById(id));
     }
 }

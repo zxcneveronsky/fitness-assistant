@@ -34,7 +34,7 @@ public class UserProfileController {
     @ResponseStatus(HttpStatus.CREATED)
     public UserProfileResponse createProfile(@Valid @RequestBody CreateUserProfileRequest request) {
         return userProfileWebMapper.toResponse(
-                createUserProfileUseCase.saveProfile(userProfileWebMapper.toDomain(request))
+                createUserProfileUseCase.createUserProfile(userProfileWebMapper.toDomain(request))
         );
     }
 
@@ -46,7 +46,7 @@ public class UserProfileController {
         );
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteProfile(@PathVariable Long id) {
         deleteProfileUseCase.deleteById(id);

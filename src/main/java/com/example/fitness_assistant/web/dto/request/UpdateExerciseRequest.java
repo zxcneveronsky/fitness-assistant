@@ -9,7 +9,6 @@ import java.util.List;
 
 public record UpdateExerciseRequest(
         @NotNull(message = "ID упражнения не может быть пустым")
-        @NotBlank(message = "ID упражнения не может быть пустым")
         Long id,
         @NotBlank(message = "Название не может быть пустым")
         @Size(max = 255, message = "Название слишком длинное")
@@ -18,13 +17,10 @@ public record UpdateExerciseRequest(
         @Size(max = 1000, message = "Описание слишком длинное")
         String description,
         @Valid
-        List<UpdateMuscleRequest> muscles
+        List<UpdateMuscleRequest> musclesId
 ) {
     public record UpdateMuscleRequest(
             @NotNull(message = "ID мышцы не может быть пустым")
-            @NotBlank(message = "ID мышцы не может быть пустым")
-            Long id,
-            @NotBlank(message = "Название мышцы не может быть пустым")
-            String name
+            Long id
     ) {}
 }

@@ -11,7 +11,6 @@ import java.time.LocalDate;
 
 public record CreateUserProfileRequest(
         @NotNull(message = "ID пользователя не может быть пустым")
-        @NotBlank(message = "ID пользователя не может быть пустым")
         Long userId,
 
         @NotNull(message = "Имя не может быть пустым")
