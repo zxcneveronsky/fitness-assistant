@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS foods (
+    id       BIGSERIAL        PRIMARY KEY,
+    name     VARCHAR(255)     NOT NULL,
+    brands   VARCHAR(255),
+    kcal     DOUBLE PRECISION NOT NULL,
+    proteins DOUBLE PRECISION NOT NULL,
+    fats     DOUBLE PRECISION NOT NULL,
+    carbs    DOUBLE PRECISION NOT NULL
+);
