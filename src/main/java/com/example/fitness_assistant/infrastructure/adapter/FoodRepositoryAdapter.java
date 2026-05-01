@@ -33,7 +33,7 @@ public class FoodRepositoryAdapter implements FoodRepository {
 
     @Override
     public Page<Food> searchFood(String name, Pageable pageable) {
-        return jpaFoodRepository.findByNameContainingIgnoreCase(name, pageable)
+        return jpaFoodRepository.searchFood(name, pageable)
                 .map(foodMapper::toDomain);
     }
 

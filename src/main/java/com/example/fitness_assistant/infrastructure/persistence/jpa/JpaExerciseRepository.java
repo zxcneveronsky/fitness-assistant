@@ -9,12 +9,19 @@ import org.springframework.data.repository.query.Param;
 
 public interface JpaExerciseRepository extends JpaRepository<ExerciseEntity, Long> {
 
-    @Query("""
-        SELECT DISTINCT e FROM ExerciseEntity e
-        LEFT JOIN e.muscles m
-        WHERE LOWER(e.name) LIKE LOWER(CONCAT('%', :query, '%'))
-        OR LOWER(m.name) LIKE LOWER(CONCAT('%', :query, '%'))
-        """)
+    @Query(
+            value = """
+            SELECT DISTINCT e FROM ExerciseEntity e
+            LEFT JOIN FETCH e.muscles m
+            WHERE LOWER(e.name) LIKE LOWER(CONCAT('%', :query, '%'))
+            OR LOWER(m.name) LIKE LOWER(CONCAT('%', :query, '%'))
+            """,
+            countQuery = """
+            SELECT COUNT(DISTINCT e) FROM ExerciseEntity e
+            LEFT JOIN e.muscles m
+            WHERE LOWER(e.name) LIKE LOWER(CONCAT('%', :query, '%'))
+            OR LOWER(m.name) LIKE LOWER(CONCAT('%', :query, '%'))
+            """)
     Page<ExerciseEntity> searchExercise(@Param("query") String query, Pageable pageable);
 
 }
