@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface JpaFoodRepository extends JpaRepository<FoodEntity, Long> {
-    @Query("""
+    @Query(value = """
         SELECT f FROM FoodEntity f
         WHERE LOWER(f.name) LIKE LOWER(CONCAT('%', :query, '%'))
         OR LOWER(f.brands) LIKE LOWER(CONCAT('%', :query, '%'))
