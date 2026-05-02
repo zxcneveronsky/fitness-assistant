@@ -27,8 +27,28 @@ public class UpdateUserProfileUseCase {
                     existingProfile.setWeight(profileUpdate.getWeight() != null ? profileUpdate.getWeight() : existingProfile.getWeight());
                     existingProfile.setHeight(profileUpdate.getHeight() != null ? profileUpdate.getHeight() : existingProfile.getHeight());
                     existingProfile.setGender(profileUpdate.getGender() != null ? profileUpdate.getGender() : existingProfile.getGender());
-                    return userProfileRepository.save(targetCalculationService.applyAutoTargets(existingProfile));
+                    if (profileUpdate.getUseAutopilot() != null){
+                        existingProfile.setUseAutopilot(profileUpdate.getUseAutopilot());
+                    }
+                    if (Boolean.TRUE.equals(existingProfile.getUseAutopilot())) {
+                        targetCalculationService.applyAutoTargets(existingProfile);
+                    }
+                    return userProfileRepository.save(existingProfile);
                 })
                 .orElseThrow(() -> new UserProfileNotFoundException(id));
     }
+
+    public UserProfile updateAutopilotStatus(UserDetails userDetails, boolean enabled){
+        Long id = ((UserDetailsAdapter) userDetails).getUserId();
+        return userProfileRepository.findById(id)
+                .map(updateStatusProfile -> {
+                    updateStatusProfile.setUseAutopilot(enabled);
+                    if (enabled){
+                        targetCalculationService.applyAutoTargets(updateStatusProfile);
+                    }
+                    return userProfileRepository.save(updateStatusProfile);
+                }).orElseThrow(()-> new UserProfileNotFoundException(id));
+    }
+
+
 }

@@ -10,16 +10,15 @@ import java.time.Period;
 @Service
 public class TargetCalculationService {
 
-    public UserProfile balanceMacrosByCalories(UserProfile profile) {
+    public void balanceMacrosByCalories(UserProfile profile) {
         Double kcal = profile.getTargetKcal();
 
         profile.setTargetProteins((kcal * 0.30) / 4);
         profile.setTargetFats((kcal * 0.30) / 9);
         profile.setTargetCarbs((kcal * 0.40) / 4);
-        return profile;
     }
 
-    public UserProfile balanceCaloriesByMacros(UserProfile profile) {
+    public void balanceCaloriesByMacros(UserProfile profile) {
         Double p = profile.getTargetProteins();
         Double f = profile.getTargetFats();
         Double c = profile.getTargetCarbs();
@@ -27,22 +26,20 @@ public class TargetCalculationService {
         Double totalKcal = (p * 4) + (c * 4) + (f * 9);
 
         profile.setTargetKcal(totalKcal);
-        return profile;
     }
-    public UserProfile applyManualTargets(UserProfile profile, UpdateTargetsRequest request) {
+    public void applyManualTargets(UserProfile profile, UpdateTargetsRequest request) {
         if (hasMacros(request)) {
             if (request.targetProteins() != null) profile.setTargetProteins(request.targetProteins());
             if (request.targetFats() != null) profile.setTargetFats(request.targetFats());
             if (request.targetCarbs() != null) profile.setTargetCarbs(request.targetCarbs());
-            return balanceCaloriesByMacros(profile);
+            balanceCaloriesByMacros(profile);
         }
         else if (request.targetKcal() != null) {
             profile.setTargetKcal(request.targetKcal());
-            return balanceMacrosByCalories(profile);
+            balanceMacrosByCalories(profile);
         }
-        return profile;
     }
-    public UserProfile applyAutoTargets(UserProfile profile) {
+    public void applyAutoTargets(UserProfile profile) {
         Integer age = getAge(profile);
         UserProfile.Gender gender = profile.getGender();
         Double weight = profile.getWeight();
@@ -54,9 +51,9 @@ public class TargetCalculationService {
             kcal = (10 * weight) + (6.25 * height) - (5 * age) - 161;
         }
         profile.setTargetKcal(kcal*1.5);
-        return balanceMacrosByCalories(profile);
+        balanceMacrosByCalories(profile);
     }
-    private boolean hasMacros(UpdateTargetsRequest r) {
+    public boolean hasMacros(UpdateTargetsRequest r) {
         return r.targetProteins() != null || r.targetFats() != null || r.targetCarbs() != null;
     }
     private Integer getAge(UserProfile profile) {

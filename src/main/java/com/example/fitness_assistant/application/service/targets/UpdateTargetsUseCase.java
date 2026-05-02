@@ -17,12 +17,17 @@ public class UpdateTargetsUseCase {
     private final UserProfileRepository userProfileRepository;
     private final TargetCalculationService targetCalculationService;
 
+
     @Transactional
     public UserProfile updateTargets(UserDetails userDetails, UpdateTargetsRequest request) {
         Long userId = ((UserDetailsAdapter) userDetails).getUserId();
         UserProfile profile = userProfileRepository.findById(userId)
                 .orElseThrow(() -> new UserProfileNotFoundException(userId));
-        profile.setUseAutopilot(false);
-        return userProfileRepository.save(targetCalculationService.applyManualTargets(profile, request));
+
+        if (request.targetKcal() != null || targetCalculationService.hasMacros(request)) {
+            profile.setUseAutopilot(false);
+            targetCalculationService.applyManualTargets(profile, request);
+        }
+        return userProfileRepository.save(profile);
     }
 }

@@ -60,9 +60,18 @@ public class UserProfileController {
                 updateTargetsUseCase.updateTargets(userDetails, request)
         );
     }
-    @GetMapping
+    @GetMapping("/targets")
     public TargetsResponse getTarget(@AuthenticationPrincipal UserDetails userDetails) {
         return userProfileWebMapper.toTargetsResponse(findProfileUseCase.findById(userDetails));
+    }
+    @PatchMapping("/targets/auto")
+    @ResponseStatus(HttpStatus.OK)
+    public UserProfileResponse updateTargets(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam boolean enabled) {
+        return userProfileWebMapper.toResponse(
+                updateUserProfileUseCase.updateAutopilotStatus(userDetails,enabled)
+        );
     }
 
 

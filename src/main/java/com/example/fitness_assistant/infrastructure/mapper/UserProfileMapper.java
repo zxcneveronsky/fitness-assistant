@@ -1,7 +1,6 @@
 package com.example.fitness_assistant.infrastructure.mapper;
 
 import com.example.fitness_assistant.core.model.UserProfile;
-import com.example.fitness_assistant.infrastructure.persistence.entity.UserEntity;
 import com.example.fitness_assistant.infrastructure.persistence.entity.UserProfileEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -20,7 +19,12 @@ public class UserProfileMapper {
                 entity.getBirthDate(),
                 entity.getWeight(),
                 entity.getHeight(),
-                UserProfile.Gender.valueOf(entity.getGender().name())
+                UserProfile.Gender.valueOf(entity.getGender().name()),
+                entity.getTargetKcal(),
+                entity.getTargetProteins(),
+                entity.getTargetFats(),
+                entity.getTargetCarbs(),
+                entity.getUseAutopilot()
         );
     }
 
@@ -32,7 +36,12 @@ public class UserProfileMapper {
                 userProfile.getBirthDate(),
                 userProfile.getWeight(),
                 userProfile.getHeight(),
-                UserProfileEntity.Gender.valueOf(userProfile.getGender().name())
+                UserProfileEntity.Gender.valueOf(userProfile.getGender().name()),
+                userProfile.getTargetKcal(),
+                userProfile.getTargetProteins(),
+                userProfile.getTargetFats(),
+                userProfile.getTargetCarbs(),
+                userProfile.getUseAutopilot()
         );
 
     }
