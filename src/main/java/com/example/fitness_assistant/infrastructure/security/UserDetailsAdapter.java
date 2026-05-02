@@ -32,4 +32,6 @@ public record UserDetailsAdapter(User user) implements UserDetails {
 
     @Override
     public boolean isEnabled() { return true; }
+
+    public Long getUserId(){return user.getId();}
 }

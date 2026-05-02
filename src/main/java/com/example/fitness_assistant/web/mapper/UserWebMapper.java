@@ -1,7 +1,7 @@
 package com.example.fitness_assistant.web.mapper;
 
 import com.example.fitness_assistant.core.model.User;
-import com.example.fitness_assistant.web.dto.request.RegisterRequest;
+import com.example.fitness_assistant.web.dto.request.create.RegisterRequest;
 import com.example.fitness_assistant.web.dto.response.AuthResponse;
 import org.springframework.stereotype.Component;
 

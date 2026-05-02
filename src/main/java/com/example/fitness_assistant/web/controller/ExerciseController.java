@@ -5,8 +5,8 @@ import com.example.fitness_assistant.application.service.exercise.DeleteExercise
 import com.example.fitness_assistant.application.service.exercise.FindExerciseUseCase;
 import com.example.fitness_assistant.application.service.exercise.GetAllExercisesUseCase;
 import com.example.fitness_assistant.application.service.exercise.UpdateExerciseUseCase;
-import com.example.fitness_assistant.web.dto.request.CreateExerciseRequest;
-import com.example.fitness_assistant.web.dto.request.UpdateExerciseRequest;
+import com.example.fitness_assistant.web.dto.request.create.CreateExerciseRequest;
+import com.example.fitness_assistant.web.dto.request.update.UpdateExerciseRequest;
 import com.example.fitness_assistant.web.dto.response.ExerciseResponse;
 import com.example.fitness_assistant.web.mapper.ExerciseWebMapper;
 import jakarta.validation.Valid;

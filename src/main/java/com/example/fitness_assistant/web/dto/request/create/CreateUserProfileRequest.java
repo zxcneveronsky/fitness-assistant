@@ -1,4 +1,4 @@
-package com.example.fitness_assistant.web.dto.request;
+package com.example.fitness_assistant.web.dto.request.create;
 
 import com.example.fitness_assistant.core.model.UserProfile;
 import jakarta.validation.constraints.NotBlank;
@@ -10,9 +10,6 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 
 public record CreateUserProfileRequest(
-        @NotNull(message = "ID пользователя не может быть пустым")
-        Long userId,
-
         @NotNull(message = "Имя не может быть пустым")
         @NotBlank(message = "Имя не может быть пустым")
         @Size(max = 255, message = "Имя не должно превышать 255 символов")

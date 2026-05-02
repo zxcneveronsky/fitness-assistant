@@ -13,8 +13,7 @@ import lombok.NoArgsConstructor;
 public class MuscleEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "muscle_seq")
-    @SequenceGenerator(name = "muscle_seq", sequenceName = "muscle_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, unique = true)

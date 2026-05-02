@@ -1,4 +1,4 @@
-package com.example.fitness_assistant.web.dto.request;
+package com.example.fitness_assistant.web.dto.request.update;
 
 import com.example.fitness_assistant.core.model.UserProfile;
 import jakarta.validation.constraints.*;

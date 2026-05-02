@@ -15,8 +15,7 @@ import java.util.List;
 public class ExerciseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "exercise_seq")
-    @SequenceGenerator(name = "exercise_seq", sequenceName = "exercise_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)

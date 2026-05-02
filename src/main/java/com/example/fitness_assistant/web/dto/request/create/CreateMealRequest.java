@@ -1,17 +1,14 @@
-package com.example.fitness_assistant.web.dto.request;
+package com.example.fitness_assistant.web.dto.request.create;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PositiveOrZero;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
+import java.time.LocalDate;
 
-public record CreateFoodRequest(
-        @NotNull(message = "Название продукта не может быть пустым")
-        @NotBlank(message = "Название продукта не может быть пустым")
-        @Size(max = 255, message = "Название продукта слишком длинное")
+public record CreateMealRequest(
+        @NotNull(message = "Название приема пищи не может быть пустым")
+        @NotBlank(message = "Название приема пищи не может быть пустым")
+        @Size(max = 255, message = "Название слишком длинное")
         String name,
 
-        @NotNull(message = "Название бренда не может быть пустым")
         @Size(max = 255, message = "Название бренда слишком длинное")
         String brands,
 
@@ -29,5 +26,9 @@ public record CreateFoodRequest(
 
         @NotNull(message = "Углеводы не могут быть пустыми")
         @PositiveOrZero(message = "Углеводы не могут быть отрицательными")
-        Double carbs
+        Double carbs,
+
+        @NotNull(message = "Дата приема пищи должна быть указана")
+        @PastOrPresent(message = "Дата приема пищи не может быть в будущем")
+        LocalDate consumedAt
 ) {}

@@ -1,9 +1,8 @@
-package com.example.fitness_assistant.application.service.profile;
+package com.example.fitness_assistant.application.service.meal;
 
 import com.example.fitness_assistant.core.exception.UserNotFoundException;
-import com.example.fitness_assistant.core.model.User;
-import com.example.fitness_assistant.core.model.UserProfile;
-import com.example.fitness_assistant.core.repository.UserProfileRepository;
+import com.example.fitness_assistant.core.model.Meal;
+import com.example.fitness_assistant.core.repository.MealRepository;
 import com.example.fitness_assistant.core.repository.UserRepository;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import lombok.RequiredArgsConstructor;
@@ -13,18 +12,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class CreateUserProfileUseCase {
-
-    private final UserProfileRepository userProfileRepository;
+public class CreateMealUseCase {
+    private final MealRepository mealRepository;
     private final UserRepository userRepository;
 
     @Transactional
-    public UserProfile createUserProfile(UserDetails userDetails, UserProfile userProfile) {
+    public Meal createMeal(UserDetails userDetails, Meal meal) {
         Long userId = ((UserDetailsAdapter) userDetails).getUserId();
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException(userId);
         }
-        userProfile.setUser(userRepository.getReferenceById(userId));
-        return userProfileRepository.save(userProfile);
+        meal.setUserId(userId);
+        return mealRepository.save(meal);
     }
 }

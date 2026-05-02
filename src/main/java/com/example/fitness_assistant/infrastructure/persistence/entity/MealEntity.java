@@ -5,16 +5,22 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "foods")
-public class FoodEntity {
+@Table(name = "meals")
+public class MealEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
 
     @Column(nullable = false)
     private String name;
@@ -32,4 +38,6 @@ public class FoodEntity {
 
     @Column(nullable = false)
     private Double carbs;
+
+    private LocalDate consumedAt;
 }

@@ -1,8 +1,8 @@
 package com.example.fitness_assistant.web.controller;
 
 import com.example.fitness_assistant.application.service.food.*;
-import com.example.fitness_assistant.web.dto.request.CreateFoodRequest;
-import com.example.fitness_assistant.web.dto.request.UpdateFoodRequest;
+import com.example.fitness_assistant.web.dto.request.create.CreateFoodRequest;
+import com.example.fitness_assistant.web.dto.request.update.UpdateFoodRequest;
 import com.example.fitness_assistant.web.dto.response.FoodResponse;
 import com.example.fitness_assistant.web.mapper.FoodWebMapper;
 import jakarta.validation.Valid;

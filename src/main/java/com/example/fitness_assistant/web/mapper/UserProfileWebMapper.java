@@ -1,8 +1,8 @@
 package com.example.fitness_assistant.web.mapper;
 
 import com.example.fitness_assistant.core.model.UserProfile;
-import com.example.fitness_assistant.web.dto.request.CreateUserProfileRequest;
-import com.example.fitness_assistant.web.dto.request.UpdateUserProfileRequest;
+import com.example.fitness_assistant.web.dto.request.create.CreateUserProfileRequest;
+import com.example.fitness_assistant.web.dto.request.update.UpdateUserProfileRequest;
 import com.example.fitness_assistant.web.dto.response.UserProfileResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -13,7 +13,7 @@ public class UserProfileWebMapper {
 
     public UserProfile toDomain(CreateUserProfileRequest request) {
         return new UserProfile(
-                request.userId(),
+                null,
                 null,
                 request.name(),
                 request.birthDate(),
@@ -25,7 +25,7 @@ public class UserProfileWebMapper {
 
     public UserProfile toDomain(UpdateUserProfileRequest request) {
         return new UserProfile(
-                request.userId(),
+                null,
                 null,
                 request.name(),
                 request.birthDate(),

@@ -1,4 +1,4 @@
-package com.example.fitness_assistant.web.dto.request;
+package com.example.fitness_assistant.web.dto.request.update;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;

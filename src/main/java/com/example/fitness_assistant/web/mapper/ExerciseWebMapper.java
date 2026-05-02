@@ -1,8 +1,8 @@
 package com.example.fitness_assistant.web.mapper;
 
 import com.example.fitness_assistant.core.model.Exercise;
-import com.example.fitness_assistant.web.dto.request.CreateExerciseRequest;
-import com.example.fitness_assistant.web.dto.request.UpdateExerciseRequest;
+import com.example.fitness_assistant.web.dto.request.create.CreateExerciseRequest;
+import com.example.fitness_assistant.web.dto.request.update.UpdateExerciseRequest;
 import com.example.fitness_assistant.web.dto.response.ExerciseResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
