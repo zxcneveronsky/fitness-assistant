@@ -35,6 +35,7 @@ public class FoodWebMapper {
 
     public FoodResponse toResponse(Food food) {
         return new FoodResponse(
+                food.getId(),
                 food.getName(),
                 food.getBrands(),
                 food.getKcal(),

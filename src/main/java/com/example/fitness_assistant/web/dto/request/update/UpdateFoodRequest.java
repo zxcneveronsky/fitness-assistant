@@ -7,10 +7,8 @@ import jakarta.validation.constraints.Size;
 
 public record UpdateFoodRequest(
         @NotNull(message = "ID продукта не может быть пустым")
-        @NotBlank(message = "ID продукта не может быть пустым")
         Long id,
 
-        @NotBlank(message = "Название продукта не может быть пустым")
         @Size(max = 255, message = "Название слишком длинное")
         String name,
 
