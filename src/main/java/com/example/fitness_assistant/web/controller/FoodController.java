@@ -1,10 +1,6 @@
 package com.example.fitness_assistant.web.controller;
 
-import com.example.fitness_assistant.application.service.food.CreateFoodUseCase;
-import com.example.fitness_assistant.application.service.food.DeleteFoodUseCase;
-import com.example.fitness_assistant.application.service.food.FindFoodUseCase;
-import com.example.fitness_assistant.application.service.food.GetAllFoodUseCase;
-import com.example.fitness_assistant.application.service.food.UpdateFoodUseCase;
+import com.example.fitness_assistant.application.service.food.*;
 import com.example.fitness_assistant.web.dto.request.CreateFoodRequest;
 import com.example.fitness_assistant.web.dto.request.UpdateFoodRequest;
 import com.example.fitness_assistant.web.dto.response.FoodResponse;
@@ -29,6 +25,7 @@ public class FoodController {
     private final CreateFoodUseCase createFoodUseCase;
     private final UpdateFoodUseCase updateFoodUseCase;
     private final DeleteFoodUseCase deleteFoodUseCase;
+    private final CalculateFoodUseCase calculateFoodUseCase;
     private final FoodWebMapper foodWebMapper;
 
     @GetMapping
@@ -43,6 +40,11 @@ public class FoodController {
             @PageableDefault(size = 9) Pageable pageable) {
         return findFoodUseCase.findByName(name, pageable)
                 .map(foodWebMapper::toResponse);
+    }
+
+    @GetMapping("/calc/{id}")
+    public FoodResponse calculateNutrition(@PathVariable Long id,@RequestParam Double weight){
+        return foodWebMapper.toResponse(calculateFoodUseCase.calculateNutrition(id, weight));
     }
 
     @PostMapping
