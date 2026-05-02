@@ -26,7 +26,7 @@ public class CreateUserProfileUseCase {
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException(userId);
         }
-        userProfile.setUser(userRepository.getReferenceById(userId));
+        userProfile.setId(userId);
         targetCalculationService.applyAutoTargets(userProfile);
         return userProfileRepository.save(userProfile);
     }

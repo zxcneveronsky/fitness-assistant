@@ -38,6 +38,7 @@ public class ExerciseWebMapper {
 
     public ExerciseResponse toResponse(Exercise exercise) {
         return new ExerciseResponse(
+                exercise.getId(),
                 exercise.getName(),
                 exercise.getDescription(),
                 exercise.getMuscles().stream()

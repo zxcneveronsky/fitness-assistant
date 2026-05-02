@@ -3,6 +3,7 @@ package com.example.fitness_assistant.web.mapper;
 import com.example.fitness_assistant.core.model.UserProfile;
 import com.example.fitness_assistant.web.dto.request.create.CreateUserProfileRequest;
 import com.example.fitness_assistant.web.dto.request.update.UpdateUserProfileRequest;
+import com.example.fitness_assistant.web.dto.response.TargetStatusResponse;
 import com.example.fitness_assistant.web.dto.response.TargetsResponse;
 import com.example.fitness_assistant.web.dto.response.UserProfileResponse;
 import lombok.RequiredArgsConstructor;
@@ -63,5 +64,10 @@ public class UserProfileWebMapper {
                 profile.getTargetFats(),
                 profile.getTargetCarbs()
                 );
+    }
+    public TargetStatusResponse toTargetStatusResponse(UserProfile profile){
+        return new TargetStatusResponse(
+                profile.getUseAutopilot()
+        );
     }
 }

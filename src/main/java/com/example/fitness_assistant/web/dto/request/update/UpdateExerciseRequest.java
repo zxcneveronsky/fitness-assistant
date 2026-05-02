@@ -10,10 +10,8 @@ import java.util.List;
 public record UpdateExerciseRequest(
         @NotNull(message = "ID упражнения не может быть пустым")
         Long id,
-        @NotBlank(message = "Название не может быть пустым")
         @Size(max = 255, message = "Название слишком длинное")
         String exerciseName,
-        @NotBlank(message = "Описание не может быть пустым")
         @Size(max = 1000, message = "Описание слишком длинное")
         String description,
         @Valid

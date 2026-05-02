@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 public class UserMapper {
 
     public User toDomain(UserEntity entity) {
+        if (entity == null) return null;
         return new User(
                 entity.getId(),
                 entity.getEmail(),
@@ -17,6 +18,7 @@ public class UserMapper {
     }
 
     public UserEntity toEntity(User domain) {
+        if (domain == null) return null;
         return new UserEntity(
                 domain.getId(),
                 domain.getEmail(),

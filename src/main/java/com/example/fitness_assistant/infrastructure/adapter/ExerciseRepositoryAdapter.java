@@ -9,6 +9,7 @@ import com.example.fitness_assistant.infrastructure.mapper.ExerciseMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -25,7 +26,6 @@ public class ExerciseRepositoryAdapter implements ExerciseRepository {
         return jpaExerciseRepository.findById(id)
                 .map(exerciseMapper::toDomain);
     }
-
     @Override
     public Page<Exercise> findAll(Pageable pageable) {
         return jpaExerciseRepository.findAll(pageable)

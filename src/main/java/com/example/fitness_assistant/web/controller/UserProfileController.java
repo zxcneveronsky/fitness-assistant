@@ -8,6 +8,7 @@ import com.example.fitness_assistant.application.service.targets.UpdateTargetsUs
 import com.example.fitness_assistant.web.dto.request.create.CreateUserProfileRequest;
 import com.example.fitness_assistant.web.dto.request.update.UpdateTargetsRequest;
 import com.example.fitness_assistant.web.dto.request.update.UpdateUserProfileRequest;
+import com.example.fitness_assistant.web.dto.response.TargetStatusResponse;
 import com.example.fitness_assistant.web.dto.response.TargetsResponse;
 import com.example.fitness_assistant.web.dto.response.UserProfileResponse;
 import com.example.fitness_assistant.web.mapper.UserProfileWebMapper;
@@ -53,10 +54,10 @@ public class UserProfileController {
     }
     @PatchMapping("/targets")
     @ResponseStatus(HttpStatus.OK)
-    public UserProfileResponse updateTargets(
+    public TargetsResponse updateTargets(
             @AuthenticationPrincipal UserDetails userDetails,
             @Valid @RequestBody UpdateTargetsRequest request) {
-        return userProfileWebMapper.toResponse(
+        return userProfileWebMapper.toTargetsResponse(
                 updateTargetsUseCase.updateTargets(userDetails, request)
         );
     }
@@ -66,10 +67,10 @@ public class UserProfileController {
     }
     @PatchMapping("/targets/auto")
     @ResponseStatus(HttpStatus.OK)
-    public UserProfileResponse updateTargets(
+    public TargetStatusResponse updateAutopilotStatus(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam boolean enabled) {
-        return userProfileWebMapper.toResponse(
+        return userProfileWebMapper.toTargetStatusResponse(
                 updateUserProfileUseCase.updateAutopilotStatus(userDetails,enabled)
         );
     }

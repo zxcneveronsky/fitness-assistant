@@ -26,6 +26,7 @@ public class ExerciseMuscleWebMapper {
 
     public ExerciseResponse.ExerciseMuscleResponse toResponse(Muscle exerciseMuscle) {
         return new ExerciseResponse.ExerciseMuscleResponse(
+                exerciseMuscle.getId(),
                 exerciseMuscle.getName()
         );
     }

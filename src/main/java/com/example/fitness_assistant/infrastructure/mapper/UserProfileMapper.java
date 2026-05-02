@@ -14,7 +14,7 @@ public class UserProfileMapper {
     public UserProfile toDomain(UserProfileEntity entity) {
         return new UserProfile(
                 entity.getId(),
-                userMapper.toDomain(entity.getUser()),
+                null,
                 entity.getName(),
                 entity.getBirthDate(),
                 entity.getWeight(),
@@ -30,7 +30,7 @@ public class UserProfileMapper {
 
     public UserProfileEntity toEntity(UserProfile userProfile) {
         return new UserProfileEntity(
-                null,
+                userProfile.getId(),
                 userMapper.toEntity(userProfile.getUser()),
                 userProfile.getName(),
                 userProfile.getBirthDate(),

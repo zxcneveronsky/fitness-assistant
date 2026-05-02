@@ -2,6 +2,7 @@ package com.example.fitness_assistant.application.service.profile;
 
 import com.example.fitness_assistant.application.service.targets.TargetCalculationService;
 import com.example.fitness_assistant.core.exception.UserProfileNotFoundException;
+import com.example.fitness_assistant.core.model.User;
 import com.example.fitness_assistant.core.model.UserProfile;
 import com.example.fitness_assistant.core.repository.UserProfileRepository;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
@@ -22,6 +23,7 @@ public class UpdateUserProfileUseCase {
         Long id = ((UserDetailsAdapter) userDetails).getUserId();
         return userProfileRepository.findById(id)
                 .map(existingProfile -> {
+                    existingProfile.setId(id);
                     existingProfile.setName(profileUpdate.getName() != null ? profileUpdate.getName() : existingProfile.getName());
                     existingProfile.setBirthDate(profileUpdate.getBirthDate() != null ? profileUpdate.getBirthDate() : existingProfile.getBirthDate());
                     existingProfile.setWeight(profileUpdate.getWeight() != null ? profileUpdate.getWeight() : existingProfile.getWeight());
@@ -37,7 +39,7 @@ public class UpdateUserProfileUseCase {
                 })
                 .orElseThrow(() -> new UserProfileNotFoundException(id));
     }
-
+    @Transactional
     public UserProfile updateAutopilotStatus(UserDetails userDetails, boolean enabled){
         Long id = ((UserDetailsAdapter) userDetails).getUserId();
         return userProfileRepository.findById(id)
