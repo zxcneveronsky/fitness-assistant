@@ -1,5 +1,6 @@
 package com.example.fitness_assistant.application.service.profile;
 
+import com.example.fitness_assistant.application.service.targets.TargetCalculationService;
 import com.example.fitness_assistant.core.exception.UserNotFoundException;
 import com.example.fitness_assistant.core.model.User;
 import com.example.fitness_assistant.core.model.UserProfile;
@@ -17,6 +18,7 @@ public class CreateUserProfileUseCase {
 
     private final UserProfileRepository userProfileRepository;
     private final UserRepository userRepository;
+    private final TargetCalculationService targetCalculationService;
 
     @Transactional
     public UserProfile createUserProfile(UserDetails userDetails, UserProfile userProfile) {
@@ -25,6 +27,6 @@ public class CreateUserProfileUseCase {
             throw new UserNotFoundException(userId);
         }
         userProfile.setUser(userRepository.getReferenceById(userId));
-        return userProfileRepository.save(userProfile);
+        return userProfileRepository.save(targetCalculationService.applyAutoTargets(userProfile));
     }
 }

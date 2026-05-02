@@ -4,8 +4,11 @@ import com.example.fitness_assistant.application.service.profile.CreateUserProfi
 import com.example.fitness_assistant.application.service.profile.DeleteProfileUseCase;
 import com.example.fitness_assistant.application.service.profile.FindProfileUseCase;
 import com.example.fitness_assistant.application.service.profile.UpdateUserProfileUseCase;
+import com.example.fitness_assistant.application.service.targets.UpdateTargetsUseCase;
 import com.example.fitness_assistant.web.dto.request.create.CreateUserProfileRequest;
+import com.example.fitness_assistant.web.dto.request.update.UpdateTargetsRequest;
 import com.example.fitness_assistant.web.dto.request.update.UpdateUserProfileRequest;
+import com.example.fitness_assistant.web.dto.response.TargetsResponse;
 import com.example.fitness_assistant.web.dto.response.UserProfileResponse;
 import com.example.fitness_assistant.web.mapper.UserProfileWebMapper;
 import jakarta.validation.Valid;
@@ -26,6 +29,7 @@ public class UserProfileController {
     private final FindProfileUseCase findProfileUseCase;
     private final UserProfileWebMapper userProfileWebMapper;
     private final DeleteProfileUseCase deleteProfileUseCase;
+    private final UpdateTargetsUseCase updateTargetsUseCase;
 
     @GetMapping
     public UserProfileResponse getProfile(@AuthenticationPrincipal UserDetails userDetails) {
@@ -47,6 +51,21 @@ public class UserProfileController {
                 updateUserProfileUseCase.updateUserProfile(userDetails,userProfileWebMapper.toDomain(request))
         );
     }
+    @PatchMapping("/targets")
+    @ResponseStatus(HttpStatus.OK)
+    public UserProfileResponse updateTargets(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @Valid @RequestBody UpdateTargetsRequest request) {
+        return userProfileWebMapper.toResponse(
+                updateTargetsUseCase.updateTargets(userDetails, request)
+        );
+    }
+    @GetMapping
+    public TargetsResponse getTarget(@AuthenticationPrincipal UserDetails userDetails) {
+        return userProfileWebMapper.toTargetsResponse(findProfileUseCase.findById(userDetails));
+    }
+
+
 
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)

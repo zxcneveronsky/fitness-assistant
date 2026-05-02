@@ -3,6 +3,7 @@ package com.example.fitness_assistant.web.mapper;
 import com.example.fitness_assistant.core.model.UserProfile;
 import com.example.fitness_assistant.web.dto.request.create.CreateUserProfileRequest;
 import com.example.fitness_assistant.web.dto.request.update.UpdateUserProfileRequest;
+import com.example.fitness_assistant.web.dto.response.TargetsResponse;
 import com.example.fitness_assistant.web.dto.response.UserProfileResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -19,7 +20,12 @@ public class UserProfileWebMapper {
                 request.birthDate(),
                 request.weight(),
                 request.height(),
-                request.gender()
+                request.gender(),
+                null,
+                null,
+                null,
+                null,
+                true
         );
     }
 
@@ -31,7 +37,12 @@ public class UserProfileWebMapper {
                 request.birthDate(),
                 request.weight(),
                 request.height(),
-                request.gender()
+                request.gender(),
+                null,
+                null,
+                null,
+                null,
+                true
         );
     }
 
@@ -43,5 +54,14 @@ public class UserProfileWebMapper {
                 profile.getHeight(),
                 profile.getGender()
         );
+    }
+
+    public TargetsResponse toTargetsResponse(UserProfile profile){
+        return new TargetsResponse(
+                profile.getTargetKcal(),
+                profile.getTargetProteins(),
+                profile.getTargetFats(),
+                profile.getTargetCarbs()
+                );
     }
 }
