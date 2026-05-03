@@ -17,7 +17,7 @@ public interface JpaMealRepository extends JpaRepository<MealEntity, Long> {
 
 
     @Query("SELECT m FROM MealEntity m WHERE m.user.id = :userId " +
-            "AND (:date IS NULL OR m.consumedAt = :date)")
+            "AND (CAST(:date AS localdate) IS NULL OR m.consumedAt = :date)")
     Page<MealEntity> searchMeal(@Param("userId") Long userId,
                             @Param("date") LocalDate date,
                             Pageable pageable);

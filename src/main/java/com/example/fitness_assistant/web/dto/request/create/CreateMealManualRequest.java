@@ -3,7 +3,7 @@ package com.example.fitness_assistant.web.dto.request.create;
 import jakarta.validation.constraints.*;
 import java.time.LocalDate;
 
-public record CreateMealRequest(
+public record CreateMealManualRequest(
         @NotNull(message = "Название приема пищи не может быть пустым")
         @NotBlank(message = "Название приема пищи не может быть пустым")
         @Size(max = 255, message = "Название слишком длинное")

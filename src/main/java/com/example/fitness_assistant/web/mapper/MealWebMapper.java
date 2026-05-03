@@ -1,7 +1,8 @@
 package com.example.fitness_assistant.web.mapper;
 
 import com.example.fitness_assistant.core.model.Meal;
-import com.example.fitness_assistant.web.dto.request.create.CreateMealRequest;
+import com.example.fitness_assistant.web.dto.request.create.CreateMealAutoRequest;
+import com.example.fitness_assistant.web.dto.request.create.CreateMealManualRequest;
 import com.example.fitness_assistant.web.dto.request.update.UpdateMealRequest;
 import com.example.fitness_assistant.web.dto.response.MealResponse;
 import org.springframework.stereotype.Component;
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class MealWebMapper {
 
-    public Meal toDomain(CreateMealRequest request) {
+    public Meal toDomain(CreateMealManualRequest request) {
         return new Meal(
                 null,
                 null,
@@ -33,6 +34,19 @@ public class MealWebMapper {
                 request.proteins(),
                 request.fats(),
                 request.carbs(),
+                request.consumedAt()
+        );
+    }
+    public Meal toDomain(CreateMealAutoRequest request) {
+        return new Meal(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
                 request.consumedAt()
         );
     }

@@ -1,7 +1,8 @@
 package com.example.fitness_assistant.web.controller;
 
 import com.example.fitness_assistant.application.service.meal.*;
-import com.example.fitness_assistant.web.dto.request.create.CreateMealRequest;
+import com.example.fitness_assistant.web.dto.request.create.CreateMealAutoRequest;
+import com.example.fitness_assistant.web.dto.request.create.CreateMealManualRequest;
 import com.example.fitness_assistant.web.dto.request.update.UpdateMealRequest;
 import com.example.fitness_assistant.web.dto.response.MealResponse;
 import com.example.fitness_assistant.web.mapper.MealWebMapper;
@@ -38,13 +39,23 @@ public class MealController {
                 .map(mealWebMapper::toResponse);
     }
 
-    @PostMapping
+    @PostMapping("/manual")
     @ResponseStatus(HttpStatus.CREATED)
     public MealResponse createMeal(
             @AuthenticationPrincipal UserDetails userDetails,
-            @Valid @RequestBody CreateMealRequest request) {
+            @Valid @RequestBody CreateMealManualRequest request) {
         return mealWebMapper.toResponse(
-                createMealUseCase.createMeal(userDetails, mealWebMapper.toDomain(request))
+                createMealUseCase.createMealManual(userDetails, mealWebMapper.toDomain(request))
+        );
+    }
+
+    @PostMapping("/auto")
+    @ResponseStatus(HttpStatus.CREATED)
+    public MealResponse createMeal(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @Valid @RequestBody CreateMealAutoRequest request) {
+        return mealWebMapper.toResponse(
+                createMealUseCase.createMealAuto(userDetails,request.id(),request.weight(),mealWebMapper.toDomain(request))
         );
     }
 
