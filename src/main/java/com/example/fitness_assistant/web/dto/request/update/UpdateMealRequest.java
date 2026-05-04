@@ -1,7 +1,7 @@
 package com.example.fitness_assistant.web.dto.request.update;
 
 import jakarta.validation.constraints.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public record UpdateMealRequest(
         @NotNull(message = "ID записи не может быть пустым")
@@ -26,6 +26,6 @@ public record UpdateMealRequest(
         Double carbs,
 
         @PastOrPresent(message = "Дата приема пищи не может быть в будущем")
-        LocalDate consumedAt
+        LocalDateTime consumedAt
 ) {}
 

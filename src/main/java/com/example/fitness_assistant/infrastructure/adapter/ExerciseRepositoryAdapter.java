@@ -1,15 +1,12 @@
 package com.example.fitness_assistant.infrastructure.adapter;
 
 import com.example.fitness_assistant.core.model.Exercise;
-import com.example.fitness_assistant.core.model.Muscle;
 import com.example.fitness_assistant.core.repository.ExerciseRepository;
-import com.example.fitness_assistant.infrastructure.persistence.entity.ExerciseEntity;
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaExerciseRepository;
 import com.example.fitness_assistant.infrastructure.mapper.ExerciseMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;

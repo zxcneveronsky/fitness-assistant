@@ -2,13 +2,9 @@ package com.example.fitness_assistant.web.dto.response;
 
 import java.time.LocalDateTime;
 
-public record MealResponse(
+public record HydrationResponse(
         Long id,
         String name,
-        String brands,
-        Double kcal,
-        Double proteins,
-        Double fats,
-        Double carbs,
+        Double amount,
         LocalDateTime consumedAt
 ) {}

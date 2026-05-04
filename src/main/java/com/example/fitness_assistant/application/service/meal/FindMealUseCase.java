@@ -9,14 +9,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 public class FindMealUseCase {
     private final MealRepository mealRepository;
 
-    public Page<Meal> findMeal(LocalDate localDate, UserDetails userDetails, Pageable pageable){
+    public Page<Meal> findMeal(LocalDateTime localDateTime, UserDetails userDetails, Pageable pageable){
         Long userId = ((UserDetailsAdapter) userDetails).getUserId();
-        return mealRepository.searchMeal(localDate,userId,pageable);
+        return mealRepository.searchMeal(localDateTime,userId,pageable);
     }
 }

@@ -2,7 +2,6 @@ package com.example.fitness_assistant.infrastructure.adapter;
 
 import com.example.fitness_assistant.core.model.Food;
 import com.example.fitness_assistant.core.repository.FoodRepository;
-import com.example.fitness_assistant.infrastructure.persistence.entity.FoodEntity;
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaFoodRepository;
 import com.example.fitness_assistant.infrastructure.mapper.FoodMapper;
 import lombok.RequiredArgsConstructor;

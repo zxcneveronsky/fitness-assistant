@@ -7,5 +7,5 @@ CREATE TABLE IF NOT EXISTS meals (
     proteins    DOUBLE PRECISION NOT NULL,
     fats        DOUBLE PRECISION NOT NULL,
     carbs       DOUBLE PRECISION NOT NULL,
-    consumed_at DATE
+    consumed_at TIMESTAMP
 );

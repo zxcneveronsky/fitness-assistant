@@ -5,7 +5,6 @@ import com.example.fitness_assistant.core.model.Targets;
 import com.example.fitness_assistant.core.model.UserProfile;
 import com.example.fitness_assistant.core.repository.UserProfileRepository;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
-import com.example.fitness_assistant.web.dto.request.update.UpdateTargetsRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;

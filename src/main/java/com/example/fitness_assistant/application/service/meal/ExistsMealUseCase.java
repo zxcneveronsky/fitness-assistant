@@ -1,6 +1,5 @@
 package com.example.fitness_assistant.application.service.meal;
 
-import com.example.fitness_assistant.core.repository.FoodRepository;
 import com.example.fitness_assistant.core.repository.MealRepository;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import lombok.RequiredArgsConstructor;

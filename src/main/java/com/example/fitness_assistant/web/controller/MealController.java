@@ -17,7 +17,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/v1/meal")
@@ -33,9 +33,9 @@ public class MealController {
     @GetMapping("/search")
     public Page<MealResponse> searchMeal(
             @AuthenticationPrincipal UserDetails userDetails,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate localDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime localDateTime,
             @PageableDefault(size = 9) Pageable pageable) {
-        return findMealUseCase.findMeal(localDate,userDetails,pageable)
+        return findMealUseCase.findMeal(localDateTime,userDetails,pageable)
                 .map(mealWebMapper::toResponse);
     }
 

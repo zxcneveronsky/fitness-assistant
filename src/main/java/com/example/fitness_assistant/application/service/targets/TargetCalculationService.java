@@ -2,10 +2,8 @@ package com.example.fitness_assistant.application.service.targets;
 
 import com.example.fitness_assistant.core.model.Targets;
 import com.example.fitness_assistant.core.model.UserProfile;
-import com.example.fitness_assistant.web.dto.request.update.UpdateTargetsRequest;
 import org.springframework.stereotype.Service;
 
-import java.lang.annotation.Target;
 import java.time.LocalDate;
 import java.time.Period;
 

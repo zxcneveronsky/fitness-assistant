@@ -24,7 +24,7 @@ public class MealMapper {
     public MealEntity toEntity(Meal domain) {
         return new MealEntity(
                 domain.getId(),
-                null,
+                null, // Это поле проставляется в адаптере через GetReferenceById
                 domain.getName(),
                 domain.getBrands(),
                 domain.getKcal(),

@@ -1,0 +1,57 @@
+package com.example.fitness_assistant.infrastructure.adapter;
+
+import com.example.fitness_assistant.core.model.Hydration;
+import com.example.fitness_assistant.core.repository.HydrationRepository;
+import com.example.fitness_assistant.infrastructure.mapper.HydrationMapper;
+import com.example.fitness_assistant.infrastructure.persistence.entity.HydrationEntity;
+import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaHydrationRepository;
+import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaUserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Optional;
+
+@Component
+@RequiredArgsConstructor
+public class HydrationRepositoryAdapter implements HydrationRepository {
+
+    private final JpaHydrationRepository jpaHydrationRepository;
+    private final JpaUserRepository jpaUserRepository;
+    private final HydrationMapper hydrationMapper;
+
+    @Override
+    public Optional<Hydration> findById(Long id, Long userId) {
+        return jpaHydrationRepository.findByIdAndUserId(id, userId)
+                .map(hydrationMapper::toDomain);
+    }
+
+    @Override
+    public Page<Hydration> searchHydration(LocalDateTime localDateTime, Long userId, Pageable pageable) {
+        LocalDateTime startOfDay = localDateTime != null ? localDateTime.toLocalDate().atStartOfDay() : null;
+        LocalDateTime endOfDay = localDateTime != null ? localDateTime.toLocalDate().atTime(LocalTime.MAX) : null;
+        return jpaHydrationRepository.searchHydration(userId, startOfDay, endOfDay, pageable)
+                .map(hydrationMapper::toDomain);
+    }
+
+    @Override
+    public Hydration save(Hydration hydration) {
+        HydrationEntity hydrationEntity = hydrationMapper.toEntity(hydration);
+        hydrationEntity.setUser(jpaUserRepository.getReferenceById(hydration.getUserId()));
+        HydrationEntity savedEntity = jpaHydrationRepository.save(hydrationEntity);
+        return hydrationMapper.toDomain(savedEntity);
+    }
+
+    @Override
+    public void deleteById(Long id, Long userId) {
+        jpaHydrationRepository.deleteByIdAndUserId(id, userId);
+    }
+
+    @Override
+    public boolean existsById(Long id, Long userId) {
+        return jpaHydrationRepository.existsByIdAndUserId(id, userId);
+    }
+}

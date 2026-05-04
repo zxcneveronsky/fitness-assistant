@@ -2,7 +2,6 @@ package com.example.fitness_assistant.application.service.profile;
 
 import com.example.fitness_assistant.application.service.targets.TargetCalculationService;
 import com.example.fitness_assistant.core.exception.UserProfileNotFoundException;
-import com.example.fitness_assistant.core.model.User;
 import com.example.fitness_assistant.core.model.UserProfile;
 import com.example.fitness_assistant.core.repository.UserProfileRepository;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;

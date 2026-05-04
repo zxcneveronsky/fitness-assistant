@@ -14,7 +14,7 @@ public class UserProfileMapper {
     public UserProfile toDomain(UserProfileEntity entity) {
         return new UserProfile(
                 entity.getId(),
-                null,
+                null, // Это поле проставляется в адаптере через GetReferenceById
                 entity.getName(),
                 entity.getBirthDate(),
                 entity.getWeight(),
@@ -28,20 +28,20 @@ public class UserProfileMapper {
         );
     }
 
-    public UserProfileEntity toEntity(UserProfile userProfile) {
+    public UserProfileEntity toEntity(UserProfile domain) {
         return new UserProfileEntity(
-                userProfile.getId(),
-                userMapper.toEntity(userProfile.getUser()),
-                userProfile.getName(),
-                userProfile.getBirthDate(),
-                userProfile.getWeight(),
-                userProfile.getHeight(),
-                UserProfileEntity.Gender.valueOf(userProfile.getGender().name()),
-                userProfile.getTargetKcal(),
-                userProfile.getTargetProteins(),
-                userProfile.getTargetFats(),
-                userProfile.getTargetCarbs(),
-                userProfile.getUseAutopilot()
+                domain.getId(),
+                userMapper.toEntity(domain.getUser()),
+                domain.getName(),
+                domain.getBirthDate(),
+                domain.getWeight(),
+                domain.getHeight(),
+                UserProfileEntity.Gender.valueOf(domain.getGender().name()),
+                domain.getTargetKcal(),
+                domain.getTargetProteins(),
+                domain.getTargetFats(),
+                domain.getTargetCarbs(),
+                domain.getUseAutopilot()
         );
 
     }

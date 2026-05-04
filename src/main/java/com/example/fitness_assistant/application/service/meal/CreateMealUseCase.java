@@ -1,7 +1,6 @@
 package com.example.fitness_assistant.application.service.meal;
 
 import com.example.fitness_assistant.core.exception.FoodNotFoundException;
-import com.example.fitness_assistant.core.exception.MealNotFoundException;
 import com.example.fitness_assistant.core.exception.UserNotFoundException;
 import com.example.fitness_assistant.core.model.Meal;
 import com.example.fitness_assistant.core.repository.FoodRepository;

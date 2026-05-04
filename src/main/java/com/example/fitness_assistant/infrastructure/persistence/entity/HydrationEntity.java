@@ -11,8 +11,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "meals")
-public class MealEntity {
+@Table(name = "hydrations")
+public class HydrationEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,19 +25,8 @@ public class MealEntity {
     @Column(nullable = false)
     private String name;
 
-    private String brands;
-
     @Column(nullable = false)
-    private Double kcal;
-
-    @Column(nullable = false)
-    private Double proteins;
-
-    @Column(nullable = false)
-    private Double fats;
-
-    @Column(nullable = false)
-    private Double carbs;
+    private Double amount;
 
     private LocalDateTime consumedAt;
 }
