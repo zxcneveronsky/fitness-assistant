@@ -1,6 +1,7 @@
 package com.example.fitness_assistant.application.service.targets;
 
 import com.example.fitness_assistant.core.exception.UserProfileNotFoundException;
+import com.example.fitness_assistant.core.model.Targets;
 import com.example.fitness_assistant.core.model.UserProfile;
 import com.example.fitness_assistant.core.repository.UserProfileRepository;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
@@ -19,13 +20,13 @@ public class UpdateTargetsUseCase {
 
 
     @Transactional
-    public UserProfile updateTargets(UserDetails userDetails, UpdateTargetsRequest request) {
+    public UserProfile updateTargets(UserDetails userDetails, Targets request) {
         Long userId = ((UserDetailsAdapter) userDetails).getUserId();
         UserProfile profile = userProfileRepository.findById(userId)
                 .orElseThrow(() -> new UserProfileNotFoundException(userId));
 
-        if (request.targetKcal() != null || targetCalculationService.hasMacros(request)) {
-            profile.setUseAutopilot(false);
+        if (request.getTargetKcal() != null || targetCalculationService.hasMacros(request)) {
+            profile.setUseAutopilot(false); // Ставим false , чтобы потом при обновлении профиля(веса) не пересчитывались targets
             targetCalculationService.applyManualTargets(profile, request);
         }
         return userProfileRepository.save(profile);

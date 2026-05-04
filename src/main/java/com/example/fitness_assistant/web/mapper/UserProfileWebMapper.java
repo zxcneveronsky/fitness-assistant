@@ -22,28 +22,28 @@ public class UserProfileWebMapper {
                 request.weight(),
                 request.height(),
                 request.gender(),
-                null,
-                null,
-                null,
-                null,
-                true
+                null, // Этого поля нет в запросе, поэтому проставляем null
+                null, // Этого поля нет в запросе, поэтому проставляем null
+                null, // Этого поля нет в запросе, поэтому проставляем null
+                null, // Этого поля нет в запросе, поэтому проставляем null
+                null // Этого поля нет в запросе, поэтому проставляем null
         );
     }
 
     public UserProfile toDomain(UpdateUserProfileRequest request) {
         return new UserProfile(
-                null,
-                null,
+                null, // Этого поля нет в запросе, поэтому проставляем null
+                null, // Этого поля нет в запросе, поэтому проставляем null
                 request.name(),
                 request.birthDate(),
                 request.weight(),
                 request.height(),
                 request.gender(),
-                null,
-                null,
-                null,
-                null,
-                true
+                null, // Этого поля нет в запросе, поэтому проставляем null
+                null, // Этого поля нет в запросе, поэтому проставляем null
+                null, // Этого поля нет в запросе, поэтому проставляем null
+                null, // Этого поля нет в запросе, поэтому проставляем null
+                null // Этого поля нет в запросе, поэтому проставляем null
         );
     }
 
@@ -54,20 +54,6 @@ public class UserProfileWebMapper {
                 profile.getWeight(),
                 profile.getHeight(),
                 profile.getGender()
-        );
-    }
-
-    public TargetsResponse toTargetsResponse(UserProfile profile){
-        return new TargetsResponse(
-                profile.getTargetKcal(),
-                profile.getTargetProteins(),
-                profile.getTargetFats(),
-                profile.getTargetCarbs()
-                );
-    }
-    public TargetStatusResponse toTargetStatusResponse(UserProfile profile){
-        return new TargetStatusResponse(
-                profile.getUseAutopilot()
         );
     }
 }

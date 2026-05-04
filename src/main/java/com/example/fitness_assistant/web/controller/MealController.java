@@ -41,7 +41,7 @@ public class MealController {
 
     @PostMapping("/manual")
     @ResponseStatus(HttpStatus.CREATED)
-    public MealResponse createMeal(
+    public MealResponse createMealManual(
             @AuthenticationPrincipal UserDetails userDetails,
             @Valid @RequestBody CreateMealManualRequest request) {
         return mealWebMapper.toResponse(
@@ -51,7 +51,7 @@ public class MealController {
 
     @PostMapping("/auto")
     @ResponseStatus(HttpStatus.CREATED)
-    public MealResponse createMeal(
+    public MealResponse createMealAuto(
             @AuthenticationPrincipal UserDetails userDetails,
             @Valid @RequestBody CreateMealAutoRequest request) {
         return mealWebMapper.toResponse(

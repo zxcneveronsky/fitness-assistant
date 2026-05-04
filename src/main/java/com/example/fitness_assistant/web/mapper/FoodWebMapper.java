@@ -11,7 +11,7 @@ public class FoodWebMapper {
 
     public Food toDomain(CreateFoodRequest request) {
         return new Food(
-                null,
+                null, // Этого поля нет в запросе, поэтому проставляем null
                 request.name(),
                 request.brands(),
                 request.kcal(),

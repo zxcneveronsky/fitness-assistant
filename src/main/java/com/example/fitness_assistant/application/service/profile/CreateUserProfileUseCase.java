@@ -27,6 +27,7 @@ public class CreateUserProfileUseCase {
             throw new UserNotFoundException(userId);
         }
         userProfile.setId(userId);
+        userProfile.setUseAutopilot(true); // Ставим всегда true , чтобы сразу просчитывались targets при изменениях профиля(веса)
         targetCalculationService.applyAutoTargets(userProfile);
         return userProfileRepository.save(userProfile);
     }

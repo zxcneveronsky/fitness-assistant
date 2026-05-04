@@ -37,6 +37,6 @@ public class AuthController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUser(@PathVariable Long id) {
-        deleteUserUseCase.deleteById(id);
+        deleteUserUseCase.deleteUser(id);
     }
 }

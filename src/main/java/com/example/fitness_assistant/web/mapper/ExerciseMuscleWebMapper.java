@@ -13,14 +13,14 @@ public class ExerciseMuscleWebMapper {
     public Muscle toDomain(CreateExerciseRequest.CreateMuscleRequest request) {
         return new Muscle(
                 request.id(),
-                null
+                null // Этого поля нет в запросе, поэтому проставляем null
         );
     }
 
     public Muscle toDomain(UpdateExerciseRequest.UpdateMuscleRequest request) {
         return new Muscle(
                 request.id(),
-                null
+                null // Этого поля нет в запросе, поэтому проставляем null
         );
     }
 

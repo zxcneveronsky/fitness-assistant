@@ -12,7 +12,7 @@ public class DeleteUserUseCase {
 
     private final UserRepository userRepository;
     @Transactional
-    public void deleteById(Long id) {
+    public void deleteUser(Long id) {
         if (!userRepository.existsById(id)) {
             throw new UserNotFoundException(id);
         }

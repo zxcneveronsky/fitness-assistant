@@ -1,9 +1,11 @@
 package com.example.fitness_assistant.application.service.targets;
 
+import com.example.fitness_assistant.core.model.Targets;
 import com.example.fitness_assistant.core.model.UserProfile;
 import com.example.fitness_assistant.web.dto.request.update.UpdateTargetsRequest;
 import org.springframework.stereotype.Service;
 
+import java.lang.annotation.Target;
 import java.time.LocalDate;
 import java.time.Period;
 
@@ -27,15 +29,21 @@ public class TargetCalculationService {
 
         profile.setTargetKcal(totalKcal);
     }
-    public void applyManualTargets(UserProfile profile, UpdateTargetsRequest request) {
+    public void applyManualTargets(UserProfile profile, Targets request) {
         if (hasMacros(request)) {
-            if (request.targetProteins() != null) profile.setTargetProteins(request.targetProteins());
-            if (request.targetFats() != null) profile.setTargetFats(request.targetFats());
-            if (request.targetCarbs() != null) profile.setTargetCarbs(request.targetCarbs());
+            if (request.getTargetProteins() != null) {
+                profile.setTargetProteins(request.getTargetProteins());
+            }
+            if (request.getTargetFats() != null) {
+                profile.setTargetFats(request.getTargetFats());
+            }
+            if (request.getTargetCarbs() != null) {
+                profile.setTargetCarbs(request.getTargetCarbs());
+            }
             balanceCaloriesByMacros(profile);
         }
-        else if (request.targetKcal() != null) {
-            profile.setTargetKcal(request.targetKcal());
+        else if (request.getTargetKcal() != null) {
+            profile.setTargetKcal(request.getTargetKcal());
             balanceMacrosByCalories(profile);
         }
     }
@@ -53,8 +61,8 @@ public class TargetCalculationService {
         profile.setTargetKcal(kcal*1.5);
         balanceMacrosByCalories(profile);
     }
-    public boolean hasMacros(UpdateTargetsRequest r) {
-        return r.targetProteins() != null || r.targetFats() != null || r.targetCarbs() != null;
+    public boolean hasMacros(Targets r) {
+        return r.getTargetProteins() != null || r.getTargetFats() != null || r.getTargetCarbs() != null;
     }
     private Integer getAge(UserProfile profile) {
         return Period.between(profile.getBirthDate(), LocalDate.now()).getYears();

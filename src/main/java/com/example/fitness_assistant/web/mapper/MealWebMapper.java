@@ -12,8 +12,8 @@ public class MealWebMapper {
 
     public Meal toDomain(CreateMealManualRequest request) {
         return new Meal(
-                null,
-                null,
+                null, // Этого поля нет в запросе, поэтому проставляем null
+                null, // Этого поля нет в запросе, поэтому проставляем null
                 request.name(),
                 request.brands(),
                 request.kcal(),
@@ -24,29 +24,30 @@ public class MealWebMapper {
         );
     }
 
+    public Meal toDomain(CreateMealAutoRequest request) {
+        return new Meal(
+                null, // Этого поля нет в запросе, поэтому проставляем null
+                null, // Этого поля нет в запросе, поэтому проставляем null
+                null, // Этого поля нет в запросе, поэтому проставляем null
+                null, // Этого поля нет в запросе, поэтому проставляем null
+                null, // Этого поля нет в запросе, поэтому проставляем null
+                null, // Этого поля нет в запросе, поэтому проставляем null
+                null, // Этого поля нет в запросе, поэтому проставляем null
+                null, // Этого поля нет в запросе, поэтому проставляем null
+                request.consumedAt()
+        );
+    }
+
     public Meal toDomain(UpdateMealRequest request) {
         return new Meal(
                 request.id(),
-                null,
+                null, // Этого поля нет в запросе, поэтому проставляем null
                 request.name(),
                 request.brands(),
                 request.kcal(),
                 request.proteins(),
                 request.fats(),
                 request.carbs(),
-                request.consumedAt()
-        );
-    }
-    public Meal toDomain(CreateMealAutoRequest request) {
-        return new Meal(
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
                 request.consumedAt()
         );
     }

@@ -16,7 +16,7 @@ public class ExerciseWebMapper {
 
     public Exercise toDomain(CreateExerciseRequest request) {
         return new Exercise(
-                null,
+                null, // Этого поля нет в запросе, поэтому проставляем null
                 request.exerciseName(),
                 request.description(),
                 request.musclesId().stream()
