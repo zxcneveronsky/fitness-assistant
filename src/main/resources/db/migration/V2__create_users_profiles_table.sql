@@ -1,8 +1,8 @@
 CREATE TABLE IF NOT EXISTS users_profiles (
-    user_id    BIGINT PRIMARY KEY REFERENCES users(id),
+    user_id    BIGINT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
     name       VARCHAR(255),
     birth_date DATE,
     weight     DOUBLE PRECISION,
     height     DOUBLE PRECISION,
-    gender     VARCHAR(10) CHECK (gender IN ('MALE', 'FEMALE', 'OTHER'))
+    gender     VARCHAR(10) CHECK (gender IN ('MALE', 'FEMALE'))
 );
