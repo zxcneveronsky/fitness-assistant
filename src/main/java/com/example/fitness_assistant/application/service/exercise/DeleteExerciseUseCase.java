@@ -12,7 +12,7 @@ public class DeleteExerciseUseCase {
 
     private final ExerciseRepository exerciseRepository;
     @Transactional
-    public void deleteById(Long id) {
+    public void deleteExercise(Long id) {
         if (!exerciseRepository.existsById(id)) {
             throw new ExerciseNotFoundException(id);
         }

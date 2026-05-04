@@ -39,7 +39,7 @@ public class ExerciseController {
     public Page<ExerciseResponse> searchExercises(
             @RequestParam String name,
             @PageableDefault(size = 9) Pageable pageable) {
-        return findExerciseUseCase.findByName(name, pageable)
+        return findExerciseUseCase.findExercise(name, pageable)
                 .map(exerciseWebMapper::toResponse);
     }
 
@@ -62,6 +62,6 @@ public class ExerciseController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteExercise(@PathVariable Long id) {
-        deleteExerciseUseCase.deleteById(id);
+        deleteExerciseUseCase.deleteExercise(id);
     }
 }

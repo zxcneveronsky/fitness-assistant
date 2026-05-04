@@ -13,7 +13,7 @@ public class ExistsMealUseCase {
 
     private final MealRepository mealRepository;
 
-    public boolean existsById(Long id, UserDetails userDetails) {
+    public boolean existsMeal(Long id, UserDetails userDetails) {
         Long userId = ((UserDetailsAdapter) userDetails).getUserId();
         return mealRepository.existsById(id,userId);
     }

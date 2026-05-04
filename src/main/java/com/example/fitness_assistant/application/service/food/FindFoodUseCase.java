@@ -13,7 +13,7 @@ public class FindFoodUseCase {
 
     private final FoodRepository foodRepository;
 
-    public Page<Food> findByName(String name, Pageable pageable) {
+    public Page<Food> findFood(String name, Pageable pageable) {
         return foodRepository.searchFood(name, pageable);
     }
 }

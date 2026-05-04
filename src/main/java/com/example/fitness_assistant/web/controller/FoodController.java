@@ -38,7 +38,7 @@ public class FoodController {
     public Page<FoodResponse> searchFood(
             @RequestParam String name,
             @PageableDefault(size = 9) Pageable pageable) {
-        return findFoodUseCase.findByName(name, pageable)
+        return findFoodUseCase.findFood(name, pageable)
                 .map(foodWebMapper::toResponse);
     }
 
@@ -66,6 +66,6 @@ public class FoodController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteFood(@PathVariable Long id) {
-        deleteFoodUseCase.deleteById(id);
+        deleteFoodUseCase.deleteFood(id);
     }
 }

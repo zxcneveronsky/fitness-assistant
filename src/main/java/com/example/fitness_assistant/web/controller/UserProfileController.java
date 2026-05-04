@@ -34,7 +34,7 @@ public class UserProfileController {
 
     @GetMapping
     public UserProfileResponse getProfile(@AuthenticationPrincipal UserDetails userDetails) {
-        return userProfileWebMapper.toResponse(findProfileUseCase.findById(userDetails));
+        return userProfileWebMapper.toResponse(findProfileUseCase.findUserProfile(userDetails));
     }
 
     @PostMapping
@@ -63,7 +63,7 @@ public class UserProfileController {
     }
     @GetMapping("/targets")
     public TargetsResponse getTarget(@AuthenticationPrincipal UserDetails userDetails) {
-        return userProfileWebMapper.toTargetsResponse(findProfileUseCase.findById(userDetails));
+        return userProfileWebMapper.toTargetsResponse(findProfileUseCase.findUserProfile(userDetails));
     }
     @PatchMapping("/targets/auto")
     @ResponseStatus(HttpStatus.OK)
@@ -80,6 +80,6 @@ public class UserProfileController {
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteProfile(@AuthenticationPrincipal UserDetails userDetails) {
-        deleteProfileUseCase.deleteById(userDetails);
+        deleteProfileUseCase.deleteUserProfile(userDetails);
     }
 }

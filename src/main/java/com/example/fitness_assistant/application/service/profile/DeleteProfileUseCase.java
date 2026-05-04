@@ -15,7 +15,7 @@ public class DeleteProfileUseCase {
     private final UserProfileRepository userProfileRepository;
 
     @Transactional
-    public void deleteById(UserDetails userDetails) {
+    public void deleteUserProfile(UserDetails userDetails) {
         Long id = ((UserDetailsAdapter) userDetails).getUserId();
 
         if (!userProfileRepository.existsById(id)) {

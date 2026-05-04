@@ -13,7 +13,7 @@ public class DeleteFoodUseCase {
     private final FoodRepository foodRepository;
 
     @Transactional
-    public void deleteById(Long id) {
+    public void deleteFood(Long id) {
         if (!foodRepository.existsById(id)) {
             throw new FoodNotFoundException(id);
         }

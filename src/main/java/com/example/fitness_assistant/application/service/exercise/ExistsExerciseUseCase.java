@@ -10,7 +10,7 @@ public class ExistsExerciseUseCase {
 
     private final ExerciseRepository exerciseRepository;
 
-    public boolean existsById(Long id) {
+    public boolean existsExercise(Long id) {
         return exerciseRepository.existsById(id);
     }
 }

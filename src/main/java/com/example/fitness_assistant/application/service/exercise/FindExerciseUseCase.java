@@ -13,7 +13,7 @@ public class FindExerciseUseCase {
 
     private final ExerciseRepository exerciseRepository;
 
-    public Page<Exercise> findByName(String name, Pageable pageable) {
+    public Page<Exercise> findExercise(String name, Pageable pageable) {
         return exerciseRepository.searchExercise(name, pageable);
     }
 }

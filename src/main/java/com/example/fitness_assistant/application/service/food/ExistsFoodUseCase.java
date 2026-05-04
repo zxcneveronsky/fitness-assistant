@@ -10,7 +10,7 @@ public class ExistsFoodUseCase {
 
     private final FoodRepository foodRepository;
 
-    public boolean existsById(Long id) {
+    public boolean existsFood(Long id) {
         return foodRepository.existsById(id);
     }
 }

@@ -15,7 +15,7 @@ public class DeleteMealUseCase {
     private final MealRepository mealRepository;
 
     @Transactional
-    public void deleteById(Long id,UserDetails userDetails) {
+    public void deleteMeal(Long id,UserDetails userDetails) {
         Long userId = ((UserDetailsAdapter) userDetails).getUserId();
 
         if (!mealRepository.existsById(id,userId)) {

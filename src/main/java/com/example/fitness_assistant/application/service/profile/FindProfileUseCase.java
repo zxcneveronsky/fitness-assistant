@@ -16,7 +16,7 @@ public class FindProfileUseCase {
 
     private final UserProfileRepository userProfileRepository;
 
-    public UserProfile findById(UserDetails userDetails) {
+    public UserProfile findUserProfile(UserDetails userDetails) {
         Long id = ((UserDetailsAdapter) userDetails).getUserId();
         return userProfileRepository.findById(id)
                 .orElseThrow(() -> new UserProfileNotFoundException(id));

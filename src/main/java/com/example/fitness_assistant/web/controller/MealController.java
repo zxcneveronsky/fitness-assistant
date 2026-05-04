@@ -35,7 +35,7 @@ public class MealController {
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate localDate,
             @PageableDefault(size = 9) Pageable pageable) {
-        return findMealUseCase.findByConsumedAd(localDate,userDetails,pageable)
+        return findMealUseCase.findMeal(localDate,userDetails,pageable)
                 .map(mealWebMapper::toResponse);
     }
 
@@ -74,6 +74,6 @@ public class MealController {
     public void deleteMeal(
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long id) {
-        deleteMealUseCase.deleteById(id, userDetails);
+        deleteMealUseCase.deleteMeal(id, userDetails);
     }
 }

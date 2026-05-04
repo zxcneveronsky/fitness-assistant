@@ -15,7 +15,7 @@ import java.time.LocalDate;
 public class FindMealUseCase {
     private final MealRepository mealRepository;
 
-    public Page<Meal> findByConsumedAd(LocalDate localDate, UserDetails userDetails, Pageable pageable){
+    public Page<Meal> findMeal(LocalDate localDate, UserDetails userDetails, Pageable pageable){
         Long userId = ((UserDetailsAdapter) userDetails).getUserId();
         return mealRepository.searchMeal(localDate,userId,pageable);
     }
