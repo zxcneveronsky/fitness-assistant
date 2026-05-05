@@ -15,5 +15,6 @@ public class Targets {
     private Double targetFats;
     private Double targetCarbs;
     private Boolean useAutopilot;
+    private Double targetHydration;
 }
 

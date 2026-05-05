@@ -10,6 +10,8 @@ public record UpdateTargetsRequest(
         @PositiveOrZero(message = "Жиры не могут быть отрицательными")
         Double targetFats,
         @PositiveOrZero(message = "Углеводы не могут быть отрицательными")
-        Double targetCarbs
+        Double targetCarbs,
+        @PositiveOrZero(message = "Воды не могут быть отрицательными")
+        Double targetHydration
 ) {}
 

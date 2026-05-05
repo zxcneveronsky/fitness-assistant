@@ -44,19 +44,26 @@ public class TargetCalculationService {
             profile.setTargetKcal(request.getTargetKcal());
             balanceMacrosByCalories(profile);
         }
+        if (request.getTargetHydration() != null) {
+            profile.setTargetHydration(request.getTargetHydration());
+        }
     }
     public void applyAutoTargets(UserProfile profile) {
         Integer age = getAge(profile);
         UserProfile.Gender gender = profile.getGender();
         Double weight = profile.getWeight();
         Double height = profile.getHeight();
-        Double kcal=0.0;
+        Double kcal = 0.0;
+        Double hydration = 0.0;
         if (gender == UserProfile.Gender.MALE) {
             kcal = (10 * weight) + (6.25 * height) - (5 * age) + 5;
+            hydration = weight * 0.035;
         } else if (gender == UserProfile.Gender.FEMALE) {
             kcal = (10 * weight) + (6.25 * height) - (5 * age) - 161;
+            hydration = weight * 0.031;
         }
         profile.setTargetKcal(kcal*1.5);
+        profile.setTargetHydration(hydration);
         balanceMacrosByCalories(profile);
     }
     public boolean hasMacros(Targets r) {

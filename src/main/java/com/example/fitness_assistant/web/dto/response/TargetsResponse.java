@@ -5,5 +5,6 @@ public record TargetsResponse(
         Double targetKcal,
         Double targetProteins,
         Double targetFats,
-        Double targetCarbs
+        Double targetCarbs,
+        Double targetHydration
 ) {}

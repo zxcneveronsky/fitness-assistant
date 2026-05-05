@@ -19,6 +19,7 @@ public class TargetsWebMapper {
                 request.targetFats(),
                 request.targetCarbs(),
                 null // Ставим null, потому что в UseCase проставляется false
+                ,request.targetHydration()
         );
     }
 
@@ -28,7 +29,8 @@ public class TargetsWebMapper {
                 profile.getTargetKcal(),
                 profile.getTargetProteins(),
                 profile.getTargetFats(),
-                profile.getTargetCarbs()
+                profile.getTargetCarbs(),
+                profile.getTargetHydration()
         );
     }
     public TargetStatusResponse toTargetStatusResponse(UserProfile profile){

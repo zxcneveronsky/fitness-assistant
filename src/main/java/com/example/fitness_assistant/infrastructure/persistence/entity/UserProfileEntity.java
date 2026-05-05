@@ -46,6 +46,10 @@ public class UserProfileEntity {
     @Column(name = "use_autopilot")
     private Boolean useAutopilot = true;
 
+    @Column(name = "target_hydration")
+    private Double targetHydration;
+
+
     public enum Gender {
         MALE, FEMALE
     }

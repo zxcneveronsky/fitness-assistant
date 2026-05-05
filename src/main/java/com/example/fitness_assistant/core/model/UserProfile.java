@@ -24,6 +24,7 @@ public class UserProfile {
     private Double targetFats;
     private Double targetCarbs;
     private Boolean useAutopilot;
+    private Double targetHydration;
 
     public enum Gender {
         MALE, FEMALE

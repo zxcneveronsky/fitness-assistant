@@ -24,7 +24,8 @@ public class UserProfileMapper {
                 entity.getTargetProteins(),
                 entity.getTargetFats(),
                 entity.getTargetCarbs(),
-                entity.getUseAutopilot()
+                entity.getUseAutopilot(),
+                entity.getTargetHydration()
         );
     }
 
@@ -41,7 +42,8 @@ public class UserProfileMapper {
                 domain.getTargetProteins(),
                 domain.getTargetFats(),
                 domain.getTargetCarbs(),
-                domain.getUseAutopilot()
+                domain.getUseAutopilot(),
+                domain.getTargetHydration()
         );
 
     }
