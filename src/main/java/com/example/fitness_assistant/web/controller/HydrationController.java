@@ -33,7 +33,7 @@ public class HydrationController {
     public Page<HydrationResponse> searchHydration(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime localDateTime,
-            @PageableDefault(size = 10) Pageable pageable) {
+            @PageableDefault(size = 9) Pageable pageable) {
         return findHydrationUseCase.findHydration(localDateTime, userDetails, pageable)
                 .map(hydrationWebMapper::toResponse);
     }
