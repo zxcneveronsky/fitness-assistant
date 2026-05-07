@@ -1,9 +1,9 @@
-package com.example.fitness_assistant.application.service.hydration;
+package com.example.fitness_assistant.application.service.workout;
 
 import com.example.fitness_assistant.core.exception.UserNotFoundException;
-import com.example.fitness_assistant.core.model.Hydration;
-import com.example.fitness_assistant.core.repository.HydrationRepository;
+import com.example.fitness_assistant.core.model.Workout;
 import com.example.fitness_assistant.core.repository.UserRepository;
+import com.example.fitness_assistant.core.repository.WorkoutRepository;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,19 +12,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class CreateHydrationUseCase {
+public class CreateWorkoutUseCase {
 
-    private final HydrationRepository hydrationRepository;
+    private final WorkoutRepository workoutRepository;
     private final UserRepository userRepository;
 
     @Transactional
-    public Hydration createHydration(UserDetails userDetails, Hydration hydration) {
-        hydration.setId(null);
+    public Workout createWorkout(UserDetails userDetails, Workout workout) {
         Long userId = ((UserDetailsAdapter) userDetails).getUserId();
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException(userId);
         }
-        hydration.setUserId(userId);
-        return hydrationRepository.save(hydration);
+        workout.setUserId(userId);
+        return workoutRepository.save(workout);
     }
 }

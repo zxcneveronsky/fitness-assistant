@@ -30,6 +30,11 @@ public class MealController {
     private final DeleteMealUseCase deleteMealUseCase;
     private final MealWebMapper mealWebMapper;
 
+    @GetMapping("/{id}")
+    public MealResponse getMealById(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails){
+        return mealWebMapper.toResponse(findMealUseCase.findById(id,userDetails));
+    }
+
     @GetMapping("/search")
     public Page<MealResponse> searchMeal(
             @AuthenticationPrincipal UserDetails userDetails,

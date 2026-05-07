@@ -35,6 +35,12 @@ public class ExerciseController {
                 .map(exerciseWebMapper::toResponse);
     }
 
+    @GetMapping("/{id}")
+    public ExerciseResponse getExerciseById(@PathVariable Long id) {
+        return exerciseWebMapper.toResponse(findExerciseUseCase.findById(id));
+    }
+
+
     @GetMapping("/search")
     public Page<ExerciseResponse> searchExercises(
             @RequestParam String name,

@@ -33,6 +33,10 @@ public class FoodController {
         return getAllFoodUseCase.getAllFood(pageable)
                 .map(foodWebMapper::toResponse);
     }
+    @GetMapping("/{id}")
+    public FoodResponse getFoodById(@PathVariable Long id){
+        return foodWebMapper.toResponse(findFoodUseCase.findById(id));
+    }
 
     @GetMapping("/search")
     public Page<FoodResponse> searchFood(

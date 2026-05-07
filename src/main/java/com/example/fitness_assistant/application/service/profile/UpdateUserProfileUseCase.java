@@ -22,7 +22,6 @@ public class UpdateUserProfileUseCase {
         Long id = ((UserDetailsAdapter) userDetails).getUserId();
         return userProfileRepository.findById(id)
                 .map(existingProfile -> {
-                    existingProfile.setId(id);
                     existingProfile.setName(profileUpdate.getName() != null ? profileUpdate.getName() : existingProfile.getName());
                     existingProfile.setBirthDate(profileUpdate.getBirthDate() != null ? profileUpdate.getBirthDate() : existingProfile.getBirthDate());
                     existingProfile.setWeight(profileUpdate.getWeight() != null ? profileUpdate.getWeight() : existingProfile.getWeight());

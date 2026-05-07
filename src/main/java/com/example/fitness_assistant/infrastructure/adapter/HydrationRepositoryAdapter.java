@@ -4,6 +4,7 @@ import com.example.fitness_assistant.core.model.Hydration;
 import com.example.fitness_assistant.core.repository.HydrationRepository;
 import com.example.fitness_assistant.infrastructure.mapper.HydrationMapper;
 import com.example.fitness_assistant.infrastructure.persistence.entity.HydrationEntity;
+import com.example.fitness_assistant.infrastructure.persistence.entity.MealEntity;
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaHydrationRepository;
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaUserRepository;
 import lombok.RequiredArgsConstructor;
@@ -39,10 +40,10 @@ public class HydrationRepositoryAdapter implements HydrationRepository {
 
     @Override
     public Hydration save(Hydration hydration) {
+        Long userId = hydration.getUserId();
         HydrationEntity hydrationEntity = hydrationMapper.toEntity(hydration);
-        hydrationEntity.setUser(jpaUserRepository.getReferenceById(hydration.getUserId()));
-        HydrationEntity savedEntity = jpaHydrationRepository.save(hydrationEntity);
-        return hydrationMapper.toDomain(savedEntity);
+        hydrationEntity.setUser(jpaUserRepository.getReferenceById(userId));
+        return hydrationMapper.toDomain(jpaHydrationRepository.save(hydrationEntity));
     }
 
     @Override

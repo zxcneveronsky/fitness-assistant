@@ -8,6 +8,9 @@ import org.springframework.stereotype.Component;
 public class HydrationMapper {
 
     public Hydration toDomain(HydrationEntity entity) {
+        if (entity == null) {
+            return null;
+        }
         return new Hydration(
                 entity.getId(),
                 entity.getUser().getId(),
@@ -18,6 +21,9 @@ public class HydrationMapper {
     }
 
     public HydrationEntity toEntity(Hydration domain) {
+        if (domain == null) {
+            return null;
+        }
         return new HydrationEntity(
                 domain.getId(),
                 null, // Это поле проставляется в адаптере через GetReferenceById

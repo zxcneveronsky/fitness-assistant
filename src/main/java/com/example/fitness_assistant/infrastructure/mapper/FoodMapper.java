@@ -8,6 +8,9 @@ import org.springframework.stereotype.Component;
 public class FoodMapper {
 
     public Food toDomain(FoodEntity entity) {
+        if (entity == null) {
+            return null;
+        }
         return new Food(
                 entity.getId(),
                 entity.getName(),
@@ -20,6 +23,9 @@ public class FoodMapper {
     }
 
     public FoodEntity toEntity(Food domain) {
+        if (domain == null) {
+            return null;
+        }
         return new FoodEntity(
                 domain.getId(),
                 domain.getName(),

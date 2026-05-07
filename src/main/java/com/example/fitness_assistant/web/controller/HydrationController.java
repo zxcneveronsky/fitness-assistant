@@ -29,6 +29,13 @@ public class HydrationController {
     private final DeleteHydrationUseCase deleteHydrationUseCase;
     private final HydrationWebMapper hydrationWebMapper;
 
+    @GetMapping("/{id}")
+    public HydrationResponse getHydrationById(@PathVariable Long id,@AuthenticationPrincipal UserDetails userDetails){
+        return hydrationWebMapper.toResponse(findHydrationUseCase.findById(id,userDetails));
+    }
+
+
+
     @GetMapping("/search")
     public Page<HydrationResponse> searchHydration(
             @AuthenticationPrincipal UserDetails userDetails,

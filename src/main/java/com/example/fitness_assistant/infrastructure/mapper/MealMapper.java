@@ -8,6 +8,9 @@ import org.springframework.stereotype.Component;
 public class MealMapper {
 
     public Meal toDomain(MealEntity entity) {
+        if (entity == null) {
+            return null;
+        }
         return new Meal(
                 entity.getId(),
                 entity.getUser().getId(),
@@ -22,6 +25,9 @@ public class MealMapper {
     }
 
     public MealEntity toEntity(Meal domain) {
+        if (domain == null) {
+            return null;
+        }
         return new MealEntity(
                 domain.getId(),
                 null, // Это поле проставляется в адаптере через GetReferenceById

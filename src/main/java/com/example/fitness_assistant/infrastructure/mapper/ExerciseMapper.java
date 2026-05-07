@@ -12,6 +12,9 @@ public class ExerciseMapper {
     private final MuscleMapper muscleMapper;
 
     public Exercise toDomain(ExerciseEntity entity) {
+        if (entity == null) {
+            return null;
+        }
         return new Exercise(
                 entity.getId(),
                 entity.getName(),
@@ -23,6 +26,9 @@ public class ExerciseMapper {
     }
 
     public ExerciseEntity toEntity(Exercise domain) {
+        if (domain == null) {
+            return null;
+        }
         return new ExerciseEntity(
                 domain.getId(),
                 domain.getName(),

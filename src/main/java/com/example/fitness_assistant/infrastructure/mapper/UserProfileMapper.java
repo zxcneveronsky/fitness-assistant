@@ -12,6 +12,9 @@ public class UserProfileMapper {
     private final UserMapper userMapper;
 
     public UserProfile toDomain(UserProfileEntity entity) {
+        if (entity == null) {
+            return null;
+        }
         return new UserProfile(
                 entity.getId(),
                 null, // Это поле проставляется в адаптере через GetReferenceById
@@ -30,6 +33,9 @@ public class UserProfileMapper {
     }
 
     public UserProfileEntity toEntity(UserProfile domain) {
+        if (domain == null) {
+            return null;
+        }
         return new UserProfileEntity(
                 domain.getId(),
                 userMapper.toEntity(domain.getUser()),

@@ -21,6 +21,7 @@ public class CreateMealUseCase {
 
     @Transactional
     public Meal createMealManual(UserDetails userDetails, Meal meal) {
+        meal.setId(null);
         Long userId = ((UserDetailsAdapter) userDetails).getUserId();
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException(userId);
@@ -31,6 +32,7 @@ public class CreateMealUseCase {
 
     @Transactional
     public Meal createMealAuto(UserDetails userDetails,Long id,Double weight, Meal meal) {
+        meal.setId(null);
         Long userId = ((UserDetailsAdapter) userDetails).getUserId();
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException(userId);
