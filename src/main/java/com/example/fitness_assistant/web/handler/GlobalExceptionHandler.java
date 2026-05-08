@@ -20,7 +20,8 @@ public class GlobalExceptionHandler {
             FoodNotFoundException.class,
             UserNotFoundException.class,
             UserProfileNotFoundException.class,
-            WorkoutNotFoundException.class
+            WorkoutNotFoundException.class,
+            WorkoutSessionNotFoundException.class
     })
     public ResponseEntity<Object> handleNotFoundExceptions(RuntimeException ex) {
         return buildResponse(ex.getMessage(), HttpStatus.NOT_FOUND);

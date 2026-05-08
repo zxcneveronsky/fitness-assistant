@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.web.bind.support.SessionStatus;
 
 import java.time.LocalDateTime;
 
@@ -18,5 +17,4 @@ public class WorkoutSession {
     private Long userId;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-    private SessionStatus status;
 }
