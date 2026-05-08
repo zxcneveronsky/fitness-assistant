@@ -1,4 +1,4 @@
-package com.example.fitness_assistant.web.dto.response;
+package com.example.fitness_assistant.web.dto.response.workout;
 
 import java.util.List;
 

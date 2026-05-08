@@ -3,8 +3,8 @@ package com.example.fitness_assistant.web.mapper;
 import com.example.fitness_assistant.core.model.Targets;
 import com.example.fitness_assistant.core.model.UserProfile;
 import com.example.fitness_assistant.web.dto.request.update.UpdateTargetsRequest;
-import com.example.fitness_assistant.web.dto.response.TargetStatusResponse;
-import com.example.fitness_assistant.web.dto.response.TargetsResponse;
+import com.example.fitness_assistant.web.dto.response.targets.TargetStatusResponse;
+import com.example.fitness_assistant.web.dto.response.targets.TargetsResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

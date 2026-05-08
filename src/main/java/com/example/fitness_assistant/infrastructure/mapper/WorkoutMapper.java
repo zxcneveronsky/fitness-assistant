@@ -1,6 +1,6 @@
 package com.example.fitness_assistant.infrastructure.mapper;
 
-import com.example.fitness_assistant.core.model.Workout;
+import com.example.fitness_assistant.core.model.workout.Workout;
 import com.example.fitness_assistant.infrastructure.persistence.entity.WorkoutEntity;
 import org.springframework.stereotype.Component;
 

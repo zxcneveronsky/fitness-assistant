@@ -3,7 +3,8 @@ package com.example.fitness_assistant.web.controller;
 import com.example.fitness_assistant.application.service.workout.*;
 import com.example.fitness_assistant.web.dto.request.create.CreateWorkoutRequest;
 import com.example.fitness_assistant.web.dto.request.update.UpdateWorkoutRequest;
-import com.example.fitness_assistant.web.dto.response.WorkoutResponse;
+import com.example.fitness_assistant.web.dto.response.workout.WorkoutResponse;
+import com.example.fitness_assistant.web.dto.response.workout.WorkoutWithExerciseResponse;
 import com.example.fitness_assistant.web.mapper.WorkoutWebMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -31,7 +32,7 @@ public class WorkoutController {
     }
 
     @GetMapping("/{id}")
-    public WorkoutResponse getWorkoutById(@AuthenticationPrincipal UserDetails userDetails,@PathVariable Long id){
+    public WorkoutWithExerciseResponse getWorkoutById(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id){
         return workoutWebMapper.toResponse(findWorkoutUseCase.findById(id,userDetails));
     }
 

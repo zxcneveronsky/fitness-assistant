@@ -1,5 +1,6 @@
-package com.example.fitness_assistant.core.model;
+package com.example.fitness_assistant.core.model.workout;
 
+import com.example.fitness_assistant.core.model.Exercise;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,9 +12,9 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Workout {
+public class WorkoutWithExercise {
     private Long id;
     private Long userId;
     private String name;
-    private List<Long> exercisesIds;
+    private List<Exercise> exercises;
 }

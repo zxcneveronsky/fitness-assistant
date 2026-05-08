@@ -1,6 +1,6 @@
 package com.example.fitness_assistant.application.service.workout;
 
-import com.example.fitness_assistant.core.model.Workout;
+import com.example.fitness_assistant.core.model.workout.Workout;
 import com.example.fitness_assistant.core.repository.WorkoutRepository;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import lombok.RequiredArgsConstructor;

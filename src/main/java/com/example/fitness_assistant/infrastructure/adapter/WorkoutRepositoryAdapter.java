@@ -1,6 +1,6 @@
 package com.example.fitness_assistant.infrastructure.adapter;
 
-import com.example.fitness_assistant.core.model.Workout;
+import com.example.fitness_assistant.core.model.workout.Workout;
 import com.example.fitness_assistant.core.repository.WorkoutRepository;
 
 import com.example.fitness_assistant.infrastructure.persistence.entity.WorkoutEntity;

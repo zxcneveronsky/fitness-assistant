@@ -4,8 +4,8 @@ import com.example.fitness_assistant.application.service.profile.FindProfileUseC
 import com.example.fitness_assistant.application.service.profile.UpdateUserProfileUseCase;
 import com.example.fitness_assistant.application.service.targets.UpdateTargetsUseCase;
 import com.example.fitness_assistant.web.dto.request.update.UpdateTargetsRequest;
-import com.example.fitness_assistant.web.dto.response.TargetStatusResponse;
-import com.example.fitness_assistant.web.dto.response.TargetsResponse;
+import com.example.fitness_assistant.web.dto.response.targets.TargetStatusResponse;
+import com.example.fitness_assistant.web.dto.response.targets.TargetsResponse;
 import com.example.fitness_assistant.web.mapper.TargetsWebMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

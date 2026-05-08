@@ -30,7 +30,7 @@ public class HydrationController {
     private final HydrationWebMapper hydrationWebMapper;
 
     @GetMapping("/{id}")
-    public HydrationResponse getHydrationById(@PathVariable Long id,@AuthenticationPrincipal UserDetails userDetails){
+    public HydrationResponse getHydrationById(@AuthenticationPrincipal UserDetails userDetails,@PathVariable Long id){
         return hydrationWebMapper.toResponse(findHydrationUseCase.findById(id,userDetails));
     }
 

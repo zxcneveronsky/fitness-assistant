@@ -1,7 +1,9 @@
 package com.example.fitness_assistant.application.service.workout;
 
 import com.example.fitness_assistant.core.exception.WorkoutNotFoundException;
-import com.example.fitness_assistant.core.model.Workout;
+import com.example.fitness_assistant.core.model.workout.Workout;
+import com.example.fitness_assistant.core.model.workout.WorkoutWithExercise;
+import com.example.fitness_assistant.core.repository.ExerciseRepository;
 import com.example.fitness_assistant.core.repository.WorkoutRepository;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class FindWorkoutUseCase {
 
     private final WorkoutRepository workoutRepository;
+    private final ExerciseRepository exerciseRepository;
 
     public Page<Workout> findWorkout( String name, UserDetails userDetails, Pageable pageable) {
         Long userId = ((UserDetailsAdapter) userDetails).getUserId();
@@ -24,8 +27,15 @@ public class FindWorkoutUseCase {
     }
 
     @Transactional
-    public Workout findById(Long id, UserDetails userDetails){
+    public WorkoutWithExercise findById(Long id, UserDetails userDetails){
         Long userId = ((UserDetailsAdapter) userDetails).getUserId();
-        return workoutRepository.findById(id, userId).orElseThrow(()->new WorkoutNotFoundException(id));
+        return workoutRepository.findById(id,userId).map(
+                workout -> new WorkoutWithExercise(
+                        workout.getId(),
+                        workout.getUserId(),
+                        workout.getName(),
+                        exerciseRepository.findAllByIdIn(workout.getExercisesIds())
+                )
+        ).orElseThrow(()->new WorkoutNotFoundException(id));
     }
 }

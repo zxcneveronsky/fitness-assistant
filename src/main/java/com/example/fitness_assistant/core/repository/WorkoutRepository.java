@@ -1,6 +1,6 @@
 package com.example.fitness_assistant.core.repository;
 
-import com.example.fitness_assistant.core.model.Workout;
+import com.example.fitness_assistant.core.model.workout.Workout;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

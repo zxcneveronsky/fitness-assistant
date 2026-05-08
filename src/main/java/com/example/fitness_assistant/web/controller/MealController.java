@@ -31,7 +31,7 @@ public class MealController {
     private final MealWebMapper mealWebMapper;
 
     @GetMapping("/{id}")
-    public MealResponse getMealById(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails){
+    public MealResponse getMealById(@AuthenticationPrincipal UserDetails userDetails,@PathVariable Long id){
         return mealWebMapper.toResponse(findMealUseCase.findById(id,userDetails));
     }
 
