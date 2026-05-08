@@ -3,6 +3,7 @@ package com.example.fitness_assistant.web.dto.request.create;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 public record LoginRequest(
 
@@ -13,5 +14,6 @@ public record LoginRequest(
 
         @NotNull(message = "Пароль не может быть пустым")
         @NotBlank(message = "Пароль не может быть пустым")
+        @Size(max = 255, message = "Пароль максимум 255 символов")
         String password
 ) {}

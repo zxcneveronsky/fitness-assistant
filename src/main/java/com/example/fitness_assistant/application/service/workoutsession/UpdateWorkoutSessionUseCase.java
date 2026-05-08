@@ -19,6 +19,12 @@ public class UpdateWorkoutSessionUseCase {
     @Transactional
     public WorkoutSession updateSession(Long id, LocalDateTime endTime, UserDetails userDetails) {
         Long userId = ((UserDetailsAdapter) userDetails).getUserId();
+        if (!workoutSessionRepository.existsById(id, userId)) {
+            throw new WorkoutSessionNotFoundException(id);
+        }
+        if (!workoutSessionRepository.existsById(id, userId)) {
+            throw new WorkoutSessionNotFoundException(id);
+        }
         return workoutSessionRepository.findById(id, userId)
                 .map(session -> {
                     session.setEndTime(endTime);

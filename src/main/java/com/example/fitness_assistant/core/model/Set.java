@@ -15,7 +15,7 @@ public class Set {
     private Long id;
     private Long sessionId;
     private Long exerciseId;
-    private Long weight;
+    private Double weight;
     private Integer reps;
     private LocalDateTime createdAt;
 }

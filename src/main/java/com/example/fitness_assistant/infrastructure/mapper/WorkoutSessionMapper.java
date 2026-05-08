@@ -22,8 +22,8 @@ public class WorkoutSessionMapper {
         if (domain == null) return null;
         return new WorkoutSessionEntity(
                 domain.getId(),
-                null, // проставляется в адаптере через getReferenceById
-                null, // проставляется в адаптере через getReferenceById
+                null, // Это поле проставляется в адаптере через getReferenceById
+                null, // Это поле проставляется в адаптере через getReferenceById
                 domain.getStartTime(),
                 domain.getEndTime()
         );

@@ -21,7 +21,7 @@ public class FindWorkoutUseCase {
     private final WorkoutRepository workoutRepository;
     private final ExerciseRepository exerciseRepository;
 
-    public Page<Workout> findWorkout( String name, UserDetails userDetails, Pageable pageable) {
+    public Page<Workout> findWorkout(String name, UserDetails userDetails, Pageable pageable) {
         Long userId = ((UserDetailsAdapter) userDetails).getUserId();
         return workoutRepository.searchWorkout(name, userId, pageable);
     }

@@ -27,7 +27,7 @@ public class SetEntity {
     private ExerciseEntity exercise;
 
     @Column(nullable = false)
-    private Long weight;
+    private Double weight;
 
     @Column(nullable = false)
     private Integer reps;

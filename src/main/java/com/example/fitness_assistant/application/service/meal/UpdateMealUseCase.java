@@ -1,8 +1,10 @@
 package com.example.fitness_assistant.application.service.meal;
 
 import com.example.fitness_assistant.core.exception.MealNotFoundException;
+import com.example.fitness_assistant.core.exception.UserNotFoundException;
 import com.example.fitness_assistant.core.model.Meal;
 import com.example.fitness_assistant.core.repository.MealRepository;
+import com.example.fitness_assistant.core.repository.UserRepository;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,13 +15,16 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UpdateMealUseCase {
 
+    private final UserRepository userRepository;
     private final MealRepository mealRepository;
 
     @Transactional
     public Meal updateMeal(UserDetails userDetails, Meal mealUpdate) {
         Long userId = ((UserDetailsAdapter) userDetails).getUserId();
         Long mealId = mealUpdate.getId();
-
+        if (!userRepository.existsById(userId)) {
+            throw new UserNotFoundException(userId);
+        }
         return mealRepository.findById(mealId, userId)
                 .map(existingMeal -> {
                     existingMeal.setName(mealUpdate.getName() != null ? mealUpdate.getName() : existingMeal.getName());

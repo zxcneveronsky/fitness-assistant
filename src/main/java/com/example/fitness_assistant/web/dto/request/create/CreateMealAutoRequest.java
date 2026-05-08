@@ -7,8 +7,8 @@ import java.time.LocalDateTime;
 public record CreateMealAutoRequest(
         @NotNull(message = "Название приема пищи не может быть пустым")
         Long id,
-        @NotNull(message = "Калории не могут быть пустыми")
-        @PositiveOrZero(message = "Калории не могут быть отрицательными")
+        @NotNull(message = "Вес не может быть пустым")
+        @PositiveOrZero(message = "Вес не может быть отрицательным      ")
         Double weight,
         @NotNull(message = "Дата приема пищи должна быть указана")
         @PastOrPresent(message = "Дата приема пищи не может быть в будущем")

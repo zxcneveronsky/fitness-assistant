@@ -13,6 +13,6 @@ public record RegisterRequest(
         String email,
         @NotNull(message = "Пароль не может быть пустым")
         @NotBlank(message = "Пароль не может быть пустым")
-        @Size(min = 6, message = "Пароль минимум 6 символов")
+        @Size(min = 6, max = 255, message = "Пароль минимум 6 символов")
         String password
 ) {}
