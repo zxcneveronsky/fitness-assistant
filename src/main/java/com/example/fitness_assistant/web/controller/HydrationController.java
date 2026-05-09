@@ -3,7 +3,9 @@ package com.example.fitness_assistant.web.controller;
 import com.example.fitness_assistant.application.service.hydration.*;
 import com.example.fitness_assistant.web.dto.request.create.CreateHydrationRequest;
 import com.example.fitness_assistant.web.dto.request.update.UpdateHydrationRequest;
-import com.example.fitness_assistant.web.dto.response.HydrationResponse;
+import com.example.fitness_assistant.web.dto.response.hydration.DailyHydrationResponse;
+import com.example.fitness_assistant.web.dto.response.hydration.HydrationResponse;
+import com.example.fitness_assistant.web.mapper.DailyHydrationWebMapper;
 import com.example.fitness_assistant.web.mapper.HydrationWebMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,8 @@ public class HydrationController {
     private final UpdateHydrationUseCase updateHydrationUseCase;
     private final DeleteHydrationUseCase deleteHydrationUseCase;
     private final HydrationWebMapper hydrationWebMapper;
+    private final GetDailyHydrationUseCase getDailyHydrationUseCase;
+    private final DailyHydrationWebMapper dailyHydrationWebMapper;
 
     @GetMapping("/{id}")
     public HydrationResponse getHydrationById(@AuthenticationPrincipal UserDetails userDetails,@PathVariable Long id){
@@ -43,6 +47,13 @@ public class HydrationController {
             @PageableDefault(size = 9) Pageable pageable) {
         return findHydrationUseCase.findHydration(localDateTime, userDetails, pageable)
                 .map(hydrationWebMapper::toResponse);
+    }
+
+    @GetMapping("/daily")
+    public DailyHydrationResponse getDailyHydration(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime localDateTime) {
+        return dailyHydrationWebMapper.toResponse(getDailyHydrationUseCase.getDailyHydration(localDateTime, userDetails));
     }
 
     @PostMapping

@@ -1,6 +1,7 @@
 package com.example.fitness_assistant.core.repository;
 
-import com.example.fitness_assistant.core.model.Meal;
+import com.example.fitness_assistant.core.model.meal.DailyNutrition;
+import com.example.fitness_assistant.core.model.meal.Meal;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -14,4 +15,6 @@ public interface MealRepository {
     Meal save(Meal meal);
     void deleteById(Long id,Long userId);
     boolean existsById(Long id,Long userId);
+    DailyNutrition getDailyNutrition(LocalDateTime localDateTime,Long userId);
+
 }

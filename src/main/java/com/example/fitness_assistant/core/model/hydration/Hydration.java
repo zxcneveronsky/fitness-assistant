@@ -1,4 +1,4 @@
-package com.example.fitness_assistant.core.model;
+package com.example.fitness_assistant.core.model.hydration;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

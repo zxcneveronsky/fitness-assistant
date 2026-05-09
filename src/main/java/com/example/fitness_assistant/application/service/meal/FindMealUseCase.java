@@ -1,7 +1,7 @@
 package com.example.fitness_assistant.application.service.meal;
 
 import com.example.fitness_assistant.core.exception.MealNotFoundException;
-import com.example.fitness_assistant.core.model.Meal;
+import com.example.fitness_assistant.core.model.meal.Meal;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

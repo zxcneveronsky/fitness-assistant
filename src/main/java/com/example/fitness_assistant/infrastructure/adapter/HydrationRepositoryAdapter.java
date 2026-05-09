@@ -1,10 +1,11 @@
 package com.example.fitness_assistant.infrastructure.adapter;
 
-import com.example.fitness_assistant.core.model.Hydration;
+import com.example.fitness_assistant.core.model.hydration.DailyHydration;
+import com.example.fitness_assistant.core.model.hydration.Hydration;
 import com.example.fitness_assistant.core.repository.HydrationRepository;
+import com.example.fitness_assistant.infrastructure.mapper.DailyHydrationMapper;
 import com.example.fitness_assistant.infrastructure.mapper.HydrationMapper;
 import com.example.fitness_assistant.infrastructure.persistence.entity.HydrationEntity;
-import com.example.fitness_assistant.infrastructure.persistence.entity.MealEntity;
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaHydrationRepository;
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaUserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ public class HydrationRepositoryAdapter implements HydrationRepository {
     private final JpaHydrationRepository jpaHydrationRepository;
     private final JpaUserRepository jpaUserRepository;
     private final HydrationMapper hydrationMapper;
+    private final DailyHydrationMapper dailyHydrationMapper;
 
     @Override
     public Optional<Hydration> findById(Long id, Long userId) {
@@ -37,6 +39,14 @@ public class HydrationRepositoryAdapter implements HydrationRepository {
         return jpaHydrationRepository.searchHydration(userId, startOfDay, endOfDay, pageable)
                 .map(hydrationMapper::toDomain);
     }
+
+    @Override
+    public DailyHydration getDailyWater(LocalDateTime localDateTime, Long userId) {
+        LocalDateTime startOfDay = localDateTime != null ? localDateTime.toLocalDate().atStartOfDay() : null;
+        LocalDateTime endOfDay = localDateTime != null ? localDateTime.toLocalDate().atTime(LocalTime.MAX) : null;
+        return dailyHydrationMapper.toDomain(jpaHydrationRepository.getDailyWater(userId, startOfDay, endOfDay));
+    }
+
 
     @Override
     public Hydration save(Hydration hydration) {

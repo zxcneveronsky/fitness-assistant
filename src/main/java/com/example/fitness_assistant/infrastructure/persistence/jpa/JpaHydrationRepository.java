@@ -1,6 +1,7 @@
 package com.example.fitness_assistant.infrastructure.persistence.jpa;
 
 import com.example.fitness_assistant.infrastructure.persistence.entity.HydrationEntity;
+import com.example.fitness_assistant.infrastructure.persistence.projection.DailyHydrationProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,4 +25,12 @@ public interface JpaHydrationRepository extends JpaRepository<HydrationEntity, L
                                           @Param("startOfDay") LocalDateTime startOfDay,
                                           @Param("endOfDay") LocalDateTime endOfDay,
                                           Pageable pageable);
+    @Query("SELECT COALESCE(SUM(h.amount), 0) AS totalAmount " +
+            "FROM HydrationEntity h " +
+            "WHERE h.user.id = :userId " +
+            "AND h.consumedAt >= :startOfDay " +
+            "AND h.consumedAt < :endOfDay")
+    DailyHydrationProjection getDailyWater(@Param("userId") Long userId,
+                                           @Param("startOfDay") LocalDateTime startOfDay,
+                                           @Param("endOfDay") LocalDateTime endOfDay);
 }

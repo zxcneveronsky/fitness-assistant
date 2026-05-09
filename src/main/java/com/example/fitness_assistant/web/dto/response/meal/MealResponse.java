@@ -1,4 +1,4 @@
-package com.example.fitness_assistant.web.dto.response;
+package com.example.fitness_assistant.web.dto.response.meal;
 
 import java.time.LocalDateTime;
 

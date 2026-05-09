@@ -1,10 +1,10 @@
 package com.example.fitness_assistant.web.mapper;
 
-import com.example.fitness_assistant.core.model.Meal;
+import com.example.fitness_assistant.core.model.meal.Meal;
 import com.example.fitness_assistant.web.dto.request.create.CreateMealAutoRequest;
 import com.example.fitness_assistant.web.dto.request.create.CreateMealManualRequest;
 import com.example.fitness_assistant.web.dto.request.update.UpdateMealRequest;
-import com.example.fitness_assistant.web.dto.response.MealResponse;
+import com.example.fitness_assistant.web.dto.response.meal.MealResponse;
 import org.springframework.stereotype.Component;
 
 @Component

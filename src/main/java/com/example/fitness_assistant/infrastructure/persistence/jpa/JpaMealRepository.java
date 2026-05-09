@@ -1,6 +1,7 @@
 package com.example.fitness_assistant.infrastructure.persistence.jpa;
 
 import com.example.fitness_assistant.infrastructure.persistence.entity.MealEntity;
+import com.example.fitness_assistant.infrastructure.persistence.projection.DailyNutritionProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,4 +23,16 @@ public interface JpaMealRepository extends JpaRepository<MealEntity, Long> {
                             @Param("startOfDay") LocalDateTime startOfDay,
                             @Param("endOfDay") LocalDateTime endOfDay,
                             Pageable pageable);
+
+    @Query("SELECT COALESCE(SUM(m.kcal), 0) AS kcal, " +
+            "COALESCE(SUM(m.proteins), 0) AS proteins, " +
+            "COALESCE(SUM(m.fats), 0) AS fats, " +
+            "COALESCE(SUM(m.carbs), 0) AS carbs " +
+            "FROM MealEntity m " +
+            "WHERE m.user.id = :userId " +
+            "AND m.consumedAt >= :startOfDay " +
+            "AND m.consumedAt < :endOfDay")
+    DailyNutritionProjection getDailyNutrition(@Param("userId") Long userId,
+                                               @Param("startOfDay") LocalDateTime startOfDay,
+                                               @Param("endOfDay") LocalDateTime endOfDay);
 }

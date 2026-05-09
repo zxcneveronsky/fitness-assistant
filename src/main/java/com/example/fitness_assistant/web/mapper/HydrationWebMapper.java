@@ -1,9 +1,9 @@
 package com.example.fitness_assistant.web.mapper;
 
-import com.example.fitness_assistant.core.model.Hydration;
+import com.example.fitness_assistant.core.model.hydration.Hydration;
 import com.example.fitness_assistant.web.dto.request.create.CreateHydrationRequest;
 import com.example.fitness_assistant.web.dto.request.update.UpdateHydrationRequest;
-import com.example.fitness_assistant.web.dto.response.HydrationResponse;
+import com.example.fitness_assistant.web.dto.response.hydration.HydrationResponse;
 import org.springframework.stereotype.Component;
 
 @Component

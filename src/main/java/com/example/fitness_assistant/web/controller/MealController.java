@@ -4,7 +4,9 @@ import com.example.fitness_assistant.application.service.meal.*;
 import com.example.fitness_assistant.web.dto.request.create.CreateMealAutoRequest;
 import com.example.fitness_assistant.web.dto.request.create.CreateMealManualRequest;
 import com.example.fitness_assistant.web.dto.request.update.UpdateMealRequest;
-import com.example.fitness_assistant.web.dto.response.MealResponse;
+import com.example.fitness_assistant.web.dto.response.meal.DailyNutritionResponse;
+import com.example.fitness_assistant.web.dto.response.meal.MealResponse;
+import com.example.fitness_assistant.web.mapper.DailyNutritionWebMapper;
 import com.example.fitness_assistant.web.mapper.MealWebMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,8 @@ public class MealController {
     private final FindMealUseCase findMealUseCase;
     private final DeleteMealUseCase deleteMealUseCase;
     private final MealWebMapper mealWebMapper;
+    private final GetDailyNutritionUseCase getDailyNutritionUseCase;
+    private final DailyNutritionWebMapper dailyNutritionWebMapper;
 
     @GetMapping("/{id}")
     public MealResponse getMealById(@AuthenticationPrincipal UserDetails userDetails,@PathVariable Long id){
@@ -42,6 +46,13 @@ public class MealController {
             @PageableDefault(size = 9) Pageable pageable) {
         return findMealUseCase.findMeal(localDateTime,userDetails,pageable)
                 .map(mealWebMapper::toResponse);
+    }
+
+    @GetMapping("/daily")
+    public DailyNutritionResponse getDailyMeal(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime localDateTime) {
+        return dailyNutritionWebMapper.toResponse(getDailyNutritionUseCase.getDailyNutrition(localDateTime,userDetails));
     }
 
     @PostMapping("/manual")

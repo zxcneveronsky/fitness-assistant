@@ -1,7 +1,9 @@
 package com.example.fitness_assistant.infrastructure.adapter;
 
-import com.example.fitness_assistant.core.model.Meal;
+import com.example.fitness_assistant.core.model.meal.DailyNutrition;
+import com.example.fitness_assistant.core.model.meal.Meal;
 import com.example.fitness_assistant.core.repository.MealRepository;
+import com.example.fitness_assistant.infrastructure.mapper.DailyNutritionMapper;
 import com.example.fitness_assistant.infrastructure.mapper.MealMapper;
 import com.example.fitness_assistant.infrastructure.persistence.entity.MealEntity;
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaMealRepository;
@@ -22,6 +24,7 @@ public class MealRepositoryAdapter implements MealRepository {
     private final JpaMealRepository jpaMealRepository;
     private final JpaUserRepository jpaUserRepository;
     private final MealMapper mealMapper;
+    private final DailyNutritionMapper dailyNutritionMapper;
 
     @Override
     public Meal save(Meal meal) {
@@ -37,6 +40,12 @@ public class MealRepositoryAdapter implements MealRepository {
         LocalDateTime endOfDay = localDateTime != null ? localDateTime.toLocalDate().atTime(LocalTime.MAX) : null;
         return jpaMealRepository.searchMeal(userId, startOfDay, endOfDay, pageable)
                 .map(mealMapper::toDomain);
+    }
+    @Override
+    public DailyNutrition getDailyNutrition(LocalDateTime localDateTime, Long userId) {
+        LocalDateTime startOfDay = localDateTime != null ? localDateTime.toLocalDate().atStartOfDay() : null;
+        LocalDateTime endOfDay = localDateTime != null ? localDateTime.toLocalDate().atTime(LocalTime.MAX) : null;
+        return dailyNutritionMapper.toDomain(jpaMealRepository.getDailyNutrition(userId, startOfDay, endOfDay));
     }
 
     @Override

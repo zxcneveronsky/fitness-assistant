@@ -1,6 +1,6 @@
 package com.example.fitness_assistant.infrastructure.mapper;
 
-import com.example.fitness_assistant.core.model.Hydration;
+import com.example.fitness_assistant.core.model.hydration.Hydration;
 import com.example.fitness_assistant.infrastructure.persistence.entity.HydrationEntity;
 import org.springframework.stereotype.Component;
 
