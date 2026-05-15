@@ -1,4 +1,4 @@
-﻿package com.example.fitness_assistant.application.service.user;
+package com.example.fitness_assistant.application.service.user;
 
 import com.example.fitness_assistant.core.exception.InvalidPasswordException;
 import com.example.fitness_assistant.core.exception.UserNotFoundException;
