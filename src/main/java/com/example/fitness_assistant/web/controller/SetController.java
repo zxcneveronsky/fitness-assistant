@@ -1,6 +1,5 @@
 package com.example.fitness_assistant.web.controller;
 
-import com.example.fitness_assistant.application.service.food.*;
 import com.example.fitness_assistant.application.service.set.*;
 import com.example.fitness_assistant.web.dto.request.create.CreateSetRequest;
 import com.example.fitness_assistant.web.dto.request.update.UpdateSetRequest;

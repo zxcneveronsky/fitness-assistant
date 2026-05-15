@@ -1,6 +1,7 @@
 package com.example.fitness_assistant.web.controller;
 
 import com.example.fitness_assistant.application.service.user.DeleteUserUseCase;
+import com.example.fitness_assistant.application.service.user.LoginResult;
 import com.example.fitness_assistant.application.service.user.LoginUseCase;
 import com.example.fitness_assistant.application.service.user.RegisterUseCase;
 import com.example.fitness_assistant.web.dto.response.AuthResponse;
@@ -24,15 +25,14 @@ public class AuthController {
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public AuthResponse register(@Valid @RequestBody RegisterRequest request) {
-        var user = registerUseCase.register(userWebMapper.toDomain(request));
-        String token = loginUseCase.login(request.email(), request.password());
-        return userWebMapper.toAuthResponse(token, user);
+        LoginResult loginResult = registerUseCase.register(userWebMapper.toDomain(request));
+        return userWebMapper.toAuthResponse(loginResult);
     }
 
     @PostMapping("/login")
     public AuthResponse login(@Valid @RequestBody LoginRequest request) {
-        String token = loginUseCase.login(request.email(), request.password());
-        return new AuthResponse(token, request.email(), "USER");
+        LoginResult loginResult = loginUseCase.login(request.email(), request.password());
+        return userWebMapper.toAuthResponse(loginResult);
     }
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

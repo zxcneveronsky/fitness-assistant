@@ -6,12 +6,15 @@ import com.example.fitness_assistant.web.dto.request.update.UpdateWorkoutRequest
 import com.example.fitness_assistant.web.dto.response.workout.WorkoutResponse;
 import com.example.fitness_assistant.web.dto.response.workout.WorkoutWithExerciseResponse;
 import com.example.fitness_assistant.web.mapper.WorkoutWebMapper;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.data.domain.Pageable;
 
 
 @RestController
@@ -26,36 +29,39 @@ public class WorkoutController {
     private final WorkoutWebMapper workoutWebMapper;
 
     @GetMapping
-    public Page<WorkoutResponse> getAllWorkouts(@AuthenticationPrincipal UserDetails userDetails,Pageable pageable) {
-        return getAllWorkoutsUseCase.getAllWorkouts(userDetails,pageable)
+    public Page<WorkoutResponse> getAllWorkouts(@AuthenticationPrincipal UserDetails userDetails, @PageableDefault(size = 9) Pageable pageable) {
+        return getAllWorkoutsUseCase.getAllWorkouts(userDetails, pageable)
                 .map(workoutWebMapper::toResponse);
     }
 
     @GetMapping("/{id}")
     public WorkoutWithExerciseResponse getWorkoutById(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id){
-        return workoutWebMapper.toResponse(findWorkoutUseCase.findById(id,userDetails));
+        return workoutWebMapper.toResponse(findWorkoutUseCase.findById(id, userDetails));
     }
 
     @GetMapping("/search")
     public Page<WorkoutResponse> searchWorkout(@AuthenticationPrincipal UserDetails userDetails,
                                                 @RequestParam(required = false) String name,
-                                                Pageable pageable) {
+                                                @PageableDefault(size = 9) Pageable pageable) {
         return findWorkoutUseCase.findWorkout(name, userDetails, pageable)
                 .map(workoutWebMapper::toResponse);
     }
 
     @PostMapping
-    public WorkoutResponse createWorkout(@AuthenticationPrincipal UserDetails userDetails, @RequestBody CreateWorkoutRequest request){
-        return workoutWebMapper.toResponse(createWorkoutUseCase.createWorkout(userDetails,workoutWebMapper.toDomain(request)));
+    @ResponseStatus(HttpStatus.CREATED)
+    public WorkoutResponse createWorkout(@AuthenticationPrincipal UserDetails userDetails, @Valid @RequestBody CreateWorkoutRequest request){
+        return workoutWebMapper.toResponse(createWorkoutUseCase.createWorkout(userDetails, workoutWebMapper.toDomain(request)));
     }
 
     @PatchMapping
-    public WorkoutResponse updateWorkout(@AuthenticationPrincipal UserDetails userDetails, @RequestBody UpdateWorkoutRequest request) {
+    @ResponseStatus(HttpStatus.OK)
+    public WorkoutResponse updateWorkout(@AuthenticationPrincipal UserDetails userDetails, @Valid @RequestBody UpdateWorkoutRequest request) {
         return workoutWebMapper.toResponse(updateWorkoutUseCase.updateWorkout(userDetails, workoutWebMapper.toDomain(request)));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteWorkout(@AuthenticationPrincipal UserDetails userDetails,@PathVariable Long id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteWorkout(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
         deleteWorkoutUseCase.deleteWorkout(id, userDetails);
     }
 }

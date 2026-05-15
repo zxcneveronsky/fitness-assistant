@@ -15,12 +15,17 @@ public class CalculateFoodUseCase {
     public Food calculateNutrition(Long id, Double weight) {
         Food food = foodRepository.findById(id).orElseThrow(()->new FoodNotFoundException(id));
         Double k = weight / 100.0;
-        food.setKcal(food.getKcal() * k);
-        food.setProteins(food.getProteins() * k);
-        food.setFats(food.getFats() * k);
-        food.setCarbs(food.getCarbs() * k);
+        Food calculated = new Food(
+                food.getId(),
+                food.getName(),
+                food.getBrands(),
+                food.getKcal() * k,
+                food.getProteins() * k,
+                food.getFats() * k,
+                food.getCarbs() * k
+        );
         log.info("Пищевая ценность рассчитана | id={} | вес={}", id, weight);
-        return food;
+        return calculated;
     }
 
 }

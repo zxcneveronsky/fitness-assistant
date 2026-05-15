@@ -1,5 +1,6 @@
 package com.example.fitness_assistant.web.mapper;
 
+import com.example.fitness_assistant.application.service.user.LoginResult;
 import com.example.fitness_assistant.core.model.User;
 import com.example.fitness_assistant.web.dto.request.create.RegisterRequest;
 import com.example.fitness_assistant.web.dto.response.AuthResponse;
@@ -10,12 +11,11 @@ public class UserWebMapper {
 
     public User toDomain(RegisterRequest request) {
         return  new User (
-                null, // Этого поля нет в запросе, поэтому проставляем null
+                null,
                 request.email(),
                 request.password(),
                 User.Role.USER
         );
-
     }
 
     public AuthResponse toAuthResponse(String token, User user) {
@@ -23,6 +23,14 @@ public class UserWebMapper {
                 token,
                 user.getEmail(),
                 user.getRole().name()
+        );
+    }
+
+    public AuthResponse toAuthResponse(LoginResult result) {
+        return new AuthResponse(
+                result.token(),
+                result.email(),
+                result.role()
         );
     }
 }

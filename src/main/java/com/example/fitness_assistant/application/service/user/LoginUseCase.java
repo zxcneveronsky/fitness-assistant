@@ -1,4 +1,4 @@
-package com.example.fitness_assistant.application.service.user;
+﻿package com.example.fitness_assistant.application.service.user;
 
 import com.example.fitness_assistant.core.exception.InvalidPasswordException;
 import com.example.fitness_assistant.core.exception.UserNotFoundException;
@@ -19,7 +19,7 @@ public class LoginUseCase {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
-    public String login(String email, String password) {
+    public LoginResult login(String email, String password) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException(email));
 
@@ -29,6 +29,6 @@ public class LoginUseCase {
 
         String token = jwtService.generateToken(user);
         log.info("Пользователь вошёл в систему | id={} | email='{}'", user.getId(), user.getEmail());
-        return token;
+        return new LoginResult(token, user.getEmail(), user.getRole().name());
     }
 }
