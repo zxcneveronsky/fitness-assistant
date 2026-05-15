@@ -10,12 +10,14 @@ import com.example.fitness_assistant.core.repository.UserRepository;
 import com.example.fitness_assistant.core.repository.WorkoutSessionRepository;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CreateSetUseCase {
     private final UserRepository userRepository;
     private final SetRepository setRepository;
@@ -37,7 +39,9 @@ public class CreateSetUseCase {
         if (!exerciseRepository.existsById(exerciseId)) {
             throw new ExerciseNotFoundException(exerciseId);
         }
-        return setRepository.save(set);
+        Set savedSet = setRepository.save(set);
+        log.info("Подход создан | id={} | sessionId={}" , savedSet.getId(), savedSet.getSessionId());
+        return savedSet;
     }
 
 }

@@ -8,6 +8,7 @@ import com.example.fitness_assistant.core.repository.SetRepository;
 import com.example.fitness_assistant.core.repository.WorkoutSessionRepository;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class GetAllSetsUseCase {
     private final SetRepository setRepository;
     private final WorkoutSessionRepository workoutSessionRepository;
@@ -28,7 +30,12 @@ public class GetAllSetsUseCase {
         if (!exerciseRepository.existsById(exerciseId)){
             throw new ExerciseNotFoundException(exerciseId);
         }
-        return setRepository.findAllBySessionIdAndExerciseId(sessionId, exerciseId, pageable);
+        Page<Set> sets = setRepository.findAllBySessionIdAndExerciseId(sessionId, exerciseId, pageable);
+        log.info("Поиск подходов завершён | найдено={} | страница={}/{}",
+                sets.getTotalElements(),
+                sets.getNumber() + 1,
+                sets.getTotalPages());
+        return sets;
     }
 
 }

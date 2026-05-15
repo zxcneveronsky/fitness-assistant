@@ -6,6 +6,7 @@ import com.example.fitness_assistant.core.repository.SetRepository;
 import com.example.fitness_assistant.core.repository.WorkoutSessionRepository;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DeleteSetUseCase {
     private final SetRepository setRepository;
     private final WorkoutSessionRepository workoutSessionRepository;
@@ -27,6 +29,7 @@ public class DeleteSetUseCase {
             throw new SetNotFoundException(id);
         }
         setRepository.deleteById(id,sessionId);
+        log.info("Подход удален | id={}", id);
     }
 
 }

@@ -4,11 +4,13 @@ import com.example.fitness_assistant.core.exception.FoodNotFoundException;
 import com.example.fitness_assistant.core.model.Food;
 import com.example.fitness_assistant.core.repository.FoodRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UpdateFoodUseCase {
 
     private final FoodRepository foodRepository;
@@ -16,7 +18,7 @@ public class UpdateFoodUseCase {
     @Transactional
     public Food updateFood(Food foodUpdate) {
         Long id = foodUpdate.getId();
-        return foodRepository.findById(id)
+        Food updatedFood = foodRepository.findById(id)
                 .map(existingFood -> {
                     existingFood.setName(foodUpdate.getName() != null ? foodUpdate.getName() : existingFood.getName());
                     existingFood.setBrands(foodUpdate.getBrands() != null ? foodUpdate.getBrands() : existingFood.getBrands());
@@ -27,5 +29,7 @@ public class UpdateFoodUseCase {
                     return foodRepository.save(existingFood);
                 })
                 .orElseThrow(() -> new FoodNotFoundException(id));
+        log.info("Продукт обновлен | id={}", id);
+        return updatedFood;
     }
 }

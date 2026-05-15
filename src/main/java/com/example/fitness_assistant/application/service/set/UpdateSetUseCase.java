@@ -7,11 +7,13 @@ import com.example.fitness_assistant.core.repository.SetRepository;
 import com.example.fitness_assistant.core.repository.WorkoutSessionRepository;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UpdateSetUseCase {
     private final SetRepository setRepository;
     private final WorkoutSessionRepository workoutSessionRepository;
@@ -27,11 +29,13 @@ public class UpdateSetUseCase {
             throw new SetNotFoundException(id);
         }
 
-        return setRepository.findById(id, sessionId).map(existingSet -> {
+        Set updatedSet = setRepository.findById(id, sessionId).map(existingSet -> {
             existingSet.setReps(set.getReps() != null ? set.getReps() : existingSet.getReps());
             existingSet.setWeight(set.getWeight() != null ? set.getWeight() : existingSet.getWeight());
             return setRepository.save(existingSet);
         }).orElseThrow(()->new SetNotFoundException(id));
+        log.info("Подход обновлен | id={}", id);
+        return updatedSet;
     }
 
 }
