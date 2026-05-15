@@ -8,12 +8,14 @@ import com.example.fitness_assistant.core.repository.MealRepository;
 import com.example.fitness_assistant.core.repository.UserRepository;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CreateMealUseCase {
     private final FoodRepository foodRepository;
     private final MealRepository mealRepository;
@@ -27,7 +29,9 @@ public class CreateMealUseCase {
             throw new UserNotFoundException(userId);
         }
         meal.setUserId(userId);
-        return mealRepository.save(meal);
+        Meal savedMeal = mealRepository.save(meal);
+        log.info("Приём пищи создан | id={}", savedMeal.getId());
+        return savedMeal;
     }
 
     @Transactional
@@ -38,7 +42,7 @@ public class CreateMealUseCase {
             throw new UserNotFoundException(userId);
         }
         Double k = weight / 100.0;
-        return foodRepository.findById(id).map(
+        Meal savedMeal =  foodRepository.findById(id).map(
                 food ->{
                     meal.setUserId(userId);
                     meal.setName(food.getName());
@@ -50,6 +54,8 @@ public class CreateMealUseCase {
                     return mealRepository.save(meal);
                 }
         ).orElseThrow(()->new FoodNotFoundException(id));
+        log.info("Приём пищи создан | id={}", savedMeal.getId());
+        return savedMeal;
 
     }
 

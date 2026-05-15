@@ -4,12 +4,14 @@ import com.example.fitness_assistant.core.exception.UserProfileNotFoundException
 import com.example.fitness_assistant.core.repository.UserProfileRepository;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DeleteProfileUseCase {
 
     private final UserProfileRepository userProfileRepository;
@@ -22,5 +24,6 @@ public class DeleteProfileUseCase {
             throw new UserProfileNotFoundException(id);
         }
         userProfileRepository.deleteById(id);
+        log.info("Профиль удалён | userId={}", id);
     }
 }

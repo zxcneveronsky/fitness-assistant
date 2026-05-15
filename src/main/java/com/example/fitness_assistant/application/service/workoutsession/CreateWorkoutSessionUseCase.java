@@ -8,6 +8,7 @@ import com.example.fitness_assistant.core.repository.WorkoutRepository;
 import com.example.fitness_assistant.core.repository.WorkoutSessionRepository;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CreateWorkoutSessionUseCase {
 
     private final WorkoutSessionRepository workoutSessionRepository;
@@ -32,7 +34,7 @@ public class CreateWorkoutSessionUseCase {
         if (!workoutRepository.existsById(workoutId, userId)) {
             throw new WorkoutNotFoundException(workoutId);
         }
-        return workoutSessionRepository.save(
+        WorkoutSession session = workoutSessionRepository.save(
                 new WorkoutSession(
                     null,
                     workoutId,
@@ -41,6 +43,7 @@ public class CreateWorkoutSessionUseCase {
                     null
                 )
         );
-
+        log.info("Сессия тренировки создана | id={}", session.getId());
+        return session;
     }
 }

@@ -7,12 +7,14 @@ import com.example.fitness_assistant.core.repository.MealRepository;
 import com.example.fitness_assistant.core.repository.UserRepository;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DeleteMealUseCase {
     private final UserRepository userRepository;
     private final MealRepository mealRepository;
@@ -27,5 +29,6 @@ public class DeleteMealUseCase {
             throw new MealNotFoundException(id);
         }
         mealRepository.deleteById(id,userId);
+        log.info("Приём пищи удалён | id={}", id);
     }
 }

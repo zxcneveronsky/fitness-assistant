@@ -6,11 +6,13 @@ import com.example.fitness_assistant.core.model.User;
 import com.example.fitness_assistant.core.repository.UserRepository;
 import com.example.fitness_assistant.infrastructure.security.JwtService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class LoginUseCase {
 
     private final UserRepository userRepository;
@@ -25,6 +27,8 @@ public class LoginUseCase {
             throw new InvalidPasswordException();
         }
 
-        return jwtService.generateToken(user);
+        String token = jwtService.generateToken(user);
+        log.info("Пользователь вошёл в систему | id={} | email='{}'", user.getId(), user.getEmail());
+        return token;
     }
 }

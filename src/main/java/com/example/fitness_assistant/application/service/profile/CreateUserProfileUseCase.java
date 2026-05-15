@@ -7,12 +7,14 @@ import com.example.fitness_assistant.core.repository.UserProfileRepository;
 import com.example.fitness_assistant.core.repository.UserRepository;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CreateUserProfileUseCase {
 
     private final UserProfileRepository userProfileRepository;
@@ -28,6 +30,8 @@ public class CreateUserProfileUseCase {
         userProfile.setId(userId);
         userProfile.setUseAutopilot(true); // Ставим всегда true , чтобы сразу просчитывались targets при изменениях профиля(веса)
         targetCalculationService.applyAutoTargets(userProfile);
-        return userProfileRepository.save(userProfile);
+        UserProfile savedProfile = userProfileRepository.save(userProfile);
+        log.info("Профиль создан | userId={}", savedProfile.getId());
+        return savedProfile;
     }
 }

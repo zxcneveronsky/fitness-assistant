@@ -4,12 +4,14 @@ import com.example.fitness_assistant.core.exception.WorkoutSessionNotFoundExcept
 import com.example.fitness_assistant.core.repository.WorkoutSessionRepository;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DeleteWorkoutSessionUseCase {
 
     private final WorkoutSessionRepository workoutSessionRepository;
@@ -21,5 +23,6 @@ public class DeleteWorkoutSessionUseCase {
             throw new WorkoutSessionNotFoundException(id);
         }
         workoutSessionRepository.deleteById(id, userId);
+        log.info("Сессия тренировки удалена | id={}", id);
     }
 }

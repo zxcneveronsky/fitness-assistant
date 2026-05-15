@@ -7,12 +7,14 @@ import com.example.fitness_assistant.core.repository.MealRepository;
 import com.example.fitness_assistant.core.repository.UserRepository;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UpdateMealUseCase {
 
     private final UserRepository userRepository;
@@ -25,7 +27,7 @@ public class UpdateMealUseCase {
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException(userId);
         }
-        return mealRepository.findById(mealId, userId)
+        Meal updatedMeal = mealRepository.findById(mealId, userId)
                 .map(existingMeal -> {
                     existingMeal.setName(mealUpdate.getName() != null ? mealUpdate.getName() : existingMeal.getName());
                     existingMeal.setBrands(mealUpdate.getBrands() != null ? mealUpdate.getBrands() : existingMeal.getBrands());
@@ -37,5 +39,7 @@ public class UpdateMealUseCase {
                     return mealRepository.save(existingMeal);
                 })
                 .orElseThrow(() -> new MealNotFoundException(mealId));
+        log.info("Приём пищи обновлён | id={}", updatedMeal.getId());
+        return updatedMeal;
     }
 }

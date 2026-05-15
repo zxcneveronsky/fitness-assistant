@@ -6,12 +6,14 @@ import com.example.fitness_assistant.core.model.UserProfile;
 import com.example.fitness_assistant.core.repository.UserProfileRepository;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UpdateUserProfileUseCase {
 
     private final UserProfileRepository userProfileRepository;
@@ -20,7 +22,7 @@ public class UpdateUserProfileUseCase {
     @Transactional
     public UserProfile updateUserProfile(UserDetails userDetails, UserProfile profileUpdate) {
         Long id = ((UserDetailsAdapter) userDetails).getUserId();
-        return userProfileRepository.findById(id)
+        UserProfile updatedProfile = userProfileRepository.findById(id)
                 .map(existingProfile -> {
                     existingProfile.setName(profileUpdate.getName() != null ? profileUpdate.getName() : existingProfile.getName());
                     existingProfile.setBirthDate(profileUpdate.getBirthDate() != null ? profileUpdate.getBirthDate() : existingProfile.getBirthDate());
@@ -36,18 +38,23 @@ public class UpdateUserProfileUseCase {
                     return userProfileRepository.save(existingProfile);
                 })
                 .orElseThrow(() -> new UserProfileNotFoundException(id));
+        log.info("Профиль обновлён | userId={}", updatedProfile.getId());
+        return updatedProfile;
     }
     @Transactional
     public UserProfile updateAutopilotStatus(UserDetails userDetails, boolean enabled){
         Long id = ((UserDetailsAdapter) userDetails).getUserId();
-        return userProfileRepository.findById(id)
-                .map(updateStatusProfile -> {
-                    updateStatusProfile.setUseAutopilot(enabled);
+        UserProfile updatedProfile = userProfileRepository.findById(id)
+                .map(profile -> {
+                    profile.setUseAutopilot(enabled);
                     if (enabled){
-                        targetCalculationService.applyAutoTargets(updateStatusProfile);
+                        targetCalculationService.applyAutoTargets(profile);
                     }
-                    return userProfileRepository.save(updateStatusProfile);
-                }).orElseThrow(()-> new UserProfileNotFoundException(id));
+                    return userProfileRepository.save(profile);
+                })
+                .orElseThrow(() -> new UserProfileNotFoundException(id));
+        log.info("Статус автопилота обновлён | userId={} | enabled={}", updatedProfile.getId(), enabled);
+        return updatedProfile;
     }
 
 

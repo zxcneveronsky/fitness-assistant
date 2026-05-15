@@ -6,12 +6,14 @@ import com.example.fitness_assistant.core.repository.HydrationRepository;
 import com.example.fitness_assistant.core.repository.UserRepository;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DeleteHydrationUseCase {
 
     private final UserRepository userRepository;
@@ -27,5 +29,6 @@ public class DeleteHydrationUseCase {
             throw new HydrationNotFoundException(id);
         }
         hydrationRepository.deleteById(id, userId);
+        log.info("Запись гидратации удалена | id={}", id);
     }
 }
