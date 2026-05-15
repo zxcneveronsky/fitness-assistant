@@ -5,11 +5,13 @@ import com.example.fitness_assistant.core.model.Exercise;
 import com.example.fitness_assistant.core.repository.ExerciseRepository;
 import com.example.fitness_assistant.core.repository.MuscleRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UpdateExerciseUseCase {
 
     private final ExerciseRepository exerciseRepository;
@@ -18,7 +20,7 @@ public class UpdateExerciseUseCase {
     @Transactional
     public Exercise updateExercise(Exercise exerciseUpdate) {
         Long id = exerciseUpdate.getId();
-        return exerciseRepository.findById(id)
+        Exercise exercise = exerciseRepository.findById(id)
                 .map(existingExercise -> {
                     existingExercise.setName(exerciseUpdate.getName() != null ? exerciseUpdate.getName() : existingExercise.getName());
                     existingExercise.setDescription(exerciseUpdate.getDescription() != null ? exerciseUpdate.getDescription() : existingExercise.getDescription());
@@ -31,5 +33,7 @@ public class UpdateExerciseUseCase {
                     return exerciseRepository.save(existingExercise);
                 })
                 .orElseThrow(() -> new ExerciseNotFoundException(id));
+        log.info("Упражнение обновлено | id={}", id);
+        return exercise;
     }
 }

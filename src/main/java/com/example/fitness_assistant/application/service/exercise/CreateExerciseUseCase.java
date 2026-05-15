@@ -4,11 +4,13 @@ import com.example.fitness_assistant.core.model.Exercise;
 import com.example.fitness_assistant.core.repository.ExerciseRepository;
 import com.example.fitness_assistant.core.repository.MuscleRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CreateExerciseUseCase {
 
     private final ExerciseRepository exerciseRepository;
@@ -21,7 +23,10 @@ public class CreateExerciseUseCase {
                 .map(muscle -> muscleRepository.getReferenceById(muscle.getId()))
                 .toList()
         );
-        return exerciseRepository.save(exercise);
+        Exercise savedExercise = exerciseRepository.save(exercise);
+        log.info("Упражнение создано | id={} | название='{}'",
+                savedExercise.getId(), savedExercise.getName());
+        return savedExercise;
     }
 
 }
