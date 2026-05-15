@@ -8,6 +8,8 @@ import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaUserProfi
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaUserRepository;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -22,12 +24,14 @@ public class UserProfileRepositoryAdapter implements UserProfileRepository {
     private final EntityManager entityManager;
 
     @Override
+    @Cacheable("userProfiles")
     public Optional<UserProfile> findById(Long id) {
         return jpaUserProfileRepository.findById(id)
                 .map(userProfileMapper::toDomain);
     }
 
     @Override
+    @CacheEvict(value = "userProfiles", allEntries = true)
     public UserProfile save(UserProfile userProfile) {
         UserProfileEntity entity = userProfileMapper.toEntity(userProfile);
         entity.setUser(jpaUserRepository.getReferenceById(userProfile.getId()));
@@ -41,6 +45,7 @@ public class UserProfileRepositoryAdapter implements UserProfileRepository {
     }
 
     @Override
+    @CacheEvict(value = "userProfiles", allEntries = true)
     public void deleteById(Long id) {
         jpaUserProfileRepository.deleteById(id);
     }

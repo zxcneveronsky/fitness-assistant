@@ -5,6 +5,8 @@ import com.example.fitness_assistant.core.repository.ExerciseRepository;
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaExerciseRepository;
 import com.example.fitness_assistant.infrastructure.mapper.ExerciseMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
@@ -20,6 +22,7 @@ public class ExerciseRepositoryAdapter implements ExerciseRepository {
     private final ExerciseMapper exerciseMapper;
 
     @Override
+    @Cacheable("exercises")
     public Optional<Exercise> findById(Long id) {
         return jpaExerciseRepository.findById(id)
                 .map(exerciseMapper::toDomain);
@@ -30,6 +33,7 @@ public class ExerciseRepositoryAdapter implements ExerciseRepository {
                 .map(exerciseMapper::toDomain);
     }
     @Override
+    @Cacheable("exercises")
     public List<Exercise> findAllByIdIn(List<Long> id) {
         return jpaExerciseRepository.findAllByIdIn(id).stream().map(exerciseMapper::toDomain).toList();
     }
@@ -41,11 +45,13 @@ public class ExerciseRepositoryAdapter implements ExerciseRepository {
     }
 
     @Override
+    @CacheEvict(value = "exercises", allEntries = true)
     public Exercise save(Exercise exercise) {
         return exerciseMapper.toDomain(jpaExerciseRepository.save(exerciseMapper.toEntity(exercise)));
     }
 
     @Override
+    @CacheEvict(value = "exercises", allEntries = true)
     public void deleteById(Long id) {
         jpaExerciseRepository.deleteById(id);
     }

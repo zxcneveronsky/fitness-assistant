@@ -5,6 +5,8 @@ import com.example.fitness_assistant.core.repository.FoodRepository;
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaFoodRepository;
 import com.example.fitness_assistant.infrastructure.mapper.FoodMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
@@ -19,6 +21,7 @@ public class FoodRepositoryAdapter implements FoodRepository {
     private final FoodMapper foodMapper;
 
     @Override
+    @Cacheable("food")
     public Optional<Food> findById(Long id) {
         return jpaFoodRepository.findById(id)
                 .map(foodMapper::toDomain);
@@ -37,11 +40,13 @@ public class FoodRepositoryAdapter implements FoodRepository {
     }
 
     @Override
+    @CacheEvict(value = "food", allEntries = true)
     public Food save(Food food) {
         return foodMapper.toDomain(jpaFoodRepository.save(foodMapper.toEntity(food)));
     }
 
     @Override
+    @CacheEvict(value = "food", allEntries = true)
     public void deleteById(Long id) {
         jpaFoodRepository.deleteById(id);
     }
