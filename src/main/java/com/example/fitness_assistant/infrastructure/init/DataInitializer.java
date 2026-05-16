@@ -3,15 +3,18 @@ package com.example.fitness_assistant.infrastructure.init;
 import com.example.fitness_assistant.infrastructure.persistence.entity.ExerciseEntity;
 import com.example.fitness_assistant.infrastructure.persistence.entity.FoodEntity;
 import com.example.fitness_assistant.infrastructure.persistence.entity.MuscleEntity;
+import com.example.fitness_assistant.infrastructure.persistence.entity.UserEntity;
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaExerciseRepository;
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaFoodRepository;
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaMuscleRepository;
+import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaUserRepository;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -29,6 +32,8 @@ public class DataInitializer implements CommandLineRunner {
     private final JpaFoodRepository foodRepository;
     private final JpaMuscleRepository muscleRepository;
     private final JpaExerciseRepository exerciseRepository;
+    private final JpaUserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public void run(String... args) {
@@ -40,7 +45,22 @@ public class DataInitializer implements CommandLineRunner {
         loadFood();
         loadMuscles();
         loadExercises();
+        createDemoUser();
         log.info("Инициализация данных завершена");
+    }
+
+    private void createDemoUser() {
+        if (userRepository.existsByEmail("user@example.com")) {
+            return;
+        }
+        UserEntity demo = new UserEntity(
+                null,
+                "user@example.com",
+                passwordEncoder.encode("password123"),
+                UserEntity.Role.USER
+        );
+        userRepository.save(demo);
+        log.info("Демо-пользователь создан: user@example.com / password123");
     }
 
     private void loadFood() {

@@ -85,6 +85,21 @@ java -jar target/fitness-assistant-0.0.1-SNAPSHOT.jar
 
 Для всех остальных эндпоинтов требуется Bearer JWT-токен.
 
+### Демо-пользователь
+
+При первом запуске создаётся демо-пользователь:
+
+```bash
+curl -X POST http://localhost:8080/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"user@example.com","password":"password123"}'
+```
+
+Полученный токен используйте в заголовке:
+```
+Authorization: Bearer <token>
+```
+
 ---
 
 ## API Endpoints
