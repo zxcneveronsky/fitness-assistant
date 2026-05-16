@@ -1,0 +1,445 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Fitness Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Manrope:wght@800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #ffffff; color: #1d1d1f; overflow-x: hidden; }
+        .hero-title { font-family: 'Manrope', sans-serif; letter-spacing: -0.04em; line-height: 0.9; }
+        .glass-nav { background: rgba(255, 255, 255, 0.8); backdrop-filter: saturate(180%) blur(20px); }
+        .dash-card { transition: all 0.5s cubic-bezier(0.15, 0.83, 0.66, 1); border-radius: 2.2rem; border: 1px solid #f2f2f7; background: #ffffff; }
+        .dash-card:hover { transform: translateY(-4px); box-shadow: 0 20px 50px rgba(0,0,0,0.05); }
+        .feature-card { transition: all 0.5s cubic-bezier(0.15, 0.83, 0.66, 1); border-radius: 2.2rem; border: 1px solid #f2f2f7; background: rgba(245,245,247,0.4); }
+        .feature-card:hover { transform: translateY(-8px); background: #fff; box-shadow: 0 30px 60px rgba(0,0,0,0.06); border-color: #0071e3; }
+        .btn-apple { transition: all 0.3s cubic-bezier(0.4,0,0.2,1); border-radius: 1.25rem; }
+        .btn-apple:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .donut-wrap { position: relative; }
+        .donut-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; pointer-events: none; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(4px); z-index: 100; display: none; align-items: center; justify-content: center; padding: 1rem; }
+        .modal-overlay.open { display: flex; }
+        .modal-box { border-radius: 2rem; background: #fff; max-width: 400px; width: 100%; padding: 2rem; box-shadow: 0 40px 80px rgba(0,0,0,0.15); }
+    </style>
+</head>
+<body>
+
+<nav class="glass-nav fixed top-0 w-full z-50 h-16 flex items-center px-4 md:px-10 border-b border-gray-100/50">
+    <div class="w-1/2 lg:w-1/4">
+        <a id="logoLink" href="/index.html" class="font-extrabold text-xl tracking-tighter">Fitness<span class="text-blue-600">Assistant</span></a>
+    </div>
+    <div class="hidden lg:flex flex-1 justify-center overflow-hidden px-4">
+        <p id="motivation-text" class="animate__animated animate__fadeIn text-[10px] font-black uppercase tracking-[0.4em] text-black whitespace-nowrap">
+            Дисциплина — это твоя свобода
+        </p>
+    </div>
+    <div class="w-1/2 lg:w-1/4 flex justify-end items-center gap-5">
+        <span id="nav-email" class="hidden sm:block text-xs font-bold text-gray-400 truncate max-w-[150px]"></span>
+            <button onclick="logout()" class="bg-gray-100 text-gray-700 text-sm font-bold px-4 py-2 rounded-xl hover:bg-gray-200">Выйти</button>
+            <button onclick="deleteAccount()" class="text-gray-400 hover:text-red-600 ml-1 text-sm" title="Удалить аккаунт">🗑️</button>
+        </div>
+    </nav>
+    <div id="activeSessionBanner" class="hidden bg-yellow-50 border-b border-yellow-200 px-4 md:px-10 py-2 text-sm flex items-center justify-between" style="position:sticky;top:64px;z-index:40">
+        <span>⏳ <strong>Активная тренировка</strong> — <span id="bannerName"></span></span>
+        <a id="bannerLink" href="" class="bg-yellow-200 text-yellow-800 px-4 py-1 rounded-lg font-semibold hover:bg-yellow-300">Продолжить</a>
+    </div>
+
+<main class="pt-24 pb-20 px-6 max-w-6xl mx-auto">
+    <div id="noProfileCard" class="hidden bg-yellow-50 border border-yellow-200 rounded-2xl p-6 mb-6 text-center">
+        <p class="text-yellow-800 font-bold text-lg mb-2">Профиль не создан</p>
+        <p class="text-yellow-700 mb-4">Создайте профиль, чтобы отслеживать прогресс</p>
+        <a href="/profile.html" class="bg-blue-600 text-white px-6 py-2 rounded-xl font-bold">Создать профиль</a>
+    </div>
+
+    <div class="animate__animated animate__fadeInDown mb-10 pt-4">
+        <h1 class="hero-title text-5xl lg:text-6xl font-extrabold tracking-tighter mb-2">
+            Привет, <span id="greeting-name" class="text-blue-600">чемпион</span>
+        </h1>
+        <p class="text-gray-400 text-lg font-medium">Вот твой прогресс на сегодня</p>
+    </div>
+
+    <section class="animate__animated animate__fadeIn mb-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="dash-card p-4 md:p-8" style="display:grid; grid-template-rows: auto 1fr auto auto; gap:0.75rem">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Вода сегодня</p>
+                    <p class="text-3xl font-black text-gray-900"><span id="water-current">0</span> <span class="text-lg text-gray-400 font-medium">мл</span></p>
+                </div>
+                <div class="flex gap-2">
+    <a href="/hydration.html" class="bg-green-50 text-green-600 font-black text-xl w-12 h-12 flex items-center justify-center rounded-2xl hover:bg-green-100 transition">+</a>
+</div>
+            </div>
+            <div class="donut-wrap w-36 h-36 mx-auto self-center">
+                <canvas id="waterChart"></canvas>
+                <div class="donut-center">
+                    <p id="water-pct" class="text-2xl font-black text-gray-900">0%</p>
+                    <p class="text-[10px] text-gray-400 font-bold">из <span id="water-norm">0</span> мл</p>
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <input type="number" id="custom-water" placeholder="мл" class="flex-1 bg-gray-50 border border-gray-100 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-400">
+                <button onclick="quickAddWater()" class="bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-xl hover:bg-blue-700">+</button>
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+                <button onclick="quickAddWater(150)" class="text-[10px] font-black bg-blue-50 text-blue-600 py-2 rounded-xl hover:bg-blue-100">+150 мл</button>
+                <button onclick="quickAddWater(250)" class="text-[10px] font-black bg-blue-50 text-blue-600 py-2 rounded-xl hover:bg-blue-100">+250 мл</button>
+                <button onclick="quickAddWater(500)" class="text-[10px] font-black bg-blue-50 text-blue-600 py-2 rounded-xl hover:bg-blue-100">+500 мл</button>
+            </div>
+        </div>
+
+        <div class="dash-card p-4 md:p-8" style="display:grid; grid-template-rows: auto 1fr auto; gap:0.75rem">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Калории сегодня</p>
+                    <p class="text-3xl font-black text-gray-900"><span id="kcal-current">0</span> <span class="text-lg text-gray-400 font-medium">ккал</span></p>
+                </div>
+                <a href="/meal.html" class="bg-green-50 text-green-600 font-black text-xl w-12 h-12 flex items-center justify-center rounded-2xl">+</a>
+            </div>
+            <div class="donut-wrap w-36 h-36 mx-auto self-center">
+                <canvas id="kcalChart"></canvas>
+                <div class="donut-center">
+                    <p id="kcal-pct" class="text-2xl font-black text-gray-900">0%</p>
+                    <p class="text-[10px] text-gray-400 font-bold">из <span id="kcal-norm">0</span></p>
+                </div>
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+                <div class="bg-blue-50/50 rounded-xl p-3 text-center">
+                    <p class="text-[9px] font-black text-blue-500 uppercase">Белки</p>
+                    <p class="text-base font-black text-blue-600 leading-none"><span id="protein-current">0</span></p>
+                    <p class="text-xs font-black text-blue-800 mt-1"><span id="protein-norm">0</span> г</p>
+                </div>
+                <div class="bg-red-50/50 rounded-xl p-3 text-center">
+                    <p class="text-[9px] font-black text-red-500 uppercase">Жиры</p>
+                    <p class="text-base font-black text-red-600 leading-none"><span id="fat-current">0</span></p>
+                    <p class="text-xs font-black text-red-800 mt-1"><span id="fat-norm">0</span> г</p>
+                </div>
+                <div class="bg-green-50/50 rounded-xl p-3 text-center">
+                    <p class="text-[9px] font-black text-green-500 uppercase">Углеводы</p>
+                    <p class="text-base font-black text-green-600 leading-none"><span id="carb-current">0</span></p>
+                    <p class="text-xs font-black text-green-800 mt-1"><span id="carb-norm">0</span> г</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="dash-card p-4 md:p-8 flex flex-col">
+            <div class="flex justify-between items-center mb-4">
+                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Параметры тела</p>
+                <button onclick="openBodyModal()" class="text-[10px] font-black text-blue-600 uppercase tracking-widest hover:opacity-70">Изменить</button>
+            </div>
+            <div class="flex-1 flex items-stretch gap-3 md:gap-6">
+                <div class="flex items-center justify-center flex-1">
+                    <svg id="bodySilhouette" viewBox="0 0 60 130" fill="currentColor" style="opacity:0.18; width:80px">
+                        <ellipse cx="30" cy="12" rx="10" ry="12"/>
+                        <path d="M15 30 Q10 50 12 75 L20 75 L20 108 L25 108 L25 75 L35 75 L35 108 L40 108 L40 75 L48 75 Q50 50 45 30 Q40 24 30 24 Q20 24 15 30Z"/>
+                        <path d="M15 30 Q5 35 6 58 L12 56 Q13 42 18 36Z"/>
+                        <path d="M45 30 Q55 35 54 58 L48 56 Q47 42 42 36Z"/>
+                    </svg>
+                </div>
+                <div class="flex flex-col justify-center space-y-5 text-right">
+                    <div>
+                        <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Рост</p>
+                        <p class="text-3xl font-black text-gray-900 leading-none"><span id="profile-height">—</span> <span class="text-sm font-medium text-gray-400">см</span></p>
+                    </div>
+                    <div>
+                        <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Вес</p>
+                        <p class="text-3xl font-black text-gray-900 leading-none"><span id="profile-weight">—</span> <span class="text-sm font-medium text-gray-400">кг</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="animate__animated animate__fadeIn animate__delay-1s mb-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <a href="/profile.html" class="feature-card p-4 md:p-8 flex items-center gap-4 md:gap-8 group">
+            <div class="text-5xl group-hover:scale-110 transition duration-500 shrink-0">👤</div>
+            <div>
+                <h3 class="font-bold text-xl text-gray-900 leading-none">Персональные параметры</h3>
+                <p class="text-[10px] text-blue-500 mt-3 uppercase tracking-widest font-black">Имя, возраст, цели</p>
+            </div>
+        </a>
+        <a href="/history.html" class="feature-card p-4 md:p-8 flex items-center gap-4 md:gap-8 group">
+            <div class="text-5xl group-hover:scale-110 transition duration-500 shrink-0">📋</div>
+            <div>
+                <h3 class="font-bold text-xl text-gray-900 leading-none">История тренировок</h3>
+                <p class="text-[10px] text-blue-500 mt-3 uppercase tracking-widest font-black">Все завершённые сессии</p>
+            </div>
+        </a>
+    </section>
+
+    <section class="animate__animated animate__fadeIn animate__delay-1s mb-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <a href="/explore/exercises.html" class="feature-card p-4 md:p-8 flex items-center gap-4 md:gap-8 group">
+            <div class="text-5xl group-hover:scale-110 transition duration-500 shrink-0">💪</div>
+            <div>
+                <h3 class="font-bold text-xl text-gray-900 leading-none">Поиск упражнений</h3>
+                <p class="text-[10px] text-blue-500 mt-3 uppercase tracking-widest font-black">База упражнений</p>
+            </div>
+        </a>
+        <a href="/explore/food.html" class="feature-card p-4 md:p-8 flex items-center gap-4 md:gap-8 group">
+            <div class="text-5xl group-hover:scale-110 transition duration-500 shrink-0">🍎</div>
+            <div>
+                <h3 class="font-bold text-xl text-gray-900 leading-none">Поиск продуктов</h3>
+                <p class="text-[10px] text-blue-500 mt-3 uppercase tracking-widest font-black">КБЖУ продуктов</p>
+            </div>
+        </a>
+        <a href="/explore/calculator.html" class="feature-card p-4 md:p-8 flex items-center gap-4 md:gap-8 group">
+            <div class="text-5xl group-hover:scale-110 transition duration-500 shrink-0">🧮</div>
+            <div>
+                <h3 class="font-bold text-xl text-gray-900 leading-none">Калькулятор КБЖУ</h3>
+                <p class="text-[10px] text-blue-500 mt-3 uppercase tracking-widest font-black">Рассчёт на вес</p>
+            </div>
+        </a>
+    </section>
+
+    <section class="animate__animated animate__fadeIn animate__delay-1s grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <a href="/workout.html" class="feature-card p-4 md:p-8 flex items-center gap-4 md:gap-8 group">
+            <div class="text-5xl group-hover:scale-110 transition duration-500 shrink-0">🏋️</div>
+            <div>
+                <h3 class="font-bold text-xl text-gray-900 leading-none">Тренировки</h3>
+                <p class="text-[10px] text-blue-500 mt-3 uppercase tracking-widest font-black">Создать и начать</p>
+            </div>
+        </a>
+        <a href="/hydration.html" class="feature-card p-4 md:p-8 flex items-center gap-4 md:gap-8 group">
+            <div class="text-5xl group-hover:scale-110 transition duration-500 shrink-0">💧</div>
+            <div>
+                <h3 class="font-bold text-xl text-gray-900 leading-none">Трекер воды</h3>
+                <p class="text-[10px] text-blue-500 mt-3 uppercase tracking-widest font-black">Запись потребления</p>
+            </div>
+        </a>
+        <a href="/meal.html" class="feature-card p-4 md:p-8 flex items-center gap-4 md:gap-8 group">
+            <div class="text-5xl group-hover:scale-110 transition duration-500 shrink-0">🥗</div>
+            <div>
+                <h3 class="font-bold text-xl text-gray-900 leading-none">Трекер питания</h3>
+                <p class="text-[10px] text-blue-500 mt-3 uppercase tracking-widest font-black">Добавить приём пищи</p>
+            </div>
+        </a>
+    </section>
+</main>
+
+<div class="modal-overlay" id="bodyModal">
+    <div class="modal-box animate__animated animate__fadeInUp">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="font-black text-xl text-gray-900">Обновить параметры</h2>
+            <button onclick="closeBodyModal()" class="text-gray-400 hover:text-gray-600 text-2xl font-bold">&times;</button>
+        </div>
+        <div class="mb-5">
+            <div class="flex justify-between items-center mb-2">
+                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Рост</label>
+                <span class="font-black text-xl text-gray-900"><span id="modal-height-val">170</span> см</span>
+            </div>
+            <input type="range" id="modal-height" min="140" max="220" value="170" step="1" oninput="document.getElementById('modal-height-val').textContent=this.value" class="w-full">
+        </div>
+        <div class="mb-8">
+            <div class="flex justify-between items-center mb-2">
+                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Вес</label>
+                <span class="font-black text-xl text-gray-900"><span id="modal-weight-val">70</span> кг</span>
+            </div>
+            <input type="range" id="modal-weight" min="40" max="180" value="70" step="1" oninput="document.getElementById('modal-weight-val').textContent=this.value" class="w-full">
+        </div>
+        <button onclick="saveBodyParams()" class="btn-apple bg-blue-600 text-white font-bold py-4 w-full text-base shadow-xl shadow-blue-100">Сохранить</button>
+    </div>
+</div>
+
+<script src="/js/api.js"></script>
+<script>
+    if (!isAuth()) window.location.href = '/login.html';
+    if (isAuth()) document.getElementById('logoLink').href = '/dashboard.html';
+
+    const email = localStorage.getItem('email');
+    let profile = { height: null, weight: null };
+    let waterNorm = 2000;
+    let kcalNorm = 2000;
+    let waterToday = 0;
+    let kcalToday = 0;
+    let proteinsToday = 0;
+    let fatsToday = 0;
+    let carbsToday = 0;
+    let proteinsNorm = 0;
+    let fatsNorm = 0;
+    let carbsNorm = 0;
+    let waterChartObj, kcalChartObj;
+
+    window.onload = async () => {
+        document.getElementById('nav-email').textContent = email || '';
+        startMotivation();
+        initCharts();
+        renderActiveSessionBanner(); syncActiveSessions();
+        await loadData();
+    };
+
+    window.addEventListener('pageshow', loadData);
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) loadData();
+    });
+
+    const phrases = [
+        "Дисциплина — это твоя свобода",
+        "Каждый день — новый шанс",
+        "Твоё тело — результат решений",
+        "Будь сильнее своих оправданий",
+        "Не ищи оправданий, ищи возможности"
+    ];
+    let phraseIdx = 0;
+    function startMotivation() {
+        const el = document.getElementById('motivation-text');
+        if (!el) return;
+        setInterval(() => {
+            el.classList.remove('animate__fadeIn');
+            el.classList.add('animate__fadeOut');
+            setTimeout(() => {
+                phraseIdx = (phraseIdx + 1) % phrases.length;
+                el.innerText = phrases[phraseIdx];
+                el.classList.remove('animate__fadeOut');
+                el.classList.add('animate__fadeIn');
+            }, 800);
+        }, 5000);
+    }
+
+    async function loadData() {
+        try {
+            const targets = await request('/profile/targets');
+            if (!targets) return;
+            waterNorm = (targets.targetHydration || 2) * 1000;
+            kcalNorm = targets.targetKcal || 2000;
+            proteinsNorm = targets.targetProteins || 0;
+            fatsNorm = targets.targetFats || 0;
+            carbsNorm = targets.targetCarbs || 0;
+            document.getElementById('water-norm').textContent = waterNorm.toFixed(0);
+            document.getElementById('kcal-norm').textContent = kcalNorm.toFixed(0);
+            document.getElementById('protein-norm').textContent = proteinsNorm.toFixed(0);
+            document.getElementById('fat-norm').textContent = fatsNorm.toFixed(0);
+            document.getElementById('carb-norm').textContent = carbsNorm.toFixed(0);
+        } catch (e) { /* no profile yet */ }
+
+        try {
+            const profileData = await request('/profile');
+            if (profileData) {
+                profile.height = profileData.height;
+                profile.weight = profileData.weight;
+                document.getElementById('profile-height').textContent = profileData.height ? Math.round(profileData.height) : '—';
+                document.getElementById('profile-weight').textContent = profileData.weight ? Math.round(profileData.weight) : '—';
+                if (profileData.name) document.getElementById('greeting-name').textContent = profileData.name;
+                setSilhouette(profileData.gender);
+                if (profileData.height) {
+                    document.getElementById('modal-height').value = Math.round(profileData.height);
+                    document.getElementById('modal-height-val').textContent = Math.round(profileData.height);
+                }
+                if (profileData.weight) {
+                    document.getElementById('modal-weight').value = Math.round(profileData.weight);
+                    document.getElementById('modal-weight-val').textContent = Math.round(profileData.weight);
+                }
+            }
+        } catch (e) {
+            document.getElementById('noProfileCard').classList.remove('hidden');
+        }
+
+        const today = new Date().toISOString();
+        try {
+            const kcalData = await request(`/meal/daily?localDateTime=${encodeURIComponent(today)}`);
+            if (kcalData) {
+                kcalToday = kcalData.kcal || 0;
+                proteinsToday = kcalData.proteins || 0;
+                fatsToday = kcalData.fats || 0;
+                carbsToday = kcalData.carbs || 0;
+                document.getElementById('protein-current').textContent = proteinsToday.toFixed(1);
+                document.getElementById('fat-current').textContent = fatsToday.toFixed(1);
+                document.getElementById('carb-current').textContent = carbsToday.toFixed(1);
+            }
+        } catch (e) {}
+
+        try {
+            const waterData = await request(`/hydration/daily?localDateTime=${encodeURIComponent(today)}`);
+            if (waterData) waterToday = (waterData.totalAmount || 0) * 1000;
+        } catch (e) {}
+
+        updateCharts();
+    }
+
+    function initCharts() {
+        const wCtx = document.getElementById('waterChart').getContext('2d');
+        waterChartObj = new Chart(wCtx, {
+            type: 'doughnut',
+            data: { datasets: [{ data: [0, 100], backgroundColor: ['#0071e3', '#f0f7ff'], borderWidth: 0, cutout: '75%' }] },
+            options: { plugins: { legend: { display: false }, tooltip: { enabled: false } }, animation: { duration: 600 } }
+        });
+        const kcalCtx = document.getElementById('kcalChart').getContext('2d');
+        kcalChartObj = new Chart(kcalCtx, {
+            type: 'doughnut',
+            data: { datasets: [{ data: [0, 100], backgroundColor: ['#34c759', '#f0fff4'], borderWidth: 0, cutout: '75%' }] },
+            options: { plugins: { legend: { display: false }, tooltip: { enabled: false } }, animation: { duration: 600 } }
+        });
+    }
+
+    function updateCharts() {
+        const wPct = waterNorm > 0 ? Math.min(Math.round((waterToday / waterNorm) * 100), 100) : 0;
+        document.getElementById('water-pct').textContent = wPct + '%';
+        document.getElementById('water-current').textContent = waterToday.toFixed(0);
+        waterChartObj.data.datasets[0].data = [waterToday, Math.max(waterNorm - waterToday, 0)];
+        waterChartObj.update();
+
+        const kPct = kcalNorm > 0 ? Math.min(Math.round((kcalToday / kcalNorm) * 100), 100) : 0;
+        document.getElementById('kcal-pct').textContent = kPct + '%';
+        document.getElementById('kcal-current').textContent = kcalToday.toFixed(0);
+        kcalChartObj.data.datasets[0].data = [kcalToday, Math.max(kcalNorm - kcalToday, 0)];
+        kcalChartObj.update();
+    }
+
+    async function quickAddWater(ml) {
+        if (ml) {
+            try {
+                await request('/hydration', { method: 'POST', body: JSON.stringify({ name: 'Вода', amount: ml / 1000, consumedAt: new Date().toISOString() }) });
+                waterToday += ml;
+                updateCharts();
+            } catch (e) { alert(e.message); }
+        } else {
+            const val = parseInt(document.getElementById('custom-water').value);
+            if (val > 0) {
+                try {
+                    await request('/hydration', { method: 'POST', body: JSON.stringify({ name: 'Вода', amount: val / 1000, consumedAt: new Date().toISOString() }) });
+                    waterToday += val;
+                    document.getElementById('custom-water').value = '';
+                    updateCharts();
+                } catch (e) { alert(e.message); }
+            }
+        }
+    }
+
+    const MALE_SVG = '<ellipse cx="30" cy="12" rx="10" ry="12"/><path d="M12 30 Q5 52 10 76 L20 76 L20 108 L25 108 L25 76 L35 76 L35 108 L40 108 L40 76 L50 76 Q55 52 48 30 Q44 22 30 22 Q16 22 12 30Z"/><path d="M12 30 Q2 38 4 62 L10 60 Q12 44 16 37Z"/><path d="M48 30 Q58 38 56 62 L50 60 Q48 44 44 37Z"/>';
+    const FEMALE_SVG = '<ellipse cx="30" cy="12" rx="9" ry="11"/><path d="M18 30 Q14 46 10 64 L19 72 L19 108 L25 108 L25 72 L35 72 L35 108 L41 108 L41 72 L50 64 Q46 46 42 30 Q38 25 30 25 Q22 25 18 30Z"/><path d="M18 30 Q8 36 8 55 L14 53 Q15 42 20 36Z"/><path d="M42 30 Q52 36 52 55 L46 53 Q45 42 40 36Z"/>';
+
+    function setSilhouette(gender) {
+        const svg = document.getElementById('bodySilhouette');
+        if (!svg) return;
+        if (gender === 'MALE') {
+            svg.innerHTML = MALE_SVG;
+        } else if (gender === 'FEMALE') {
+            svg.innerHTML = FEMALE_SVG;
+        }
+    }
+
+    function openBodyModal() { document.getElementById('bodyModal').classList.add('open'); }
+    function closeBodyModal() { document.getElementById('bodyModal').classList.remove('open'); }
+
+    async function saveBodyParams() {
+        const weight = parseFloat(document.getElementById('modal-weight').value);
+        const height = parseFloat(document.getElementById('modal-height').value);
+        try {
+            await request('/profile', { method: 'PATCH', body: JSON.stringify({ weight, height }) });
+            profile.weight = weight;
+            profile.height = height;
+            document.getElementById('profile-height').textContent = Math.round(height);
+            document.getElementById('profile-weight').textContent = Math.round(weight);
+            closeBodyModal();
+            loadData();
+        } catch (e) { alert('Ошибка: ' + e.message); }
+    }
+
+    function logout() {
+        clearToken();
+        window.location.href = '/index.html';
+    }
+</script>
+</body>
+</html>

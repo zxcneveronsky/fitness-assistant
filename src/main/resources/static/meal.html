@@ -1,0 +1,288 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Питание — Fitness Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="font-['Inter'] bg-gray-50 min-h-screen">
+<nav class="bg-white border-b border-gray-100 h-16 px-4 md:px-10 flex items-center justify-between">
+    <a id="logoLink" href="/index.html" class="font-extrabold text-xl tracking-tighter">Fitness<span class="text-blue-600">Assistant</span></a>
+    <div class="hidden md:flex gap-3 items-center text-sm">
+        <a href="/dashboard.html" class="text-gray-600 hover:text-black">Главная</a>
+        <a href="/meal.html" class="font-semibold text-blue-600">Еда</a>
+        <a href="/hydration.html" class="text-gray-600 hover:text-black">Вода</a>
+        <a href="/workout.html" class="text-gray-600 hover:text-black">Тренировки</a>
+        <a href="/history.html" class="text-gray-600 hover:text-black">История</a>
+        <a href="/profile.html" class="text-gray-600 hover:text-black">Профиль</a>
+        <button onclick="logout()" class="text-red-500 hover:text-red-700 ml-4">Выйти</button>
+                <button onclick="deleteAccount()" class="text-gray-400 hover:text-red-600 ml-2 text-sm" title="Удалить аккаунт">🗑️</button>
+    </div>
+    <button onclick="document.getElementById('mobileMenu').classList.toggle('hidden')" class="md:hidden text-gray-600 text-2xl px-2">☰</button>
+</nav>
+<div id="mobileMenu" class="hidden md:hidden bg-white border-b border-gray-100 px-4 py-3 space-y-2 text-sm">
+    <a href="/dashboard.html" class="block text-gray-600 hover:text-black">Главная</a>
+    <a href="/meal.html" class="block text-blue-600 font-semibold">Еда</a>
+    <a href="/hydration.html" class="block text-gray-600 hover:text-black">Вода</a>
+    <a href="/workout.html" class="block text-gray-600 hover:text-black">Тренировки</a>
+    <a href="/history.html" class="block text-gray-600 hover:text-black">История</a>
+    <a href="/profile.html" class="block text-gray-600 hover:text-black">Профиль</a>
+    <hr class="border-gray-100">
+    <button onclick="logout()" class="block text-red-500 hover:text-red-700 w-full text-left">Выйти</button>
+    <button onclick="deleteAccount()" class="block text-gray-400 hover:text-red-600 w-full text-left text-xs">Удалить аккаунт</button>
+</div>
+    <div id="activeSessionBanner" class="hidden bg-yellow-50 border-b border-yellow-200 px-4 md:px-10 py-2 text-sm flex items-center justify-between" style="position:sticky;top:64px;z-index:40">
+        <span>⏳ <strong>Активная тренировка</strong> — <span id="bannerName"></span></span>
+        <a id="bannerLink" href="" class="bg-yellow-200 text-yellow-800 px-4 py-1 rounded-lg font-semibold hover:bg-yellow-300">Продолжить</a>
+    </div>
+<main class="max-w-6xl mx-auto px-4 py-8">
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-3xl font-bold">🥗 Приёмы пищи</h1>
+        <input type="date" id="mealDate" onchange="loadMeals()" class="px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-sm">
+    </div>
+
+    <div class="bg-white rounded-2xl p-6 border border-gray-100 mb-6">
+        <div class="flex gap-2 mb-6">
+            <button id="autoTab" onclick="setMode('auto')" class="flex-1 py-3 rounded-xl font-semibold text-sm transition-all bg-blue-600 text-white">🤖 Автоматически</button>
+            <button id="manualTab" onclick="setMode('manual')" class="flex-1 py-3 rounded-xl font-semibold text-sm transition-all bg-gray-100 text-gray-500 hover:bg-gray-200">✏️ Ручной ввод</button>
+        </div>
+
+        <div id="autoMode">
+            <div class="flex gap-3 mb-4">
+                <input id="foodSearch" placeholder="Поиск продуктов..." class="flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500">
+                <button onclick="searchFood()" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700">Найти</button>
+            </div>
+            <div id="foodResults" class="space-y-2 max-h-96 overflow-y-auto mb-4"></div>
+        </div>
+
+        <div id="manualMode" class="hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="text-sm text-gray-500 font-medium">Название</label>
+                    <input id="manualName" placeholder="Например: Овсянка" class="w-full mt-1 px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="text-sm text-gray-500 font-medium">Бренд (необязательно)</label>
+                    <input id="manualBrands" placeholder="Бренд" class="w-full mt-1 px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="text-sm text-gray-500 font-medium">Калории (ккал)</label>
+                    <input id="manualKcal" type="number" placeholder="0" class="w-full mt-1 px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="text-sm text-gray-500 font-medium">Белки (г)</label>
+                    <input id="manualProteins" type="number" placeholder="0" class="w-full mt-1 px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="text-sm text-gray-500 font-medium">Жиры (г)</label>
+                    <input id="manualFats" type="number" placeholder="0" class="w-full mt-1 px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="text-sm text-gray-500 font-medium">Углеводы (г)</label>
+                    <input id="manualCarbs" type="number" placeholder="0" class="w-full mt-1 px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500">
+                </div>
+            </div>
+            <button onclick="addMealManual()" class="bg-green-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-green-700 w-full">💾 Сохранить приём пищи</button>
+        </div>
+        <p id="mealError" class="text-red-500 text-sm mt-2 hidden"></p>
+    </div>
+
+    <h2 class="text-xl font-bold mb-4">Сегодня съедено</h2>
+    <div id="mealList" class="space-y-3"></div>
+</main>
+<script src="/js/api.js"></script>
+<script>
+    if (!isAuth()) window.location.href = '/login.html';
+    if (isAuth()) document.getElementById('logoLink').href = '/dashboard.html';
+
+    let expandedFoodId = null;
+
+    function setMode(mode) {
+        const autoMode = document.getElementById('autoMode');
+        const manualMode = document.getElementById('manualMode');
+        const autoTab = document.getElementById('autoTab');
+        const manualTab = document.getElementById('manualTab');
+
+        autoMode.classList.toggle('hidden', mode !== 'auto');
+        manualMode.classList.toggle('hidden', mode !== 'manual');
+
+        if (mode === 'auto') {
+            autoTab.className = 'flex-1 py-3 rounded-xl font-semibold text-sm transition-all bg-blue-600 text-white';
+            manualTab.className = 'flex-1 py-3 rounded-xl font-semibold text-sm transition-all bg-gray-100 text-gray-500 hover:bg-gray-200';
+        } else {
+            autoTab.className = 'flex-1 py-3 rounded-xl font-semibold text-sm transition-all bg-gray-100 text-gray-500 hover:bg-gray-200';
+            manualTab.className = 'flex-1 py-3 rounded-xl font-semibold text-sm transition-all bg-blue-600 text-white';
+        }
+    }
+
+    async function searchFood() {
+        const q = document.getElementById('foodSearch').value;
+        const data = await request(`/food/search?name=${encodeURIComponent(q)}&size=20`);
+        expandedFoodId = null;
+        document.getElementById('foodResults').innerHTML = data.content.map(f => `
+            <div class="bg-white rounded-2xl p-5 border border-gray-100 hover:shadow-lg transition-shadow cursor-pointer" onclick="toggleDetail(${f.id})">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h3 class="font-bold text-lg">${f.name}</h3>
+                        <p class="text-sm text-gray-400">${f.brands || 'Нет бренда'}</p>
+                    </div>
+                    <span class="text-gray-300 text-sm mt-1.5" id="arrow_${f.id}">▼</span>
+                </div>
+                <div class="flex items-center gap-1 mt-3 mb-1">
+                    <span class="text-xs text-gray-400 font-medium">Пищевая ценность на 100 г</span>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 text-center">
+                    <div><span class="font-bold text-blue-600 text-lg">${f.kcal.toFixed(1)}</span><br><span class="text-gray-400 text-sm">ккал</span></div>
+                    <div><span class="font-bold text-lg">${f.proteins.toFixed(1)}</span><br><span class="text-gray-400 text-sm">белки</span></div>
+                    <div><span class="font-bold text-lg">${f.fats.toFixed(1)}</span><br><span class="text-gray-400 text-sm">жиры</span></div>
+                    <div><span class="font-bold text-lg">${f.carbs.toFixed(1)}</span><br><span class="text-gray-400 text-sm">углеводы</span></div>
+                </div>
+                <div id="detail_${f.id}" class="hidden mt-3 pt-3 border-t border-gray-200" onclick="event.stopPropagation()">
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm text-gray-500">Вес (г):</span>
+                        <input id="weight_${f.id}" type="number" placeholder="100" class="w-20 px-3 py-1.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-500" onclick="event.stopPropagation()">
+                        <button onclick="addMeal(${f.id})" class="bg-green-600 text-white px-4 py-1.5 rounded-lg text-sm font-semibold hover:bg-green-700">💾 Сохранить</button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function toggleDetail(id) {
+        const detail = document.getElementById(`detail_${id}`);
+        const arrow = document.getElementById(`arrow_${id}`);
+        if (!detail) return;
+        const isOpen = !detail.classList.contains('hidden');
+        if (expandedFoodId && expandedFoodId !== id) {
+            const prevDetail = document.getElementById(`detail_${expandedFoodId}`);
+            const prevArrow = document.getElementById(`arrow_${expandedFoodId}`);
+            if (prevDetail) prevDetail.classList.add('hidden');
+            if (prevArrow) prevArrow.textContent = '▼';
+        }
+        detail.classList.toggle('hidden');
+        arrow.textContent = isOpen ? '▼' : '▲';
+        expandedFoodId = isOpen ? null : id;
+    }
+
+    async function addMeal(foodId) {
+        const weight = parseFloat(document.getElementById(`weight_${foodId}`).value);
+        if (!weight || weight <= 0) { showError('Укажите вес в граммах'); return; }
+        try {
+            await request('/meal/auto', {
+                method: 'POST',
+                body: JSON.stringify({ id: foodId, weight, name: 'auto', consumedAt: new Date().toISOString() })
+            });
+            document.getElementById(`weight_${foodId}`).value = '';
+            document.getElementById('foodSearch').value = '';
+            document.getElementById('foodResults').innerHTML = '';
+            loadMeals();
+        } catch (e) { showError(e.message); }
+    }
+
+    async function addMealManual() {
+        const name = document.getElementById('manualName').value.trim();
+        const kcal = parseFloat(document.getElementById('manualKcal').value);
+        const proteins = parseFloat(document.getElementById('manualProteins').value);
+        const fats = parseFloat(document.getElementById('manualFats').value);
+        const carbs = parseFloat(document.getElementById('manualCarbs').value);
+        if (!name) { showError('Введите название'); return; }
+        if (isNaN(kcal) || kcal < 0) { showError('Укажите калории'); return; }
+        try {
+            await request('/meal/manual', {
+                method: 'POST',
+                body: JSON.stringify({
+                    name,
+                    brands: document.getElementById('manualBrands').value.trim() || null,
+                    kcal,
+                    proteins: isNaN(proteins) ? 0 : proteins,
+                    fats: isNaN(fats) ? 0 : fats,
+                    carbs: isNaN(carbs) ? 0 : carbs,
+                    consumedAt: new Date().toISOString()
+                })
+            });
+            document.getElementById('manualName').value = '';
+            document.getElementById('manualBrands').value = '';
+            document.getElementById('manualKcal').value = '';
+            document.getElementById('manualProteins').value = '';
+            document.getElementById('manualFats').value = '';
+            document.getElementById('manualCarbs').value = '';
+            setMode('auto');
+            loadMeals();
+        } catch (e) { showError(e.message); }
+    }
+
+    function showError(msg) {
+        const el = document.getElementById('mealError');
+        el.textContent = msg;
+        el.classList.remove('hidden');
+        setTimeout(() => el.classList.add('hidden'), 3000);
+    }
+
+    function selectedDate() {
+        const d = document.getElementById('mealDate').value;
+        return d ? new Date(d).toISOString() : new Date().toISOString();
+    }
+
+    async function loadMeals() {
+        const data = await request(`/meal/search?localDateTime=${encodeURIComponent(selectedDate())}&size=50`);
+        document.getElementById('mealList').innerHTML = data.content.length === 0
+            ? '<p class="text-gray-400 text-center py-8">Сегодня ещё ничего не съедено</p>'
+            : data.content.map(m => `
+                <div class="bg-white rounded-xl p-4 border border-gray-100 flex items-center justify-between" id="mealRow_${m.id}">
+                    <div class="flex-1">
+                        <div id="mealView_${m.id}">
+                            <div class="flex items-center gap-2">
+                                <span class="font-semibold">${m.name}</span>
+                                <span class="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded">${new Date(m.consumedAt).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}</span>
+                            </div>
+                            <span class="text-gray-400 text-sm">${m.kcal.toFixed(0)} ккал | Б ${m.proteins.toFixed(1)} Ж ${m.fats.toFixed(1)} У ${m.carbs.toFixed(1)}</span>
+                        </div>
+                        <div id="mealEdit_${m.id}" class="hidden items-center gap-1 flex-wrap mt-1">
+                            <input id="meName_${m.id}" value="${m.name.replace(/'/g, "\\'")}" class="w-28 px-2 py-1 border border-gray-200 rounded-lg text-sm">
+                            <input id="meKcal_${m.id}" type="number" step="0.1" value="${m.kcal}" class="w-16 px-2 py-1 border border-gray-200 rounded-lg text-sm"><span class="text-xs text-gray-400">ккал</span>
+                            <input id="meProt_${m.id}" type="number" step="0.1" value="${m.proteins}" class="w-14 px-2 py-1 border border-gray-200 rounded-lg text-sm"><span class="text-xs text-gray-400">Б</span>
+                            <input id="meFat_${m.id}" type="number" step="0.1" value="${m.fats}" class="w-14 px-2 py-1 border border-gray-200 rounded-lg text-sm"><span class="text-xs text-gray-400">Ж</span>
+                            <input id="meCarb_${m.id}" type="number" step="0.1" value="${m.carbs}" class="w-14 px-2 py-1 border border-gray-200 rounded-lg text-sm"><span class="text-xs text-gray-400">У</span>
+                            <button onclick="saveMealEdit(${m.id})" class="text-green-600 hover:text-green-800 text-sm px-1">💾</button>
+                        </div>
+                    </div>
+                    <div class="flex gap-1 items-center shrink-0 ml-2">
+                        <button onclick="toggleMealEdit(${m.id})" class="text-blue-500 hover:text-blue-700 text-xs px-1">✏️</button>
+                        <button onclick="deleteMeal(${m.id})" class="text-red-400 hover:text-red-600 text-sm">✕</button>
+                    </div>
+                </div>
+            `).join('');
+    }
+
+    function toggleMealEdit(id) {
+        document.getElementById(`mealView_${id}`).classList.toggle('hidden');
+        const edit = document.getElementById(`mealEdit_${id}`);
+        edit.classList.toggle('hidden');
+        edit.classList.toggle('flex');
+    }
+
+    async function saveMealEdit(id) {
+        const name = document.getElementById(`meName_${id}`).value.trim();
+        const kcal = parseFloat(document.getElementById(`meKcal_${id}`).value);
+        const proteins = parseFloat(document.getElementById(`meProt_${id}`).value);
+        const fats = parseFloat(document.getElementById(`meFat_${id}`).value);
+        const carbs = parseFloat(document.getElementById(`meCarb_${id}`).value);
+        if (!name || isNaN(kcal)) return;
+        try {
+            await request('/meal', {
+                method: 'PATCH',
+                body: JSON.stringify({ id, name, kcal, proteins, fats, carbs })
+            });
+            loadMeals();
+        } catch (e) { showError(e.message); }
+    }
+
+    async function deleteMeal(id) { await request(`/meal/${id}`, { method: 'DELETE' }); loadMeals(); }
+    document.getElementById('mealDate').value = new Date().toISOString().split('T')[0];
+    renderActiveSessionBanner(); syncActiveSessions(); function logout() { clearToken(); window.location.href = '/index.html'; }
+    loadMeals();
+</script>
+</body>
+</html>

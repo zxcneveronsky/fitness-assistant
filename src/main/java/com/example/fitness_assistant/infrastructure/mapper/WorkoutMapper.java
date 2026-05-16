@@ -27,9 +27,9 @@ public class WorkoutMapper {
         }
         return new WorkoutEntity(
                 domain.getId(),
-                null,  // Это поле проставляется в адаптере через GetReferenceById
+                null, // Это поле проставляется в адаптере через GetReferenceById
                 domain.getName(),
-                new ArrayList<>(domain.getExercisesIds())
+                domain.getExercisesIds() != null ? new ArrayList<>(domain.getExercisesIds()) : new ArrayList<>()
         );
     }
 }

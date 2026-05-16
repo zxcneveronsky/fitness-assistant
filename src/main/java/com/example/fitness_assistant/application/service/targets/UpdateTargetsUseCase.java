@@ -26,7 +26,7 @@ public class UpdateTargetsUseCase {
         UserProfile profile = userProfileRepository.findById(userId)
                 .orElseThrow(() -> new UserProfileNotFoundException(userId));
 
-        if (request.getTargetKcal() != null || targetCalculationService.hasMacros(request)) {
+        if (request.getTargetKcal() != null || targetCalculationService.hasMacros(request) || request.getTargetHydration() != null) {
             profile.setUseAutopilot(false); // Ставим false , чтобы потом при обновлении профиля(веса) не пересчитывались targets
             targetCalculationService.applyManualTargets(profile, request);
         }

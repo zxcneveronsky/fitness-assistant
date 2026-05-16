@@ -22,6 +22,21 @@ public class SecurityConfig {
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                                "/",
+                                "/index.html",
+                                "/login.html",
+                                "/register.html",
+                                "/dashboard.html",
+                                "/meal.html",
+                                "/hydration.html",
+                                "/workout.html",
+                                "/workout-detail.html",
+                                "/session.html",
+                                "/session-detail.html",
+                                "/history.html",
+                                "/profile.html",
+                                "/js/**",
+                                "/explore/**",
                                 "/api/v1/auth/**",
                                 "/api/v1/food/**",
                                 "/api/v1/exercises/**",

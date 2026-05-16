@@ -1,0 +1,141 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>История — Fitness Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="font-['Inter'] bg-gray-50 min-h-screen">
+<nav class="bg-white border-b border-gray-100 h-16 px-4 md:px-10 flex items-center justify-between">
+    <a id="logoLink" href="/index.html" class="font-extrabold text-xl tracking-tighter">Fitness<span class="text-blue-600">Assistant</span></a>
+    <div class="hidden md:flex gap-3 items-center text-sm">
+        <a href="/dashboard.html" class="text-gray-600 hover:text-black">Главная</a>
+        <a href="/meal.html" class="text-gray-600 hover:text-black">Еда</a>
+        <a href="/hydration.html" class="text-gray-600 hover:text-black">Вода</a>
+        <a href="/workout.html" class="text-gray-600 hover:text-black">Тренировки</a>
+        <a href="/history.html" class="font-semibold text-blue-600">История</a>
+        <a href="/profile.html" class="text-gray-600 hover:text-black">Профиль</a>
+        <button onclick="logout()" class="text-red-500 hover:text-red-700 ml-4">Выйти</button>
+                <button onclick="deleteAccount()" class="text-gray-400 hover:text-red-600 ml-2 text-sm" title="Удалить аккаунт">🗑️</button>
+    </div>
+    <button onclick="document.getElementById('mobileMenu').classList.toggle('hidden')" class="md:hidden text-gray-600 text-2xl px-2">☰</button>
+</nav>
+<div id="mobileMenu" class="hidden md:hidden bg-white border-b border-gray-100 px-4 py-3 space-y-2 text-sm">
+    <a href="/dashboard.html" class="block text-gray-600 hover:text-black">Главная</a>
+    <a href="/meal.html" class="block text-gray-600 hover:text-black">Еда</a>
+    <a href="/hydration.html" class="block text-gray-600 hover:text-black">Вода</a>
+    <a href="/workout.html" class="block text-gray-600 hover:text-black">Тренировки</a>
+    <a href="/history.html" class="block text-blue-600 font-semibold">История</a>
+    <a href="/profile.html" class="block text-gray-600 hover:text-black">Профиль</a>
+    <hr class="border-gray-100">
+    <button onclick="logout()" class="block text-red-500 hover:text-red-700 w-full text-left">Выйти</button>
+    <button onclick="deleteAccount()" class="block text-gray-400 hover:text-red-600 w-full text-left text-xs">Удалить аккаунт</button>
+</div>
+    <div id="activeSessionBanner" class="hidden bg-yellow-50 border-b border-yellow-200 px-4 md:px-10 py-2 text-sm flex items-center justify-between" style="position:sticky;top:64px;z-index:40">
+        <span>⏳ <strong>Активная тренировка</strong> — <span id="bannerName"></span></span>
+        <a id="bannerLink" href="" class="bg-yellow-200 text-yellow-800 px-4 py-1 rounded-lg font-semibold hover:bg-yellow-300">Продолжить</a>
+    </div>
+<main class="max-w-6xl mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">📋 История тренировок</h1>
+    <div id="historyList" class="space-y-4"></div>
+    <div id="pagination" class="flex justify-center items-center gap-2 mt-6"></div>
+</main>
+<script src="/js/api.js"></script>
+<script>
+    if (!isAuth()) window.location.href = '/login.html';
+    if (isAuth()) document.getElementById('logoLink').href = '/dashboard.html';
+
+    let currentPage = 0;
+    let totalPages = 0;
+    let workoutCache = {};
+
+    async function getWorkoutName(workoutId) {
+        if (workoutCache[workoutId]) return workoutCache[workoutId];
+        try {
+            const w = await request('/workout/' + workoutId);
+            const n = w.name || w.exerciseName || 'Тренировка';
+            workoutCache[workoutId] = n;
+            return n;
+        } catch (e) { return 'Тренировка'; }
+    }
+
+    async function loadHistory(page = 0) {
+        currentPage = page;
+        const data = await request(`/workout/session/history?page=${page}&size=10`);
+        totalPages = data.totalPages;
+        const container = document.getElementById('historyList');
+
+        if (data.content.length === 0) {
+            if (currentPage > 0) {
+                loadHistory(0);
+                return;
+            }
+            container.innerHTML = '<p class="text-gray-400 text-center py-8">Нет завершённых тренировок</p>';
+            document.getElementById('pagination').innerHTML = '';
+            return;
+        }
+
+        const names = await Promise.all(data.content.map(s => getWorkoutName(s.workoutId)));
+        container.innerHTML = data.content.map((s, i) => {
+            const start = new Date(s.startTime);
+            const dateStr = start.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
+            const isActive = !s.endTime;
+            return `
+                <div class="bg-white rounded-2xl p-5 border border-gray-100 hover:shadow-lg transition-shadow">
+                    <a href="/session-detail.html?id=${s.id}" class="block">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="font-bold text-lg">${names[i]}</span>
+                                <p class="text-sm text-gray-400 mt-1">${dateStr}</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="text-xs font-bold px-3 py-1 rounded-full ${isActive ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700'}">${isActive ? '⏳ Активна' : '✅ Завершена'}</span>
+                            </div>
+                        </div>
+                    </a>
+                    <div class="flex gap-2 mt-4">
+                        ${isActive ? `<button onclick="endSession(${s.id})" class="bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-red-700">Завершить</button>` : ''}
+                        <button onclick="deleteSession(${s.id})" class="text-red-400 hover:text-red-600 text-sm">Удалить</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        renderPagination();
+    }
+
+    function renderPagination() {
+        const el = document.getElementById('pagination');
+        if (totalPages <= 1 && currentPage === 0) { el.innerHTML = ''; return; }
+        let html = '';
+        html += `<button onclick="loadHistory(${currentPage - 1})" class="px-3 py-1 rounded-lg border ${currentPage === 0 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-gray-100'}">← Назад</button>`;
+        for (let i = Math.max(0, currentPage - 2); i < Math.min(totalPages, currentPage + 3); i++) {
+            html += `<button onclick="loadHistory(${i})" class="px-3 py-1 rounded-lg ${i === currentPage ? 'bg-blue-600 text-white' : 'border hover:bg-gray-100'}">${i + 1}</button>`;
+        }
+        html += `<button onclick="loadHistory(${currentPage + 1})" class="px-3 py-1 rounded-lg border ${currentPage >= totalPages - 1 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-gray-100'}">Вперёд →</button>`;
+        el.innerHTML = html;
+    }
+
+    async function endSession(id) {
+        if (!confirm('Завершить тренировку?')) return;
+        try {
+            await request('/workout/session/end', { method: 'PATCH', body: JSON.stringify({ id, endTime: new Date().toISOString() }) });
+            removeActiveSession();
+            loadHistory(currentPage);
+        } catch (e) { alert(e.message); }
+    }
+
+    async function deleteSession(id) {
+        if (!confirm('Удалить сессию?')) return;
+        try {
+            await request(`/workout/session/${id}`, { method: 'DELETE' });
+            loadHistory(currentPage);
+        } catch (e) { alert(e.message); }
+    }
+
+    renderActiveSessionBanner(); syncActiveSessions(); function logout() { clearToken(); window.location.href = '/index.html'; }
+    loadHistory();
+</script>
+</body>
+</html>

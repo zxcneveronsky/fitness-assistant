@@ -1,0 +1,67 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Упражнения — Fitness Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="font-['Inter'] bg-gray-50 min-h-screen">
+<nav class="bg-white border-b border-gray-100 h-16 px-4 md:px-10 flex items-center justify-between">
+    <a id="logoLink" href="/index.html" class="font-extrabold text-xl tracking-tighter">Fitness<span class="text-blue-600">Assistant</span></a>
+    <div class="flex gap-4 items-center">
+        <a href="/login.html" class="text-sm font-semibold text-gray-600 hover:text-black">Вход</a>
+        <a href="/register.html" class="text-sm font-semibold bg-blue-600 text-white px-5 py-2 rounded-full hover:bg-blue-700">Регистрация</a>
+    </div>
+</nav>
+<div id="activeSessionBanner" class="hidden bg-yellow-50 border-b border-yellow-200 px-4 md:px-10 py-2 text-sm flex items-center justify-between" style="position:sticky;top:64px;z-index:40">
+    <span>⏳ <strong>Активная тренировка</strong> — <span id="bannerName"></span></span>
+    <a id="bannerLink" href="" class="bg-yellow-200 text-yellow-800 px-4 py-1 rounded-lg font-semibold hover:bg-yellow-300">Продолжить</a>
+</div>
+<div class="max-w-6xl mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">💪 Поиск упражнений</h1>
+    <div class="flex gap-3 mb-6">
+        <input id="searchInput" placeholder="Поиск по названию или мышце..." class="flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500">
+        <button onclick="search()" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700">Найти</button>
+    </div>
+    <div id="results" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    <div id="pagination" class="flex justify-center items-center gap-2 mt-6"></div>
+</div>
+<script src="/js/api.js"></script>
+<script>
+    if (isAuth()) document.getElementById('logoLink').href = '/dashboard.html';
+
+    let currentPage = 0;
+    let totalPages = 0;
+    async function search(page = 0) {
+        currentPage = page;
+        const q = document.getElementById('searchInput').value;
+        const endpoint = q ? `/exercises/search?name=${encodeURIComponent(q)}&page=${page}&size=9` : `/exercises?page=${page}&size=9`;
+        const data = await request(endpoint);
+        totalPages = data.totalPages;
+        document.getElementById('results').innerHTML = data.content.map(ex => `
+            <div class="bg-white rounded-2xl p-5 border border-gray-100 hover:shadow-lg transition-shadow">
+                <h3 class="font-bold text-lg">${ex.exerciseName || 'Без названия'}</h3>
+                <p class="text-sm text-gray-500 mt-2">${ex.description || 'Нет описания'}</p>
+                <div class="flex flex-wrap gap-1 mt-3">${(ex.muscles || []).map(m => `<span class="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded-full">${m.name}</span>`).join('')}</div>
+            </div>
+        `).join('');
+        renderPagination();
+    }
+    function renderPagination() {
+        const el = document.getElementById('pagination');
+        if (totalPages <= 1) { el.innerHTML = ''; return; }
+        let html = '';
+        html += `<button onclick="search(${currentPage - 1})" class="px-3 py-1 rounded-lg border ${currentPage === 0 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-gray-100'}">← Назад</button>`;
+        for (let i = Math.max(0, currentPage - 2); i < Math.min(totalPages, currentPage + 3); i++) {
+            html += `<button onclick="search(${i})" class="px-3 py-1 rounded-lg ${i === currentPage ? 'bg-blue-600 text-white' : 'border hover:bg-gray-100'}">${i + 1}</button>`;
+        }
+        html += `<button onclick="search(${currentPage + 1})" class="px-3 py-1 rounded-lg border ${currentPage >= totalPages - 1 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-gray-100'}">Вперёд →</button>`;
+        el.innerHTML = html;
+    }
+    document.getElementById('searchInput').addEventListener('keydown', e => { if (e.key === 'Enter') search(); if (isAuth()) { renderActiveSessionBanner(); syncActiveSessions(); } });
+    search(); renderActiveSessionBanner(); if (isAuth()) syncActiveSessions();
+</script>
+</body>
+</html>

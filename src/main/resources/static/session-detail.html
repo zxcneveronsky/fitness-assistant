@@ -1,0 +1,157 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Детали сессии — Fitness Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="font-['Inter'] bg-gray-50 min-h-screen">
+<nav class="bg-white border-b border-gray-100 h-16 px-4 md:px-10 flex items-center justify-between">
+    <a id="logoLink" href="/index.html" class="font-extrabold text-xl tracking-tighter">Fitness<span class="text-blue-600">Assistant</span></a>
+    <div class="hidden md:flex gap-3 items-center text-sm">
+        <a href="/dashboard.html" class="text-gray-600 hover:text-black">Главная</a>
+        <a href="/meal.html" class="text-gray-600 hover:text-black">Еда</a>
+        <a href="/hydration.html" class="text-gray-600 hover:text-black">Вода</a>
+        <a href="/workout.html" class="text-gray-600 hover:text-black">Тренировки</a>
+        <a href="/history.html" class="font-semibold text-blue-600">История</a>
+        <a href="/profile.html" class="text-gray-600 hover:text-black">Профиль</a>
+        <button onclick="logout()" class="text-red-500 hover:text-red-700 ml-4">Выйти</button>
+                <button onclick="deleteAccount()" class="text-gray-400 hover:text-red-600 ml-2 text-sm" title="Удалить аккаунт">🗑️</button>
+    </div>
+    <button onclick="document.getElementById('mobileMenu').classList.toggle('hidden')" class="md:hidden text-gray-600 text-2xl px-2">☰</button>
+</nav>
+<div id="mobileMenu" class="hidden md:hidden bg-white border-b border-gray-100 px-4 py-3 space-y-2 text-sm">
+    <a href="/dashboard.html" class="block text-gray-600 hover:text-black">Главная</a>
+    <a href="/meal.html" class="block text-gray-600 hover:text-black">Еда</a>
+    <a href="/hydration.html" class="block text-gray-600 hover:text-black">Вода</a>
+    <a href="/workout.html" class="block text-gray-600 hover:text-black">Тренировки</a>
+    <a href="/history.html" class="block text-blue-600 font-semibold">История</a>
+    <a href="/profile.html" class="block text-gray-600 hover:text-black">Профиль</a>
+    <hr class="border-gray-100">
+    <button onclick="logout()" class="block text-red-500 hover:text-red-700 w-full text-left">Выйти</button>
+    <button onclick="deleteAccount()" class="block text-gray-400 hover:text-red-600 w-full text-left text-xs">Удалить аккаунт</button>
+</div>
+<div id="activeSessionBanner" class="hidden bg-yellow-50 border-b border-yellow-200 px-4 md:px-10 py-2 text-sm flex items-center justify-between" style="position:sticky;top:64px;z-index:40">
+    <span>⏳ <strong>Активная тренировка</strong> — <span id="bannerName"></span></span>
+    <a id="bannerLink" href="" class="bg-yellow-200 text-yellow-800 px-4 py-1 rounded-lg font-semibold hover:bg-yellow-300">Продолжить</a>
+</div>
+<main class="max-w-4xl mx-auto px-4 py-8">
+    <a href="/history.html" class="text-sm text-blue-600 hover:underline mb-4 inline-block">&larr; К истории</a>
+    <h1 id="sessionTitle" class="text-3xl font-bold mb-2">Детали сессии</h1>
+    <p id="sessionDate" class="text-gray-400 mb-6"></p>
+    <div id="exerciseDetails" class="space-y-4"></div>
+</main>
+<script src="/js/api.js"></script>
+<script>
+    if (!isAuth()) window.location.href = '/login.html';
+    if (isAuth()) document.getElementById('logoLink').href = '/dashboard.html';
+
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get('id');
+
+    async function loadSession() {
+        try {
+            const session = await request(`/workout/session/${sessionId}`);
+            if (!session) return;
+            const start = new Date(session.startTime);
+            let dateStr = start.toLocaleDateString('ru-RU', {
+                day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
+            });
+
+            if (session.endTime) {
+                const mins = Math.round((new Date(session.endTime) - start) / 60000);
+                dateStr += ` — ${mins} мин`;
+            }
+
+            document.getElementById('sessionDate').textContent = dateStr;
+
+            const container = document.getElementById('exerciseDetails');
+            const workout = await request(`/workout/${session.workoutId}`);
+            if (!workout) return;
+            const exercises = workout.exercises || [];
+
+            if (exercises.length === 0) {
+                container.innerHTML = '<p class="text-gray-400">Нет упражнений в этой тренировке</p>';
+                return;
+            }
+
+            container.innerHTML = '';
+            for (const ex of exercises) {
+                container.innerHTML += `
+                    <div class="bg-white rounded-2xl p-5 border border-gray-100">
+                        <h3 class="font-bold text-lg">${ex.name || ex.exerciseName}</h3>
+                        <div class="mt-3 space-y-1" id="sets_${ex.id}">Загрузка...</div>
+                    </div>
+                `;
+                loadSets(ex.id);
+            }
+        } catch (e) {
+            document.getElementById('exerciseDetails').innerHTML = '<p class="text-red-500">Ошибка: ' + e.message + '</p>';
+        }
+    }
+
+    async function loadSets(exerciseId) {
+        try {
+            const data = await request(`/workout/session/set?sessionId=${sessionId}&exerciseId=${exerciseId}&size=50`);
+            const el = document.getElementById(`sets_${exerciseId}`);
+            if (!el) return;
+            el.innerHTML = data.content.length === 0
+                ? '<p class="text-gray-400 text-sm">Нет подходов</p>'
+                : data.content.map((s, i) => `
+                    <div class="bg-gray-50 rounded-lg px-4 py-2 text-sm flex items-center justify-between" id="set_${s.id}">
+                        <div class="flex items-center gap-2 flex-1">
+                            <span class="font-medium">Подход ${i + 1}</span>
+                            <span id="setDisplay_${s.id}">${s.weight} кг × ${s.reps} повторов</span>
+                            <div id="setEdit_${s.id}" class="hidden items-center gap-1">
+                                <input id="editW_${s.id}" type="number" step="0.5" value="${s.weight}" class="w-20 px-2 py-1 border border-gray-200 rounded-lg text-sm">
+                                <span class="text-gray-400">кг</span>
+                                <input id="editR_${s.id}" type="number" value="${s.reps}" class="w-16 px-2 py-1 border border-gray-200 rounded-lg text-sm">
+                                <span class="text-gray-400">повт</span>
+                                <button onclick="saveSet(${s.id}, ${exerciseId})" class="text-green-600 hover:text-green-800 text-xs">💾</button>
+                            </div>
+                        </div>
+                        <div class="flex gap-1">
+                            <button onclick="toggleEdit(${s.id})" class="text-blue-500 hover:text-blue-700 text-xs">✏️</button>
+                            <button onclick="deleteSet(${s.id}, ${exerciseId})" class="text-red-400 hover:text-red-600 text-xs">🗑️</button>
+                        </div>
+                    </div>
+                `).join('');
+        } catch (e) {}
+    }
+
+    function toggleEdit(setId) {
+        const display = document.getElementById(`setDisplay_${setId}`);
+        const edit = document.getElementById(`setEdit_${setId}`);
+        if (!display || !edit) return;
+        display.classList.toggle('hidden');
+        edit.classList.toggle('hidden');
+    }
+
+    async function saveSet(setId, exerciseId) {
+        const weight = parseFloat(document.getElementById(`editW_${setId}`).value);
+        const reps = parseInt(document.getElementById(`editR_${setId}`).value);
+        if (isNaN(weight) || isNaN(reps) || weight < 0 || reps < 1) return;
+        try {
+            await request('/workout/session/set', {
+                method: 'PATCH',
+                body: JSON.stringify({ id: setId, sessionId, exerciseId, weight, reps })
+            });
+            loadSets(exerciseId);
+        } catch (e) {}
+    }
+
+    async function deleteSet(setId, exerciseId) {
+        if (!confirm('Удалить подход?')) return;
+        try {
+            await request(`/workout/session/set/${setId}?sessionId=${sessionId}`, { method: 'DELETE' });
+            loadSets(exerciseId);
+        } catch (e) {}
+    }
+
+    renderActiveSessionBanner(); syncActiveSessions(); function logout() { clearToken(); window.location.href = '/index.html'; }
+    loadSession();
+</script>
+</body>
+</html>

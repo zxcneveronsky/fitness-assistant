@@ -1,0 +1,140 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вода — Fitness Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="font-['Inter'] bg-gray-50 min-h-screen">
+    <nav class="bg-white border-b border-gray-100 px-4 md:px-10 h-16 flex items-center justify-between">
+        <a id="logoLink" href="/index.html" class="font-extrabold text-xl tracking-tighter">Fitness<span class="text-blue-600">Assistant</span></a>
+        <div class="hidden md:flex gap-3 items-center text-sm">
+            <a href="/dashboard.html" class="text-gray-600 hover:text-black">Главная</a>
+            <a href="/meal.html" class="text-gray-600 hover:text-black">Еда</a>
+            <a href="/hydration.html" class="font-semibold text-blue-600">Вода</a>
+            <a href="/workout.html" class="text-gray-600 hover:text-black">Тренировки</a>
+            <a href="/history.html" class="text-gray-600 hover:text-black">История</a>
+            <a href="/profile.html" class="text-gray-600 hover:text-black">Профиль</a>
+            <button onclick="logout()" class="text-red-500 hover:text-red-700 ml-4">Выйти</button>
+            <button onclick="deleteAccount()" class="text-gray-400 hover:text-red-600 ml-2 text-sm" title="Удалить аккаунт">🗑️</button>
+    </div>
+    <button onclick="document.getElementById('mobileMenu').classList.toggle('hidden')" class="md:hidden text-gray-600 text-2xl px-2">☰</button>
+</nav>
+<div id="mobileMenu" class="hidden md:hidden bg-white border-b border-gray-100 px-4 py-3 space-y-2 text-sm">
+    <a href="/dashboard.html" class="block text-gray-600 hover:text-black">Главная</a>
+    <a href="/meal.html" class="block text-gray-600 hover:text-black">Еда</a>
+    <a href="/hydration.html" class="block text-blue-600 font-semibold">Вода</a>
+    <a href="/workout.html" class="block text-gray-600 hover:text-black">Тренировки</a>
+    <a href="/history.html" class="block text-gray-600 hover:text-black">История</a>
+    <a href="/profile.html" class="block text-gray-600 hover:text-black">Профиль</a>
+    <hr class="border-gray-100">
+    <button onclick="logout()" class="block text-red-500 hover:text-red-700 w-full text-left">Выйти</button>
+    <button onclick="deleteAccount()" class="block text-gray-400 hover:text-red-600 w-full text-left text-xs">Удалить аккаунт</button>
+</div>
+    <div id="activeSessionBanner" class="hidden bg-yellow-50 border-b border-yellow-200 px-4 md:px-10 py-2 text-sm flex items-center justify-between" style="position:sticky;top:64px;z-index:40">
+        <span>⏳ <strong>Активная тренировка</strong> — <span id="bannerName"></span></span>
+        <a id="bannerLink" href="" class="bg-yellow-200 text-yellow-800 px-4 py-1 rounded-lg font-semibold hover:bg-yellow-300">Продолжить</a>
+    </div>
+    <main class="max-w-6xl mx-auto px-4 py-8">
+        <div class="flex items-center justify-between mb-6">
+            <h1 class="text-3xl font-bold">💧 Трекер воды</h1>
+            <input type="date" id="waterDate" onchange="loadWater()" class="px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-sm">
+        </div>
+        <div class="bg-white rounded-2xl p-6 border border-gray-100 mb-6">
+            <h2 class="font-bold text-lg mb-4">Добавить запись</h2>
+            <div class="flex gap-3 items-end">
+                <div class="flex-1">
+                    <label class="text-sm text-gray-500">Название</label>
+                    <input id="waterName" type="text" value="Вода" class="w-full mt-1 px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500">
+                </div>
+                <div class="w-32">
+                    <label class="text-sm text-gray-500">Объём (л)</label>
+                    <input id="waterAmount" type="number" step="0.1" value="0.25" class="w-full mt-1 px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500">
+                </div>
+                <button onclick="addWater()" class="bg-blue-600 text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-blue-700">+ Добавить</button>
+            </div>
+            <p id="waterError" class="text-red-500 text-sm mt-2 hidden"></p>
+        </div>
+        <div id="waterList" class="space-y-3"></div>
+    </main>
+    <script src="/js/api.js"></script>
+    <script>
+        if (!isAuth()) window.location.href = '/login.html';
+        if (isAuth()) document.getElementById('logoLink').href = '/dashboard.html';
+
+        function selectedWaterDate() {
+            const d = document.getElementById('waterDate').value;
+            return d ? new Date(d).toISOString() : new Date().toISOString();
+        }
+
+        async function addWater() {
+            const name = document.getElementById('waterName').value || 'Вода';
+            const amount = parseFloat(document.getElementById('waterAmount').value);
+            if (!amount || amount <= 0) { showError('Укажите объём'); return; }
+            try {
+                await request('/hydration', { method: 'POST', body: JSON.stringify({ name, amount, consumedAt: selectedWaterDate() }) });
+                document.getElementById('waterName').value = 'Вода';
+                document.getElementById('waterAmount').value = '0.25';
+                loadWater();
+            } catch (e) { showError(e.message); }
+        }
+
+        function showError(msg) {
+            const el = document.getElementById('waterError');
+            el.textContent = msg;
+            el.classList.remove('hidden');
+            setTimeout(() => el.classList.add('hidden'), 3000);
+        }
+
+        async function loadWater() {
+            const data = await request(`/hydration/search?localDateTime=${encodeURIComponent(selectedWaterDate())}&size=50`);
+            document.getElementById('waterList').innerHTML = data.content.length === 0
+                ? '<p class="text-gray-400 text-center py-8">Сегодня ещё не пили воду</p>'
+                : data.content.map(w => `
+                    <div class="bg-white rounded-xl p-4 border border-gray-100 flex items-center justify-between" id="waterRow_${w.id}">
+                        <div class="flex-1">
+                            <span id="wView_${w.id}"><span class="font-semibold">${w.name}</span> <span class="text-blue-600 font-bold ml-2">${w.amount.toFixed(2)} л</span></span>
+                            <div id="wEdit_${w.id}" class="hidden items-center gap-2">
+                                <input id="wName_${w.id}" value="${w.name.replace(/'/g, "\\'")}" class="w-28 px-2 py-1 border border-gray-200 rounded-lg text-sm">
+                                <input id="wAmt_${w.id}" type="number" step="0.1" value="${w.amount}" class="w-20 px-2 py-1 border border-gray-200 rounded-lg text-sm">
+                                <span class="text-sm text-gray-400">л</span>
+                                <button onclick="saveWaterEdit(${w.id})" class="text-green-600 hover:text-green-800 text-sm">💾</button>
+                            </div>
+                        </div>
+                        <div class="flex gap-1 items-center shrink-0 ml-2">
+                            <button onclick="toggleWaterEdit(${w.id})" class="text-blue-500 hover:text-blue-700 text-xs px-1">✏️</button>
+                            <button onclick="deleteWater(${w.id})" class="text-red-400 hover:text-red-600 text-sm font-bold">✕</button>
+                        </div>
+                    </div>
+                `).join('');
+        }
+
+        function toggleWaterEdit(id) {
+            document.getElementById(`wView_${id}`).classList.toggle('hidden');
+            const edit = document.getElementById(`wEdit_${id}`);
+            edit.classList.toggle('hidden');
+            edit.classList.toggle('flex');
+        }
+
+        async function saveWaterEdit(id) {
+            const name = document.getElementById(`wName_${id}`).value.trim();
+            const amount = parseFloat(document.getElementById(`wAmt_${id}`).value);
+            if (!name || isNaN(amount) || amount <= 0) return;
+            try {
+                await request('/hydration', {
+                    method: 'PATCH',
+                    body: JSON.stringify({ id, name, amount })
+                });
+                loadWater();
+            } catch (e) { showError(e.message); }
+        }
+
+        async function deleteWater(id) { await request(`/hydration/${id}`, { method: 'DELETE' }); loadWater(); }
+        document.getElementById('waterDate').value = new Date().toISOString().split('T')[0];
+        renderActiveSessionBanner(); syncActiveSessions(); function logout() { clearToken(); window.location.href = '/index.html'; }
+        loadWater();
+    </script>
+</body>
+</html>

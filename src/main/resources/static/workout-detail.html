@@ -1,0 +1,132 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тренировка — Fitness Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="font-['Inter'] bg-gray-50 min-h-screen">
+<nav class="bg-white border-b border-gray-100 h-16 px-4 md:px-10 flex items-center justify-between">
+    <a id="logoLink" href="/index.html" class="font-extrabold text-xl tracking-tighter">Fitness<span class="text-blue-600">Assistant</span></a>
+    <div class="hidden md:flex gap-3 items-center text-sm">
+        <a href="/dashboard.html" class="text-gray-600 hover:text-black">Главная</a>
+        <a href="/meal.html" class="text-gray-600 hover:text-black">Еда</a>
+        <a href="/hydration.html" class="text-gray-600 hover:text-black">Вода</a>
+        <a href="/workout.html" class="font-semibold text-blue-600">Тренировки</a>
+        <a href="/history.html" class="text-gray-600 hover:text-black">История</a>
+        <a href="/profile.html" class="text-gray-600 hover:text-black">Профиль</a>
+        <button onclick="logout()" class="text-red-500 hover:text-red-700 ml-4">Выйти</button>
+                <button onclick="deleteAccount()" class="text-gray-400 hover:text-red-600 ml-2 text-sm" title="Удалить аккаунт">🗑️</button>
+    </div>
+    <button onclick="document.getElementById('mobileMenu').classList.toggle('hidden')" class="md:hidden text-gray-600 text-2xl px-2">☰</button>
+</nav>
+<div id="mobileMenu" class="hidden md:hidden bg-white border-b border-gray-100 px-4 py-3 space-y-2 text-sm">
+    <a href="/dashboard.html" class="block text-gray-600 hover:text-black">Главная</a>
+    <a href="/meal.html" class="block text-gray-600 hover:text-black">Еда</a>
+    <a href="/hydration.html" class="block text-gray-600 hover:text-black">Вода</a>
+    <a href="/workout.html" class="block text-blue-600 font-semibold">Тренировки</a>
+    <a href="/history.html" class="block text-gray-600 hover:text-black">История</a>
+    <a href="/profile.html" class="block text-gray-600 hover:text-black">Профиль</a>
+    <hr class="border-gray-100">
+    <button onclick="logout()" class="block text-red-500 hover:text-red-700 w-full text-left">Выйти</button>
+    <button onclick="deleteAccount()" class="block text-gray-400 hover:text-red-600 w-full text-left text-xs">Удалить аккаунт</button>
+</div>
+    <div id="activeSessionBanner" class="hidden bg-yellow-50 border-b border-yellow-200 px-4 md:px-10 py-2 text-sm flex items-center justify-between" style="position:sticky;top:64px;z-index:40">
+        <span>⏳ <strong>Активная тренировка</strong> — <span id="bannerName"></span></span>
+        <a id="bannerLink" href="" class="bg-yellow-200 text-yellow-800 px-4 py-1 rounded-lg font-semibold hover:bg-yellow-300">Продолжить</a>
+    </div>
+<main class="max-w-6xl mx-auto px-4 py-8">
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <a href="/workout.html" class="text-sm text-blue-600 hover:underline">&larr; К тренировкам</a>
+            <h1 id="workoutName" class="text-3xl font-bold mt-1">Загрузка...</h1>
+        </div>
+        <button onclick="startSession()" class="bg-green-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-green-700">Старт</button>
+    </div>
+
+    <div class="bg-white rounded-2xl p-6 border border-gray-100 mb-6">
+        <h2 class="font-bold text-lg mb-4">Добавить упражнение</h2>
+        <div class="flex gap-3 mb-4">
+            <input id="searchInput" placeholder="Поиск упражнений..." class="flex-1 px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500">
+            <button onclick="searchExercises()" class="bg-gray-600 text-white px-4 py-2 rounded-xl hover:bg-gray-700">Найти</button>
+        </div>
+        <div id="searchResults" class="space-y-2 max-h-48 overflow-y-auto mb-4"></div>
+        <div id="addedExercises" class="space-y-2"></div>
+    </div>
+</main>
+<script src="/js/api.js"></script>
+<script>
+    if (!isAuth()) window.location.href = '/login.html';
+    if (isAuth()) document.getElementById('logoLink').href = '/dashboard.html';
+
+    const params = new URLSearchParams(window.location.search);
+    const workoutId = params.get('id');
+    let workoutExercises = [];
+
+    async function loadWorkout() {
+        const w = await request(`/workout/${workoutId}`);
+        document.getElementById('workoutName').textContent = w.name;
+        workoutExercises = w.exercises || [];
+        renderExercises();
+    }
+
+    function renderExercises() {
+        const container = document.getElementById('addedExercises');
+        if (workoutExercises.length === 0) {
+            container.innerHTML = '<p class="text-gray-400 text-center py-8">Нет упражнений. Добавьте через поиск.</p>';
+            return;
+        }
+        container.innerHTML = workoutExercises.map(ex => `
+            <div class="flex items-center justify-between bg-gray-50 rounded-xl px-4 py-3">
+                <div>
+                    <span class="font-semibold">${ex.name || ex.exerciseName}</span>
+                    <span class="text-gray-400 text-sm ml-2">${(ex.muscles || []).map(m => m.name).join(', ')}</span>
+                </div>
+                <button onclick="removeExercise(${ex.id})" class="text-red-400 hover:text-red-600 text-sm font-bold">Убрать</button>
+            </div>
+        `).join('');
+    }
+
+    async function searchExercises() {
+        const q = document.getElementById('searchInput').value;
+        const data = await request(`/exercises/search?name=${encodeURIComponent(q)}&size=10`);
+        const container = document.getElementById('searchResults');
+        container.innerHTML = data.content.map(ex => {
+            const alreadyAdded = workoutExercises.some(e => e.id === ex.id);
+            if (alreadyAdded) return '';
+            return `
+                <div class="flex items-center justify-between bg-white border rounded-xl px-4 py-2">
+                    <span>${ex.name || ex.exerciseName}</span>
+                    <button onclick="addExercise(${ex.id})" class="bg-blue-600 text-white px-3 py-1 rounded-lg text-sm hover:bg-blue-700">+</button>
+                </div>
+            `;
+        }).join('');
+    }
+
+    async function addExercise(exerciseId) {
+        const ids = workoutExercises.map(e => e.id);
+        ids.push(exerciseId);
+        await request('/workout', { method: 'PATCH', body: JSON.stringify({ id: parseInt(workoutId), exerciseIds: ids }) });
+        document.getElementById('searchResults').innerHTML = '';
+        document.getElementById('searchInput').value = '';
+        await loadWorkout();
+    }
+
+    async function removeExercise(exerciseId) {
+        const ids = workoutExercises.filter(e => e.id !== exerciseId).map(e => e.id);
+        await request('/workout', { method: 'PATCH', body: JSON.stringify({ id: parseInt(workoutId), exerciseIds: ids }) });
+        await loadWorkout();
+    }
+
+    function startSession() {
+        if (workoutExercises.length === 0) { alert('Добавьте хотя бы одно упражнение'); return; }
+        window.location.href = `/session.html?workoutId=${workoutId}`;
+    }
+
+    renderActiveSessionBanner(); syncActiveSessions(); function logout() { clearToken(); window.location.href = '/index.html'; }
+    loadWorkout();
+</script>
+</body>
+</html>
