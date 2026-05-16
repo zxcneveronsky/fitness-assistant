@@ -105,10 +105,10 @@
                             <span class="font-medium">Подход ${i + 1}</span>
                             <span id="setDisplay_${s.id}">${s.weight} кг × ${s.reps} повторов</span>
                             <div id="setEdit_${s.id}" class="hidden items-center gap-1">
-                                <input id="editW_${s.id}" type="number" step="0.5" value="${s.weight}" class="w-20 px-2 py-1 border border-gray-200 rounded-lg text-sm">
-                                <span class="text-gray-400">кг</span>
-                                <input id="editR_${s.id}" type="number" value="${s.reps}" class="w-16 px-2 py-1 border border-gray-200 rounded-lg text-sm">
-                                <span class="text-gray-400">повт</span>
+                                <input id="editW_${s.id}" type="number" step="0.5" value="${s.weight}" class="w-16 sm:w-20 px-1 sm:px-2 py-1 border border-gray-200 rounded-lg text-xs sm:text-sm">
+                                <span class="text-gray-400 text-xs sm:text-sm">кг</span>
+                                <input id="editR_${s.id}" type="number" value="${s.reps}" class="w-12 sm:w-16 px-1 sm:px-2 py-1 border border-gray-200 rounded-lg text-xs sm:text-sm">
+                                <span class="text-gray-400 text-xs sm:text-sm">повт</span>
                                 <button onclick="saveSet(${s.id}, ${exerciseId})" class="text-green-600 hover:text-green-800 text-xs">💾</button>
                             </div>
                         </div>

@@ -22,8 +22,8 @@
 <div class="max-w-6xl mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold mb-6">🧮 Калькулятор КБЖУ</h1>
     <div class="flex gap-3 mb-6">
-        <input id="searchInput" placeholder="Поиск продуктов..." class="flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500">
-        <button onclick="search()" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700">Найти</button>
+        <input id="searchInput" placeholder="Поиск продуктов..." class="flex-1 px-3 sm:px-4 py-2 sm:py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-sm">
+        <button onclick="search()" class="bg-blue-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl font-semibold text-sm hover:bg-blue-700">Найти</button>
     </div>
     <div id="results" class="space-y-3"></div>
     <div id="pagination" class="flex justify-center items-center gap-2 mt-6"></div>
@@ -56,10 +56,10 @@
                     <span class="text-xs text-gray-400 font-medium">Пищевая ценность на 100 г</span>
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 text-center">
-                    <div><span class="font-bold text-blue-600 text-lg">${f.kcal.toFixed(1)}</span><br><span class="text-gray-400 text-sm">ккал</span></div>
-                    <div><span class="font-bold text-lg">${f.proteins.toFixed(1)}</span><br><span class="text-gray-400 text-sm">белки</span></div>
-                    <div><span class="font-bold text-lg">${f.fats.toFixed(1)}</span><br><span class="text-gray-400 text-sm">жиры</span></div>
-                    <div><span class="font-bold text-lg">${f.carbs.toFixed(1)}</span><br><span class="text-gray-400 text-sm">углеводы</span></div>
+                    <div><span class="font-bold text-blue-600 text-lg">${f.kcal.toFixed(2)}</span><br><span class="text-gray-400 text-sm">ккал</span></div>
+                    <div><span class="font-bold text-lg">${f.proteins.toFixed(2)}</span><br><span class="text-gray-400 text-sm">белки</span></div>
+                    <div><span class="font-bold text-lg">${f.fats.toFixed(2)}</span><br><span class="text-gray-400 text-sm">жиры</span></div>
+                    <div><span class="font-bold text-lg">${f.carbs.toFixed(2)}</span><br><span class="text-gray-400 text-sm">углеводы</span></div>
                 </div>
                 <div id="detail_${f.id}" class="hidden mt-3 pt-3 border-t border-gray-200" onclick="event.stopPropagation()">
                     <div class="flex items-center gap-2 mb-3">
@@ -106,10 +106,10 @@
         if (!weight || weight <= 0) return;
         const data = await request(`/food/calc/${id}?weight=${weight}`);
         document.getElementById(`calcWeightLabel_${id}`).textContent = weight;
-        document.getElementById(`calcKcal_${id}`).textContent = data.kcal.toFixed(1);
-        document.getElementById(`calcProteins_${id}`).textContent = data.proteins.toFixed(1);
-        document.getElementById(`calcFats_${id}`).textContent = data.fats.toFixed(1);
-        document.getElementById(`calcCarbs_${id}`).textContent = data.carbs.toFixed(1);
+        document.getElementById(`calcKcal_${id}`).textContent = data.kcal.toFixed(2);
+        document.getElementById(`calcProteins_${id}`).textContent = data.proteins.toFixed(2);
+        document.getElementById(`calcFats_${id}`).textContent = data.fats.toFixed(2);
+        document.getElementById(`calcCarbs_${id}`).textContent = data.carbs.toFixed(2);
         document.getElementById(`calcResult_${id}`).classList.remove('hidden');
 
         const saveBlock = document.getElementById(`calcSave_${id}`);

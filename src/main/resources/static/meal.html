@@ -44,15 +44,15 @@
     </div>
 
     <div class="bg-white rounded-2xl p-6 border border-gray-100 mb-6">
-        <div class="flex gap-2 mb-6">
-            <button id="autoTab" onclick="setMode('auto')" class="flex-1 py-3 rounded-xl font-semibold text-sm transition-all bg-blue-600 text-white">🤖 Автоматически</button>
-            <button id="manualTab" onclick="setMode('manual')" class="flex-1 py-3 rounded-xl font-semibold text-sm transition-all bg-gray-100 text-gray-500 hover:bg-gray-200">✏️ Ручной ввод</button>
+        <div class="flex gap-2 mb-4 sm:mb-6">
+            <button id="autoTab" onclick="setMode('auto')" class="flex-1 py-2 sm:py-3 rounded-xl font-semibold text-xs sm:text-sm transition-all bg-blue-600 text-white">🤖 Автоматически</button>
+            <button id="manualTab" onclick="setMode('manual')" class="flex-1 py-2 sm:py-3 rounded-xl font-semibold text-xs sm:text-sm transition-all bg-gray-100 text-gray-500 hover:bg-gray-200">✏️ Ручной ввод</button>
         </div>
 
         <div id="autoMode">
-            <div class="flex gap-3 mb-4">
-                <input id="foodSearch" placeholder="Поиск продуктов..." class="flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500">
-                <button onclick="searchFood()" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700">Найти</button>
+            <div class="flex gap-2 sm:gap-3 mb-4">
+                <input id="foodSearch" placeholder="Поиск продуктов..." class="flex-1 px-3 sm:px-4 py-2 sm:py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-sm">
+                <button onclick="searchFood()" class="bg-blue-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl font-semibold text-sm hover:bg-blue-700">Найти</button>
             </div>
             <div id="foodResults" class="space-y-2 max-h-96 overflow-y-auto mb-4"></div>
         </div>
@@ -134,10 +134,10 @@
                     <span class="text-xs text-gray-400 font-medium">Пищевая ценность на 100 г</span>
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 text-center">
-                    <div><span class="font-bold text-blue-600 text-lg">${f.kcal.toFixed(1)}</span><br><span class="text-gray-400 text-sm">ккал</span></div>
-                    <div><span class="font-bold text-lg">${f.proteins.toFixed(1)}</span><br><span class="text-gray-400 text-sm">белки</span></div>
-                    <div><span class="font-bold text-lg">${f.fats.toFixed(1)}</span><br><span class="text-gray-400 text-sm">жиры</span></div>
-                    <div><span class="font-bold text-lg">${f.carbs.toFixed(1)}</span><br><span class="text-gray-400 text-sm">углеводы</span></div>
+                    <div><span class="font-bold text-blue-600 text-lg">${f.kcal.toFixed(2)}</span><br><span class="text-gray-400 text-sm">ккал</span></div>
+                    <div><span class="font-bold text-lg">${f.proteins.toFixed(2)}</span><br><span class="text-gray-400 text-sm">белки</span></div>
+                    <div><span class="font-bold text-lg">${f.fats.toFixed(2)}</span><br><span class="text-gray-400 text-sm">жиры</span></div>
+                    <div><span class="font-bold text-lg">${f.carbs.toFixed(2)}</span><br><span class="text-gray-400 text-sm">углеводы</span></div>
                 </div>
                 <div id="detail_${f.id}" class="hidden mt-3 pt-3 border-t border-gray-200" onclick="event.stopPropagation()">
                     <div class="flex items-center gap-2">
@@ -237,7 +237,7 @@
                                 <span class="font-semibold">${m.name}</span>
                                 <span class="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded">${new Date(m.consumedAt).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}</span>
                             </div>
-                            <span class="text-gray-400 text-sm">${m.kcal.toFixed(0)} ккал | Б ${m.proteins.toFixed(1)} Ж ${m.fats.toFixed(1)} У ${m.carbs.toFixed(1)}</span>
+                            <span class="text-gray-400 text-sm">${m.kcal.toFixed(2)} ккал | Б ${m.proteins.toFixed(2)} Ж ${m.fats.toFixed(2)} У ${m.carbs.toFixed(2)}</span>
                         </div>
                         <div id="mealEdit_${m.id}" class="hidden items-center gap-1 flex-wrap mt-1">
                             <input id="meName_${m.id}" value="${m.name.replace(/'/g, "\\'")}" class="w-28 px-2 py-1 border border-gray-200 rounded-lg text-sm">
