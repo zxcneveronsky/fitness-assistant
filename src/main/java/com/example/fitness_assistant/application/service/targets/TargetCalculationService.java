@@ -10,45 +10,47 @@ import java.time.Period;
 @Service
 public class TargetCalculationService {
 
-    public void balanceMacrosByCalories(UserProfile profile) {
-        Double kcal = profile.getTargetKcal();
+    public void balanceMacrosByCalories(Targets targets) {
+        Double kcal = targets.getTargetKcal();
 
-        profile.setTargetProteins((kcal * 0.30) / 4);
-        profile.setTargetFats((kcal * 0.30) / 9);
-        profile.setTargetCarbs((kcal * 0.40) / 4);
+        targets.setTargetProteins((kcal * 0.30) / 4);
+        targets.setTargetFats((kcal * 0.30) / 9);
+        targets.setTargetCarbs((kcal * 0.40) / 4);
     }
 
-    public void balanceCaloriesByMacros(UserProfile profile) {
-        Double p = profile.getTargetProteins();
-        Double f = profile.getTargetFats();
-        Double c = profile.getTargetCarbs();
+    public void balanceCaloriesByMacros(Targets targets) {
+        Double p = targets.getTargetProteins();
+        Double f = targets.getTargetFats();
+        Double c = targets.getTargetCarbs();
 
         Double totalKcal = (p * 4) + (c * 4) + (f * 9);
 
-        profile.setTargetKcal(totalKcal);
+        targets.setTargetKcal(totalKcal);
     }
-    public void applyManualTargets(UserProfile profile, Targets request) {
+
+    public void applyManualTargets(Targets targets, Targets request) {
         if (hasMacros(request)) {
             if (request.getTargetProteins() != null) {
-                profile.setTargetProteins(request.getTargetProteins());
+                targets.setTargetProteins(request.getTargetProteins());
             }
             if (request.getTargetFats() != null) {
-                profile.setTargetFats(request.getTargetFats());
+                targets.setTargetFats(request.getTargetFats());
             }
             if (request.getTargetCarbs() != null) {
-                profile.setTargetCarbs(request.getTargetCarbs());
+                targets.setTargetCarbs(request.getTargetCarbs());
             }
-            balanceCaloriesByMacros(profile);
+            balanceCaloriesByMacros(targets);
         }
         else if (request.getTargetKcal() != null) {
-            profile.setTargetKcal(request.getTargetKcal());
-            balanceMacrosByCalories(profile);
+            targets.setTargetKcal(request.getTargetKcal());
+            balanceMacrosByCalories(targets);
         }
         if (request.getTargetHydration() != null) {
-            profile.setTargetHydration(request.getTargetHydration());
+            targets.setTargetHydration(request.getTargetHydration());
         }
     }
-    public void applyAutoTargets(UserProfile profile) {
+
+    public void applyAutoTargets(Targets targets, UserProfile profile) {
         Integer age = getAge(profile);
         UserProfile.Gender gender = profile.getGender();
         Double weight = profile.getWeight();
@@ -62,15 +64,16 @@ public class TargetCalculationService {
             kcal = (10 * weight) + (6.25 * height) - (5 * age) - 161;
             hydration = weight * 0.031;
         }
-        profile.setTargetKcal(kcal*1.5);
-        profile.setTargetHydration(hydration);
-        balanceMacrosByCalories(profile);
+        targets.setTargetKcal(kcal*1.5);
+        targets.setTargetHydration(hydration);
+        balanceMacrosByCalories(targets);
     }
+
     public boolean hasMacros(Targets r) {
         return r.getTargetProteins() != null || r.getTargetFats() != null || r.getTargetCarbs() != null;
     }
+
     private Integer getAge(UserProfile profile) {
         return Period.between(profile.getBirthDate(), LocalDate.now()).getYears();
     }
 }
-

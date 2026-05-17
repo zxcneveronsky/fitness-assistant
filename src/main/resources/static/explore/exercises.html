@@ -10,7 +10,7 @@
 <body class="font-['Inter'] bg-gray-50 min-h-screen">
 <nav class="bg-white border-b border-gray-100 h-16 px-4 md:px-10 flex items-center justify-between">
     <a id="logoLink" href="/index.html" class="font-extrabold text-xl tracking-tighter">Fitness<span class="text-blue-600">Assistant</span></a>
-    <div class="flex gap-4 items-center">
+    <div id="navAuth" class="flex gap-4 items-center">
         <a href="/login.html" class="text-sm font-semibold text-gray-600 hover:text-black">Вход</a>
         <a href="/register.html" class="text-sm font-semibold bg-blue-600 text-white px-5 py-2 rounded-full hover:bg-blue-700">Регистрация</a>
     </div>
@@ -21,26 +21,51 @@
 </div>
 <div class="max-w-6xl mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold mb-6">💪 Поиск упражнений</h1>
-    <div class="flex gap-3 mb-6">
+    <div class="flex gap-3 mb-4">
         <input id="searchInput" placeholder="Поиск по названию или мышце..." class="flex-1 px-3 sm:px-4 py-2 sm:py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-sm">
         <button onclick="search()" class="bg-blue-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl font-semibold text-sm hover:bg-blue-700">Найти</button>
     </div>
+    <div id="muscleChips" class="flex gap-2 mb-4 overflow-x-auto pb-1" style="scrollbar-width:thin;-webkit-overflow-scrolling:touch"></div>
     <div id="results" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
     <div id="pagination" class="flex justify-center items-center gap-2 mt-6"></div>
 </div>
 <script src="/js/api.js"></script>
 <script>
-    if (isAuth()) document.getElementById('logoLink').href = '/dashboard.html';
+    if (isAuth()) {
+        document.getElementById('logoLink').href = '/dashboard.html';
+        document.getElementById('navAuth').innerHTML = '<a href="/dashboard.html" class="text-sm font-semibold bg-blue-600 text-white px-5 py-2 rounded-full hover:bg-blue-700">Дашборд</a>';
+    }
 
     let currentPage = 0;
     let totalPages = 0;
+    let selectedMuscleId = null;
+
+    async function loadChips() {
+        try {
+            const muscles = await request('/muscles');
+            const container = document.getElementById('muscleChips');
+            container.innerHTML = '<button onclick="setMuscle(null)" class="px-3 py-1.5 rounded-full text-xs font-bold border transition-colors whitespace-nowrap shrink-0 ' + (selectedMuscleId === null ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-500 border-gray-200 hover:border-blue-300') + '">Все</button>' +
+                muscles.map(m => `<button onclick="setMuscle(${m.id})" class="px-3 py-1.5 rounded-full text-xs font-bold border transition-colors whitespace-nowrap shrink-0 ${selectedMuscleId === m.id ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-500 border-gray-200 hover:border-blue-300'}">${m.name}</button>`).join('');
+        } catch (e) {}
+    }
+
+    function setMuscle(id) {
+        selectedMuscleId = id;
+        loadChips();
+        search(0);
+    }
+
     async function search(page = 0) {
         currentPage = page;
         const q = document.getElementById('searchInput').value;
-        const endpoint = q ? `/exercises/search?name=${encodeURIComponent(q)}&page=${page}&size=9` : `/exercises?page=${page}&size=9`;
+        let endpoint = `/exercises/search?page=${page}&size=9`;
+        if (q) endpoint += `&name=${encodeURIComponent(q)}`;
+        if (selectedMuscleId) endpoint += `&muscleId=${selectedMuscleId}`;
         const data = await request(endpoint);
         totalPages = data.totalPages;
-        document.getElementById('results').innerHTML = data.content.map(ex => `
+        document.getElementById('results').innerHTML = data.content.length === 0
+            ? '<p class="text-gray-400 col-span-3 text-center py-8">Ничего не найдено</p>'
+            : data.content.map(ex => `
             <div class="bg-white rounded-2xl p-5 border border-gray-100 hover:shadow-lg transition-shadow">
                 <h3 class="font-bold text-lg">${ex.exerciseName || 'Без названия'}</h3>
                 <p class="text-sm text-gray-500 mt-2">${ex.description || 'Нет описания'}</p>
@@ -61,7 +86,7 @@
         el.innerHTML = html;
     }
     document.getElementById('searchInput').addEventListener('keydown', e => { if (e.key === 'Enter') search(); if (isAuth()) { renderActiveSessionBanner(); syncActiveSessions(); } });
-    search(); renderActiveSessionBanner(); if (isAuth()) syncActiveSessions();
+    loadChips(); search(); renderActiveSessionBanner(); if (isAuth()) syncActiveSessions();
 </script>
 </body>
 </html>

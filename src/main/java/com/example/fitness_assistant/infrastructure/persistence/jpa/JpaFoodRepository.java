@@ -10,12 +10,14 @@ import org.springframework.data.repository.query.Param;
 public interface JpaFoodRepository extends JpaRepository<FoodEntity, Long> {
     @Query(value = """
         SELECT f FROM FoodEntity f
-        WHERE LOWER(f.name) LIKE LOWER(CONCAT('%', :query, '%'))
-        OR LOWER(f.brands) LIKE LOWER(CONCAT('%', :query, '%'))
+        WHERE (cast(:name as text) IS NULL
+        OR LOWER(f.name) LIKE LOWER(CONCAT('%', cast(:name as text), '%'))
+        OR LOWER(f.brands) LIKE LOWER(CONCAT('%', cast(:name as text), '%')))
         """,
             countQuery = """
         SELECT COUNT(f) FROM FoodEntity f
-        WHERE LOWER(f.name) LIKE LOWER(CONCAT('%', :query, '%'))
-        OR LOWER(f.brands) LIKE LOWER(CONCAT('%', :query, '%'))
+        WHERE (cast(:name as text) IS NULL
+        OR LOWER(f.name) LIKE LOWER(CONCAT('%', cast(:name as text), '%'))
+        OR LOWER(f.brands) LIKE LOWER(CONCAT('%', cast(:name as text), '%')))
         """)
-    Page<FoodEntity> searchFood(@Param("query") String query, Pageable pageable);}
+    Page<FoodEntity> searchFood(@Param("name") String name, Pageable pageable);}

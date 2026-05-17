@@ -8,28 +8,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class UpdateTargetsUseCase {
+public class FindTargetsUseCase {
 
     private final TargetsRepository targetsRepository;
-    private final TargetCalculationService targetCalculationService;
 
-    @Transactional
-    public Targets updateTargets(UserDetails userDetails, Targets request) {
+    public Targets findTargets(UserDetails userDetails) {
         Long userId = ((UserDetailsAdapter) userDetails).getUserId();
         Targets targets = targetsRepository.findById(userId)
                 .orElseThrow(() -> new TargetsNotFoundException(userId));
-
-        if (request.getTargetKcal() != null || targetCalculationService.hasMacros(request) || request.getTargetHydration() != null) {
-            targets.setUseAutopilot(false);
-            targetCalculationService.applyManualTargets(targets, request);
-        }
-        Targets savedTargets = targetsRepository.save(targets);
-        log.info("Цели обновлены | userId={}", savedTargets.getProfileId());
-        return savedTargets;
+        log.info("Цели найдены | userId={}", userId);
+        return targets;
     }
 }

@@ -18,8 +18,8 @@ public class FindExerciseUseCase {
 
     private final ExerciseRepository exerciseRepository;
 
-    public Page<Exercise> findExercise(String name, Pageable pageable) {
-        Page<Exercise> exercises = exerciseRepository.searchExercise(name, pageable);
+    public Page<Exercise> findExercise(String name, Long muscleId, Pageable pageable) {
+        Page<Exercise> exercises = exerciseRepository.searchExercise(name, muscleId, pageable);
         log.info("Поиск упражнений завершён | name='{}' | найдено={} | страница={}/{}",
                 name,
                 exercises.getTotalElements(),

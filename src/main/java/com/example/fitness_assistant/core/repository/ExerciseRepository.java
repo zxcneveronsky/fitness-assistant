@@ -9,9 +9,8 @@ import java.util.Optional;
 
 public interface ExerciseRepository {
     Optional<Exercise> findById(Long id);
-    Page<Exercise> findAll(Pageable pageable);
     List<Exercise> findAllByIdIn(List<Long> id);
-    Page<Exercise> searchExercise(String name, Pageable pageable);
+    Page<Exercise> searchExercise(String name, Long muscleId, Pageable pageable);
     Exercise save(Exercise exercise);
     void deleteById(Long id);
     boolean existsById(Long id);

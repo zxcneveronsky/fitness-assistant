@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 public class FoodController {
 
-    private final GetAllFoodUseCase getAllFoodUseCase;
     private final FindFoodUseCase findFoodUseCase;
     private final CreateFoodUseCase createFoodUseCase;
     private final UpdateFoodUseCase updateFoodUseCase;
@@ -28,11 +27,6 @@ public class FoodController {
     private final CalculateFoodUseCase calculateFoodUseCase;
     private final FoodWebMapper foodWebMapper;
 
-    @GetMapping
-    public Page<FoodResponse> getAllFood(@PageableDefault(size = 9) Pageable pageable) {
-        return getAllFoodUseCase.getAllFood(pageable)
-                .map(foodWebMapper::toResponse);
-    }
     @GetMapping("/{id}")
     public FoodResponse getFoodById(@PathVariable Long id){
         return foodWebMapper.toResponse(findFoodUseCase.findById(id));
@@ -40,7 +34,7 @@ public class FoodController {
 
     @GetMapping("/search")
     public Page<FoodResponse> searchFood(
-            @RequestParam String name,
+            @RequestParam(required = false) String name,
             @PageableDefault(size = 9) Pageable pageable) {
         return findFoodUseCase.findFood(name, pageable)
                 .map(foodWebMapper::toResponse);

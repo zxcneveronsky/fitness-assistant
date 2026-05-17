@@ -1,8 +1,11 @@
 package com.example.fitness_assistant.application.service.profile;
 
 import com.example.fitness_assistant.application.service.targets.TargetCalculationService;
+import com.example.fitness_assistant.core.exception.TargetsNotFoundException;
 import com.example.fitness_assistant.core.exception.UserProfileNotFoundException;
+import com.example.fitness_assistant.core.model.Targets;
 import com.example.fitness_assistant.core.model.UserProfile;
+import com.example.fitness_assistant.core.repository.TargetsRepository;
 import com.example.fitness_assistant.core.repository.UserProfileRepository;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UpdateUserProfileUseCase {
 
     private final UserProfileRepository userProfileRepository;
+    private final TargetsRepository targetsRepository;
     private final TargetCalculationService targetCalculationService;
 
     @Transactional
@@ -29,33 +33,36 @@ public class UpdateUserProfileUseCase {
                     existingProfile.setWeight(profileUpdate.getWeight() != null ? profileUpdate.getWeight() : existingProfile.getWeight());
                     existingProfile.setHeight(profileUpdate.getHeight() != null ? profileUpdate.getHeight() : existingProfile.getHeight());
                     existingProfile.setGender(profileUpdate.getGender() != null ? profileUpdate.getGender() : existingProfile.getGender());
-                    if (profileUpdate.getUseAutopilot() != null){
-                        existingProfile.setUseAutopilot(profileUpdate.getUseAutopilot());
-                    }
-                    if (Boolean.TRUE.equals(existingProfile.getUseAutopilot())) {
-                        targetCalculationService.applyAutoTargets(existingProfile);
-                    }
                     return userProfileRepository.save(existingProfile);
                 })
                 .orElseThrow(() -> new UserProfileNotFoundException(id));
+
+        targetsRepository.findById(id).ifPresent(targets -> {
+            if (Boolean.TRUE.equals(targets.getUseAutopilot())) {
+                targetCalculationService.applyAutoTargets(targets, updatedProfile);
+                targetsRepository.save(targets);
+            }
+        });
+
         log.info("Профиль обновлён | userId={}", updatedProfile.getId());
         return updatedProfile;
     }
+
     @Transactional
-    public UserProfile updateAutopilotStatus(UserDetails userDetails, boolean enabled){
+    public Targets updateAutopilotStatus(UserDetails userDetails, boolean enabled) {
         Long id = ((UserDetailsAdapter) userDetails).getUserId();
-        UserProfile updatedProfile = userProfileRepository.findById(id)
-                .map(profile -> {
-                    profile.setUseAutopilot(enabled);
-                    if (enabled){
-                        targetCalculationService.applyAutoTargets(profile);
-                    }
-                    return userProfileRepository.save(profile);
-                })
+        UserProfile profile = userProfileRepository.findById(id)
                 .orElseThrow(() -> new UserProfileNotFoundException(id));
-        log.info("Статус автопилота обновлён | userId={} | enabled={}", updatedProfile.getId(), enabled);
-        return updatedProfile;
+
+        Targets targets = targetsRepository.findById(id)
+                .orElseThrow(() -> new TargetsNotFoundException(id));
+        targets.setUseAutopilot(enabled);
+        if (enabled) {
+            targetCalculationService.applyAutoTargets(targets, profile);
+        }
+        Targets saved = targetsRepository.save(targets);
+
+        log.info("Статус автопилота обновлён | userId={} | enabled={}", id, enabled);
+        return saved;
     }
-
-
 }

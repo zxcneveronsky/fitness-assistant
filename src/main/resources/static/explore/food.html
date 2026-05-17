@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Продукты — Fitness Assistant</title>
+    <title>База продуктов — Fitness Assistant</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body class="font-['Inter'] bg-gray-50 min-h-screen">
 <nav class="bg-white border-b border-gray-100 h-16 px-4 md:px-10 flex items-center justify-between">
     <a id="logoLink" href="/index.html" class="font-extrabold text-xl tracking-tighter">Fitness<span class="text-blue-600">Assistant</span></a>
-    <div class="flex gap-4 items-center">
+    <div id="navAuth" class="flex gap-4 items-center">
         <a href="/login.html" class="text-sm font-semibold text-gray-600 hover:text-black">Вход</a>
         <a href="/register.html" class="text-sm font-semibold bg-blue-600 text-white px-5 py-2 rounded-full hover:bg-blue-700">Регистрация</a>
     </div>
@@ -20,7 +20,8 @@
     <a id="bannerLink" href="" class="bg-yellow-200 text-yellow-800 px-4 py-1 rounded-lg font-semibold hover:bg-yellow-300">Продолжить</a>
 </div>
 <div class="max-w-6xl mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-6">🍎 Поиск продуктов</h1>
+    <h1 class="text-3xl font-bold mb-2">🍎 База продуктов</h1>
+    <p class="text-gray-400 text-sm mb-6">Нажми на продукт, чтобы рассчитать КБЖУ на нужный вес</p>
     <div class="flex gap-3 mb-6">
         <input id="searchInput" placeholder="Поиск по названию или бренду..." class="flex-1 px-3 sm:px-4 py-2 sm:py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-sm">
         <button onclick="search()" class="bg-blue-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl font-semibold text-sm hover:bg-blue-700">Найти</button>
@@ -30,30 +31,102 @@
 </div>
 <script src="/js/api.js"></script>
 <script>
-    if (isAuth()) document.getElementById('logoLink').href = '/dashboard.html';
+    if (isAuth()) {
+        document.getElementById('logoLink').href = '/dashboard.html';
+        document.getElementById('navAuth').innerHTML = '<a href="/dashboard.html" class="text-sm font-semibold bg-blue-600 text-white px-5 py-2 rounded-full hover:bg-blue-700">Дашборд</a>';
+    }
 
     let currentPage = 0;
     let totalPages = 0;
+    let expandedFoodId = null;
+
     async function search(page = 0) {
         currentPage = page;
         const q = document.getElementById('searchInput').value;
-        const endpoint = q ? `/food/search?name=${encodeURIComponent(q)}&page=${page}&size=9` : `/food?page=${page}&size=9`;
+        const endpoint = q ? `/food/search?name=${encodeURIComponent(q)}&page=${page}&size=9` : `/food/search?page=${page}&size=9`;
         const data = await request(endpoint);
         totalPages = data.totalPages;
-        document.getElementById('results').innerHTML = data.content.map(f => `
-            <div class="bg-white rounded-2xl p-5 border border-gray-100 hover:shadow-lg transition-shadow">
+        expandedFoodId = null;
+        document.getElementById('results').innerHTML = data.content.length === 0
+            ? '<p class="text-gray-400 col-span-3 text-center py-8">Ничего не найдено</p>'
+            : data.content.map(f => `
+            <div class="bg-white rounded-2xl p-5 border border-gray-100 hover:shadow-lg transition-shadow cursor-pointer" onclick="toggleDetail(${f.id})">
                 <h3 class="font-bold text-lg">${f.name}</h3>
-                <p class="text-sm text-gray-400">${f.brands || 'Без бренда'}</p>
+                <p class="text-sm text-gray-400">${f.brands || 'Нет бренда'}</p>
                 <div class="grid grid-cols-4 gap-2 mt-3 text-center text-sm">
                     <div><span class="font-bold text-blue-600">${f.kcal.toFixed(2)}</span><br><span class="text-gray-400 text-xs">ккал</span></div>
                     <div><span class="font-bold">${f.proteins.toFixed(2)}</span><br><span class="text-gray-400 text-xs">белки</span></div>
                     <div><span class="font-bold">${f.fats.toFixed(2)}</span><br><span class="text-gray-400 text-xs">жиры</span></div>
                     <div><span class="font-bold">${f.carbs.toFixed(2)}</span><br><span class="text-gray-400 text-xs">углеводы</span></div>
                 </div>
+                <div id="detail_${f.id}" class="hidden mt-3 pt-3 border-t border-gray-200" onclick="event.stopPropagation()">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="text-sm text-gray-500">Вес (г):</span>
+                        <input id="calcWeight_${f.id}" type="number" placeholder="100" class="w-20 px-3 py-1.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-500" onclick="event.stopPropagation()">
+                        <button onclick="event.stopPropagation(); calculate(${f.id})" class="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-blue-700">🧮 Рассчитать</button>
+                    </div>
+                    <div id="calcResult_${f.id}" class="hidden">
+                        <div class="grid grid-cols-4 gap-2 mb-3 text-center text-sm">
+                            <div><span class="font-bold text-blue-600" id="calcKcal_${f.id}"></span><br><span class="text-gray-400 text-xs">ккал</span></div>
+                            <div><span class="font-bold" id="calcProteins_${f.id}"></span><br><span class="text-gray-400 text-xs">белки</span></div>
+                            <div><span class="font-bold" id="calcFats_${f.id}"></span><br><span class="text-gray-400 text-xs">жиры</span></div>
+                            <div><span class="font-bold" id="calcCarbs_${f.id}"></span><br><span class="text-gray-400 text-xs">углеводы</span></div>
+                        </div>
+                        <div id="calcSave_${f.id}"></div>
+                    </div>
+                </div>
             </div>
         `).join('');
         renderPagination();
     }
+
+    function toggleDetail(id) {
+        const detail = document.getElementById(`detail_${id}`);
+        const arrow = document.getElementById(`arrow_${id}`);
+        if (!detail) return;
+        const isOpen = !detail.classList.contains('hidden');
+        if (expandedFoodId && expandedFoodId !== id) {
+            const prevDetail = document.getElementById(`detail_${expandedFoodId}`);
+            if (prevDetail) prevDetail.classList.add('hidden');
+        }
+        detail.classList.toggle('hidden');
+        expandedFoodId = isOpen ? null : id;
+    }
+
+    async function calculate(id) {
+        const weight = parseFloat(document.getElementById(`calcWeight_${id}`).value);
+        if (!weight || weight <= 0) return;
+        const data = await request(`/food/calc/${id}?weight=${weight}`);
+        document.getElementById(`calcKcal_${id}`).textContent = data.kcal.toFixed(2);
+        document.getElementById(`calcProteins_${id}`).textContent = data.proteins.toFixed(2);
+        document.getElementById(`calcFats_${id}`).textContent = data.fats.toFixed(2);
+        document.getElementById(`calcCarbs_${id}`).textContent = data.carbs.toFixed(2);
+        document.getElementById(`calcResult_${id}`).classList.remove('hidden');
+
+        const saveBlock = document.getElementById(`calcSave_${id}`);
+        if (isAuth()) {
+            saveBlock.innerHTML = `<button onclick="event.stopPropagation(); saveMeal(${id}, ${weight}, this)" class="bg-green-600 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-green-700 w-full">💾 Сохранить приём пищи</button>`;
+        } else {
+            saveBlock.innerHTML = `<a href="/login.html" class="block text-center bg-gray-100 text-gray-500 px-4 py-2 rounded-lg text-xs font-semibold hover:bg-gray-200">Войдите, чтобы сохранить</a>`;
+        }
+    }
+
+    async function saveMeal(foodId, weight, btn) {
+        btn.disabled = true;
+        btn.textContent = '⏳ Сохраняю...';
+        try {
+            await request('/meal/auto', {
+                method: 'POST',
+                body: JSON.stringify({ id: foodId, weight, name: 'auto', consumedAt: new Date().toISOString() })
+            });
+            btn.className = 'bg-green-100 text-green-700 px-4 py-2 rounded-lg text-xs font-bold w-full';
+            btn.textContent = '✅ Сохранено';
+        } catch (e) {
+            btn.disabled = false;
+            btn.textContent = '💾 Сохранить приём пищи';
+        }
+    }
+
     function renderPagination() {
         const el = document.getElementById('pagination');
         if (totalPages <= 1) { el.innerHTML = ''; return; }

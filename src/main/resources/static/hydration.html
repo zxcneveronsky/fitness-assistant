@@ -5,7 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Вода — Fitness Assistant</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .donut-wrap { position: relative; }
+        .donut-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; pointer-events: none; }
+    </style>
 </head>
 <body class="font-['Inter'] bg-gray-50 min-h-screen">
     <nav class="bg-white border-b border-gray-100 px-4 md:px-10 h-16 flex items-center justify-between">
@@ -42,6 +47,26 @@
             <h1 class="text-3xl font-bold">💧 Трекер воды</h1>
             <input type="date" id="waterDate" onchange="loadWater()" class="px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-sm">
         </div>
+
+        <div class="bg-white rounded-2xl p-4 md:p-6 border border-gray-100 mb-6 flex items-center gap-4 sm:gap-8">
+        <div class="donut-wrap w-28 sm:w-36 h-28 sm:h-36 shrink-0">
+            <canvas id="waterChart"></canvas>
+            <div class="donut-center">
+                <p id="water-pct" class="text-xl sm:text-2xl font-black text-gray-900">0%</p>
+                <p class="text-[10px] text-gray-400 font-bold">из <span id="water-norm">0</span> мл</p>
+            </div>
+        </div>
+        <div>
+            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Вода сегодня</p>
+            <p class="text-2xl font-black text-gray-900 mt-1"><span id="water-current">0</span> <span class="text-sm text-gray-400 font-medium">мл</span></p>
+                <div class="flex gap-2 mt-3">
+                    <button onclick="quickAddWater(150)" class="text-[10px] font-black bg-blue-50 text-blue-600 py-2 px-3 rounded-xl hover:bg-blue-100">+150</button>
+                    <button onclick="quickAddWater(250)" class="text-[10px] font-black bg-blue-50 text-blue-600 py-2 px-3 rounded-xl hover:bg-blue-100">+250</button>
+                    <button onclick="quickAddWater(500)" class="text-[10px] font-black bg-blue-50 text-blue-600 py-2 px-3 rounded-xl hover:bg-blue-100">+500</button>
+                </div>
+            </div>
+        </div>
+
         <div class="bg-white rounded-2xl p-6 border border-gray-100 mb-6">
             <h2 class="font-bold text-lg mb-4">Добавить запись</h2>
             <div class="flex gap-2 sm:gap-3 items-end">
@@ -64,6 +89,42 @@
         if (!isAuth()) window.location.href = '/login.html';
         if (isAuth()) document.getElementById('logoLink').href = '/dashboard.html';
 
+        let waterChartObj = null;
+        let waterNorm = 2000;
+        let waterToday = 0;
+
+        function initWaterChart() {
+            const ctx = document.getElementById('waterChart');
+            if (!ctx) return;
+            waterChartObj = new Chart(ctx.getContext('2d'), {
+                type: 'doughnut',
+                data: { datasets: [{ data: [0, 100], backgroundColor: ['#0071e3', '#f0f7ff'], borderWidth: 0, cutout: '75%' }] },
+                options: { plugins: { legend: { display: false }, tooltip: { enabled: false } }, animation: { duration: 600 } }
+            });
+        }
+
+        function updateWaterChart() {
+            if (!waterChartObj) return;
+            const pct = waterNorm > 0 ? Math.min(Math.round((waterToday / waterNorm) * 100), 100) : 0;
+            document.getElementById('water-pct').textContent = pct + '%';
+            document.getElementById('water-current').textContent = waterToday.toFixed(0);
+            document.getElementById('water-norm').textContent = waterNorm.toFixed(0);
+            waterChartObj.data.datasets[0].data = [waterToday, Math.max(waterNorm - waterToday, 0)];
+            waterChartObj.update();
+        }
+
+        async function loadWaterData() {
+            try {
+                const targets = await request('/profile/targets');
+                if (targets) waterNorm = (targets.targetHydration || 2) * 1000;
+            } catch (e) {}
+            try {
+                const waterData = await request(`/hydration/daily?localDateTime=${encodeURIComponent(selectedWaterDate())}`);
+                if (waterData) waterToday = (waterData.totalAmount || 0) * 1000;
+            } catch (e) {}
+            updateWaterChart();
+        }
+
         function selectedWaterDate() {
             const d = document.getElementById('waterDate').value;
             return d ? new Date(d).toISOString() : new Date().toISOString();
@@ -81,6 +142,15 @@
             } catch (e) { showError(e.message); }
         }
 
+        async function quickAddWater(ml) {
+            try {
+                await request('/hydration', { method: 'POST', body: JSON.stringify({ name: 'Вода', amount: ml / 1000, consumedAt: selectedWaterDate() }) });
+                waterToday += ml;
+                updateWaterChart();
+                loadWater();
+            } catch (e) { showError(e.message); }
+        }
+
         function showError(msg) {
             const el = document.getElementById('waterError');
             el.textContent = msg;
@@ -89,6 +159,7 @@
         }
 
         async function loadWater() {
+            await loadWaterData();
             const data = await request(`/hydration/search?localDateTime=${encodeURIComponent(selectedWaterDate())}&size=50`);
             document.getElementById('waterList').innerHTML = data.content.length === 0
                 ? '<p class="text-gray-400 text-center py-8">Сегодня ещё не пили воду</p>'
@@ -134,7 +205,7 @@
         async function deleteWater(id) { await request(`/hydration/${id}`, { method: 'DELETE' }); loadWater(); }
         document.getElementById('waterDate').value = new Date().toISOString().split('T')[0];
         renderActiveSessionBanner(); syncActiveSessions(); function logout() { clearToken(); window.location.href = '/index.html'; }
-        loadWater();
+        initWaterChart(); loadWaterData(); loadWater();
     </script>
 </body>
 </html>

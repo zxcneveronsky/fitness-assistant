@@ -1,7 +1,7 @@
 package com.example.fitness_assistant.web.controller;
 
-import com.example.fitness_assistant.application.service.profile.FindProfileUseCase;
 import com.example.fitness_assistant.application.service.profile.UpdateUserProfileUseCase;
+import com.example.fitness_assistant.application.service.targets.FindTargetsUseCase;
 import com.example.fitness_assistant.application.service.targets.UpdateTargetsUseCase;
 import com.example.fitness_assistant.web.dto.request.update.UpdateTargetsRequest;
 import com.example.fitness_assistant.web.dto.response.targets.TargetStatusResponse;
@@ -23,10 +23,9 @@ import org.springframework.web.bind.annotation.*;
 public class TargetsController {
 
     private final UpdateTargetsUseCase updateTargetsUseCase;
+    private final FindTargetsUseCase findTargetsUseCase;
     private final TargetsWebMapper targetsWebMapper;
-    private final FindProfileUseCase findProfileUseCase;
     private final UpdateUserProfileUseCase updateUserProfileUseCase;
-
 
     @PatchMapping("/targets")
     @ResponseStatus(HttpStatus.OK)
@@ -37,17 +36,19 @@ public class TargetsController {
                 updateTargetsUseCase.updateTargets(userDetails, targetsWebMapper.toDomain(request))
         );
     }
+
     @GetMapping("/targets")
     public TargetsResponse getTarget(@AuthenticationPrincipal UserDetails userDetails) {
-        return targetsWebMapper.toTargetsResponse(findProfileUseCase.findUserProfile(userDetails));
+        return targetsWebMapper.toTargetsResponse(findTargetsUseCase.findTargets(userDetails));
     }
+
     @PatchMapping("/targets/status")
     @ResponseStatus(HttpStatus.OK)
     public TargetStatusResponse updateAutopilotStatus(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam boolean enabled) {
         return targetsWebMapper.toTargetStatusResponse(
-                updateUserProfileUseCase.updateAutopilotStatus(userDetails,enabled)
+                updateUserProfileUseCase.updateAutopilotStatus(userDetails, enabled)
         );
     }
 }

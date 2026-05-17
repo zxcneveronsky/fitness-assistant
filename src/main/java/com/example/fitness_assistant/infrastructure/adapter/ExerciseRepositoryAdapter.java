@@ -28,19 +28,14 @@ public class ExerciseRepositoryAdapter implements ExerciseRepository {
                 .map(exerciseMapper::toDomain);
     }
     @Override
-    public Page<Exercise> findAll(Pageable pageable) {
-        return jpaExerciseRepository.findAll(pageable)
-                .map(exerciseMapper::toDomain);
-    }
-    @Override
     @Cacheable("exercises")
     public List<Exercise> findAllByIdIn(List<Long> id) {
         return jpaExerciseRepository.findAllByIdIn(id).stream().map(exerciseMapper::toDomain).toList();
     }
 
     @Override
-    public Page<Exercise> searchExercise(String name, Pageable pageable) {
-        return jpaExerciseRepository.searchExercise(name, pageable)
+    public Page<Exercise> searchExercise(String name, Long muscleId, Pageable pageable) {
+        return jpaExerciseRepository.searchExercise(name, muscleId, pageable)
                 .map(exerciseMapper::toDomain);
     }
 

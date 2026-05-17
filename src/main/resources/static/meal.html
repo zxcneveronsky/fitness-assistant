@@ -5,7 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Питание — Fitness Assistant</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .donut-wrap { position: relative; }
+        .donut-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; pointer-events: none; }
+    </style>
 </head>
 <body class="font-['Inter'] bg-gray-50 min-h-screen">
 <nav class="bg-white border-b border-gray-100 h-16 px-4 md:px-10 flex items-center justify-between">
@@ -41,6 +46,25 @@
     <div class="flex items-center justify-between mb-6">
         <h1 class="text-3xl font-bold">🥗 Приёмы пищи</h1>
         <input type="date" id="mealDate" onchange="loadMeals()" class="px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-sm">
+    </div>
+
+    <div class="bg-white rounded-2xl p-4 md:p-6 border border-gray-100 mb-6 flex items-center gap-4 sm:gap-8">
+        <div class="donut-wrap w-28 sm:w-36 h-28 sm:h-36 shrink-0">
+            <canvas id="kcalChart"></canvas>
+            <div class="donut-center">
+                <p id="kcal-pct" class="text-xl sm:text-2xl font-black text-gray-900">0%</p>
+                <p class="text-[10px] text-gray-400 font-bold">из <span id="kcal-norm">0</span> ккал</p>
+            </div>
+        </div>
+        <div>
+            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Калории сегодня</p>
+            <p class="text-2xl font-black text-gray-900 mt-1"><span id="kcal-current">0</span> <span class="text-sm text-gray-400 font-medium">ккал</span></p>
+            <div class="grid grid-cols-3 gap-2 mt-3">
+                <div><span class="text-[9px] font-black text-blue-500">Белки</span><br><span class="text-sm font-black text-blue-600"><span id="protein-current">0</span> <span class="text-xs text-gray-300">/ <span id="protein-norm">0</span> г</span></span></div>
+                <div><span class="text-[9px] font-black text-red-500">Жиры</span><br><span class="text-sm font-black text-red-600"><span id="fat-current">0</span> <span class="text-xs text-gray-300">/ <span id="fat-norm">0</span> г</span></span></div>
+                <div><span class="text-[9px] font-black text-green-500">Углеводы</span><br><span class="text-sm font-black text-green-600"><span id="carb-current">0</span> <span class="text-xs text-gray-300">/ <span id="carb-norm">0</span> г</span></span></div>
+            </div>
+        </div>
     </div>
 
     <div class="bg-white rounded-2xl p-6 border border-gray-100 mb-6">
@@ -98,6 +122,15 @@
     if (isAuth()) document.getElementById('logoLink').href = '/dashboard.html';
 
     let expandedFoodId = null;
+    let kcalChartObj = null;
+    let kcalNorm = 2000;
+    let kcalToday = 0;
+    let proteinsToday = 0;
+    let fatsToday = 0;
+    let carbsToday = 0;
+    let proteinsNorm = 0;
+    let fatsNorm = 0;
+    let carbsNorm = 0;
 
     function setMode(mode) {
         const autoMode = document.getElementById('autoMode');
@@ -166,6 +199,54 @@
         expandedFoodId = isOpen ? null : id;
     }
 
+    function initKcalChart() {
+        const ctx = document.getElementById('kcalChart');
+        if (!ctx) return;
+        kcalChartObj = new Chart(ctx.getContext('2d'), {
+            type: 'doughnut',
+            data: { datasets: [{ data: [0, 100], backgroundColor: ['#34c759', '#f0fff4'], borderWidth: 0, cutout: '75%' }] },
+            options: { plugins: { legend: { display: false }, tooltip: { enabled: false } }, animation: { duration: 600 } }
+        });
+    }
+
+    function updateKcalChart() {
+        if (!kcalChartObj) return;
+        const pct = kcalNorm > 0 ? Math.min(Math.round((kcalToday / kcalNorm) * 100), 100) : 0;
+        document.getElementById('kcal-pct').textContent = pct + '%';
+        document.getElementById('kcal-current').textContent = kcalToday.toFixed(0);
+        document.getElementById('kcal-norm').textContent = kcalNorm.toFixed(0);
+        document.getElementById('protein-current').textContent = proteinsToday.toFixed(1);
+        document.getElementById('protein-norm').textContent = proteinsNorm.toFixed(0);
+        document.getElementById('fat-current').textContent = fatsToday.toFixed(1);
+        document.getElementById('fat-norm').textContent = fatsNorm.toFixed(0);
+        document.getElementById('carb-current').textContent = carbsToday.toFixed(1);
+        document.getElementById('carb-norm').textContent = carbsNorm.toFixed(0);
+        kcalChartObj.data.datasets[0].data = [kcalToday, Math.max(kcalNorm - kcalToday, 0)];
+        kcalChartObj.update();
+    }
+
+    async function loadMealData() {
+        try {
+            const targets = await request('/profile/targets');
+            if (targets) {
+                kcalNorm = targets.targetKcal || 2000;
+                proteinsNorm = targets.targetProteins || 0;
+                fatsNorm = targets.targetFats || 0;
+                carbsNorm = targets.targetCarbs || 0;
+            }
+        } catch (e) {}
+        try {
+            const kcalData = await request(`/meal/daily?localDateTime=${encodeURIComponent(selectedDate())}`);
+            if (kcalData) {
+                kcalToday = kcalData.kcal || 0;
+                proteinsToday = kcalData.proteins || 0;
+                fatsToday = kcalData.fats || 0;
+                carbsToday = kcalData.carbs || 0;
+            }
+        } catch (e) {}
+        updateKcalChart();
+    }
+
     async function addMeal(foodId) {
         const weight = parseFloat(document.getElementById(`weight_${foodId}`).value);
         if (!weight || weight <= 0) { showError('Укажите вес в граммах'); return; }
@@ -226,6 +307,7 @@
     }
 
     async function loadMeals() {
+        await loadMealData();
         const data = await request(`/meal/search?localDateTime=${encodeURIComponent(selectedDate())}&size=50`);
         document.getElementById('mealList').innerHTML = data.content.length === 0
             ? '<p class="text-gray-400 text-center py-8">Сегодня ещё ничего не съедено</p>'
@@ -282,7 +364,7 @@
     async function deleteMeal(id) { await request(`/meal/${id}`, { method: 'DELETE' }); loadMeals(); }
     document.getElementById('mealDate').value = new Date().toISOString().split('T')[0];
     renderActiveSessionBanner(); syncActiveSessions(); function logout() { clearToken(); window.location.href = '/index.html'; }
-    loadMeals();
+    initKcalChart(); loadMealData(); loadMeals();
 </script>
 </body>
 </html>

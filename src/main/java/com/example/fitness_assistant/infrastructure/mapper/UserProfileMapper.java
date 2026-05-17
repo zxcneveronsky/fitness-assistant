@@ -17,18 +17,12 @@ public class UserProfileMapper {
         }
         return new UserProfile(
                 entity.getId(),
-                null, // Это поле проставляется в адаптере через GetReferenceById
+                null, // Это поле проставляется в адаптере через getReferenceById
                 entity.getName(),
                 entity.getBirthDate(),
                 entity.getWeight(),
                 entity.getHeight(),
-                UserProfile.Gender.valueOf(entity.getGender().name()),
-                entity.getTargetKcal(),
-                entity.getTargetProteins(),
-                entity.getTargetFats(),
-                entity.getTargetCarbs(),
-                entity.getUseAutopilot(),
-                entity.getTargetHydration()
+                UserProfile.Gender.valueOf(entity.getGender().name())
         );
     }
 
@@ -43,13 +37,7 @@ public class UserProfileMapper {
                 domain.getBirthDate(),
                 domain.getWeight(),
                 domain.getHeight(),
-                UserProfileEntity.Gender.valueOf(domain.getGender().name()),
-                domain.getTargetKcal(),
-                domain.getTargetProteins(),
-                domain.getTargetFats(),
-                domain.getTargetCarbs(),
-                domain.getUseAutopilot(),
-                domain.getTargetHydration()
+                UserProfileEntity.Gender.valueOf(domain.getGender().name())
         );
 
     }

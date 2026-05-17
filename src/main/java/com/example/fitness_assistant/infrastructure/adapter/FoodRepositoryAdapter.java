@@ -28,12 +28,6 @@ public class FoodRepositoryAdapter implements FoodRepository {
     }
 
     @Override
-    public Page<Food> findAll(Pageable pageable) {
-        return jpaFoodRepository.findAll(pageable)
-                .map(foodMapper::toDomain);
-    }
-
-    @Override
     public Page<Food> searchFood(String name, Pageable pageable) {
         return jpaFoodRepository.searchFood(name, pageable)
                 .map(foodMapper::toDomain);

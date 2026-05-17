@@ -13,19 +13,13 @@ public class UserProfileWebMapper {
 
     public UserProfile toDomain(CreateUserProfileRequest request) {
         return new UserProfile(
-                null,
-                null,
+                null, // Этого поля нет в запросе, поэтому проставляем null
+                null, // Этого поля нет в запросе, поэтому проставляем null
                 request.name(),
                 request.birthDate(),
                 request.weight(),
                 request.height(),
-                request.gender(),
-                null, // Этого поля нет в запросе, поэтому проставляем null
-                null, // Этого поля нет в запросе, поэтому проставляем null
-                null, // Этого поля нет в запросе, поэтому проставляем null
-                null, // Этого поля нет в запросе, поэтому проставляем null
-                null, // Этого поля нет в запросе, поэтому проставляем null
-                null // Этого поля нет в запросе, поэтому проставляем null
+                request.gender()
         );
     }
 
@@ -37,13 +31,7 @@ public class UserProfileWebMapper {
                 request.birthDate(),
                 request.weight(),
                 request.height(),
-                request.gender(),
-                null, // Этого поля нет в запросе, поэтому проставляем null
-                null, // Этого поля нет в запросе, поэтому проставляем null
-                null, // Этого поля нет в запросе, поэтому проставляем null
-                null, // Этого поля нет в запросе, поэтому проставляем null
-                null, // Этого поля нет в запросе, поэтому проставляем null
-                null // Этого поля нет в запросе, поэтому проставляем null
+                request.gender()
         );
     }
 

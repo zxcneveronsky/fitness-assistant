@@ -10,11 +10,11 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Targets {
+    private Long profileId;
     private Double targetKcal;
     private Double targetProteins;
     private Double targetFats;
     private Double targetCarbs;
-    private Boolean useAutopilot;
     private Double targetHydration;
+    private Boolean useAutopilot;
 }
-

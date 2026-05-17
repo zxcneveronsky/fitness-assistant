@@ -31,25 +31,6 @@ public class UserProfileEntity {
     @Column(length = 10)
     private Gender gender;
 
-    @Column(name = "target_kcal")
-    private Double targetKcal;
-
-    @Column(name = "target_proteins")
-    private Double targetProteins;
-
-    @Column(name = "target_fats")
-    private Double targetFats;
-
-    @Column(name = "target_carbs")
-    private Double targetCarbs;
-
-    @Column(name = "use_autopilot")
-    private Boolean useAutopilot = true;
-
-    @Column(name = "target_hydration")
-    private Double targetHydration;
-
-
     public enum Gender {
         MALE, FEMALE
     }

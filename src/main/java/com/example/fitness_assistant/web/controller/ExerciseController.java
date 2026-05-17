@@ -3,7 +3,6 @@ package com.example.fitness_assistant.web.controller;
 import com.example.fitness_assistant.application.service.exercise.CreateExerciseUseCase;
 import com.example.fitness_assistant.application.service.exercise.DeleteExerciseUseCase;
 import com.example.fitness_assistant.application.service.exercise.FindExerciseUseCase;
-import com.example.fitness_assistant.application.service.exercise.GetAllExercisesUseCase;
 import com.example.fitness_assistant.application.service.exercise.UpdateExerciseUseCase;
 import com.example.fitness_assistant.web.dto.request.create.CreateExerciseRequest;
 import com.example.fitness_assistant.web.dto.request.update.UpdateExerciseRequest;
@@ -22,30 +21,23 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ExerciseController {
 
-    private final GetAllExercisesUseCase getAllExercisesUseCase;
     private final FindExerciseUseCase findExerciseUseCase;
     private final CreateExerciseUseCase createExerciseUseCase;
     private final UpdateExerciseUseCase updateExerciseUseCase;
     private final DeleteExerciseUseCase deleteExerciseUseCase;
     private final ExerciseWebMapper exerciseWebMapper;
 
-    @GetMapping
-    public Page<ExerciseResponse> getAllExercises(@PageableDefault(size = 9) Pageable pageable) {
-        return getAllExercisesUseCase.getAllExercises(pageable)
-                .map(exerciseWebMapper::toResponse);
-    }
-
     @GetMapping("/{id}")
     public ExerciseResponse getExerciseById(@PathVariable Long id) {
         return exerciseWebMapper.toResponse(findExerciseUseCase.findById(id));
     }
 
-
     @GetMapping("/search")
     public Page<ExerciseResponse> searchExercises(
-            @RequestParam String name,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Long muscleId,
             @PageableDefault(size = 9) Pageable pageable) {
-        return findExerciseUseCase.findExercise(name, pageable)
+        return findExerciseUseCase.findExercise(name, muscleId, pageable)
                 .map(exerciseWebMapper::toResponse);
     }
 

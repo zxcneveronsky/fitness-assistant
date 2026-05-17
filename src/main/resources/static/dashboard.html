@@ -62,13 +62,13 @@
     </div>
 
     <section class="animate__animated animate__fadeIn mb-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="dash-card p-4 md:p-8" style="display:grid; grid-template-rows: auto 1fr auto auto; gap:0.75rem">
+        <div onclick="window.location.href='/hydration.html'" class="dash-card p-4 md:p-8 cursor-pointer" style="display:grid; grid-template-rows: auto 1fr auto auto; gap:0.75rem">
             <div class="flex justify-between items-start">
                 <div>
                     <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Вода сегодня</p>
                     <p class="text-3xl font-black text-gray-900"><span id="water-current">0</span> <span class="text-lg text-gray-400 font-medium">мл</span></p>
                 </div>
-                <div class="flex gap-2">
+                <div class="flex gap-2" onclick="event.stopPropagation()">
     <a href="/hydration.html" class="bg-green-50 text-green-600 font-black text-xl w-12 h-12 flex items-center justify-center rounded-2xl hover:bg-green-100 transition">+</a>
 </div>
             </div>
@@ -79,24 +79,24 @@
                     <p class="text-[10px] text-gray-400 font-bold">из <span id="water-norm">0</span> мл</p>
                 </div>
             </div>
-            <div class="flex gap-2">
+            <div class="flex gap-2" onclick="event.stopPropagation()">
                 <input type="number" id="custom-water" placeholder="мл" class="flex-1 bg-gray-50 border border-gray-100 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-400">
                 <button onclick="quickAddWater()" class="bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-xl hover:bg-blue-700">+</button>
             </div>
-            <div class="grid grid-cols-3 gap-2">
+            <div class="grid grid-cols-3 gap-2" onclick="event.stopPropagation()">
                 <button onclick="quickAddWater(150)" class="text-[10px] font-black bg-blue-50 text-blue-600 py-2 rounded-xl hover:bg-blue-100">+150 мл</button>
                 <button onclick="quickAddWater(250)" class="text-[10px] font-black bg-blue-50 text-blue-600 py-2 rounded-xl hover:bg-blue-100">+250 мл</button>
                 <button onclick="quickAddWater(500)" class="text-[10px] font-black bg-blue-50 text-blue-600 py-2 rounded-xl hover:bg-blue-100">+500 мл</button>
             </div>
         </div>
 
-        <div class="dash-card p-4 md:p-8" style="display:grid; grid-template-rows: auto 1fr auto; gap:0.75rem">
+        <div onclick="window.location.href='/meal.html'" class="dash-card p-4 md:p-8 cursor-pointer" style="display:grid; grid-template-rows: auto 1fr auto; gap:0.75rem">
             <div class="flex justify-between items-start">
                 <div>
                     <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Калории сегодня</p>
                     <p class="text-3xl font-black text-gray-900"><span id="kcal-current">0</span> <span class="text-lg text-gray-400 font-medium">ккал</span></p>
                 </div>
-                <a href="/meal.html" class="bg-green-50 text-green-600 font-black text-xl w-12 h-12 flex items-center justify-center rounded-2xl">+</a>
+                <div onclick="event.stopPropagation()"><a href="/meal.html" class="bg-green-50 text-green-600 font-black text-xl w-12 h-12 flex items-center justify-center rounded-2xl">+</a></div>
             </div>
             <div class="donut-wrap w-28 sm:w-36 h-28 sm:h-36 mx-auto self-center">
                 <canvas id="kcalChart"></canvas>
@@ -124,10 +124,10 @@
             </div>
         </div>
 
-        <div class="dash-card p-4 md:p-8 flex flex-col">
+        <div onclick="window.location.href='/profile.html'" class="dash-card p-4 md:p-8 flex flex-col cursor-pointer">
             <div class="flex justify-between items-center mb-4">
                 <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Параметры тела</p>
-                <button onclick="openBodyModal()" class="text-[10px] font-black text-blue-600 uppercase tracking-widest hover:opacity-70">Изменить</button>
+                <button onclick="event.stopPropagation(); openBodyModal()" class="text-[10px] font-black text-blue-600 uppercase tracking-widest hover:opacity-70">Изменить</button>
             </div>
             <div class="flex-1 flex items-stretch gap-3 md:gap-6">
                 <div class="flex items-center justify-center flex-1">
