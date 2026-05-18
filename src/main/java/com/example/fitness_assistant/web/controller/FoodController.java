@@ -6,6 +6,7 @@ import com.example.fitness_assistant.web.dto.request.update.UpdateFoodRequest;
 import com.example.fitness_assistant.web.dto.response.FoodResponse;
 import com.example.fitness_assistant.web.mapper.FoodWebMapper;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -35,13 +36,13 @@ public class FoodController {
     @GetMapping("/search")
     public Page<FoodResponse> searchFood(
             @RequestParam(required = false) String name,
-            @PageableDefault(size = 9) Pageable pageable) {
+            @PageableDefault(size = 12) Pageable pageable) {
         return findFoodUseCase.findFood(name, pageable)
                 .map(foodWebMapper::toResponse);
     }
 
     @GetMapping("/calc/{id}")
-    public FoodResponse calculateNutrition(@PathVariable Long id,@RequestParam Double weight){
+    public FoodResponse calculateNutrition(@PathVariable Long id,@RequestParam @Positive Double weight){
         return foodWebMapper.toResponse(calculateFoodUseCase.calculateNutrition(id, weight));
     }
 
@@ -61,7 +62,7 @@ public class FoodController {
         );
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteFood(@PathVariable Long id) {
         deleteFoodUseCase.deleteFood(id);

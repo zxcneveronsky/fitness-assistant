@@ -6,13 +6,18 @@ import com.example.fitness_assistant.core.repository.FoodRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class CalculateFoodUseCase {
     private final FoodRepository foodRepository;
+    @Transactional(readOnly = true)
     public Food calculateNutrition(Long id, Double weight) {
+        if (weight == null) {
+            throw new IllegalArgumentException("Вес не может быть null");
+        }
         Food food = foodRepository.findById(id).orElseThrow(()->new FoodNotFoundException(id));
         Double k = weight / 100.0;
         Food calculated = new Food(

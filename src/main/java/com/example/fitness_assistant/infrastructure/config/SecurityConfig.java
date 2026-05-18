@@ -1,6 +1,7 @@
 package com.example.fitness_assistant.infrastructure.config;
 
 import com.example.fitness_assistant.infrastructure.security.JwtFilter;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +21,13 @@ public class SecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setContentType("application/json;charset=UTF-8");
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.getWriter().write("{\"timestamp\":\"" + java.time.LocalDateTime.now() + "\",\"status\":401,\"error\":\"Unauthorized\",\"message\":\"Требуется авторизация\"}");
+                        })
+                )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/",
@@ -37,10 +45,14 @@ public class SecurityConfig {
                                 "/profile.html",
                                 "/js/**",
                                 "/explore/**",
-                                "/api/v1/auth/**",
-                                "/api/v1/food/**",
-                                "/api/v1/exercises/**",
-                                "/api/v1/muscles/**",
+                                "/api/v1/auth/login",
+                                "/api/v1/auth/register",
+                                "/api/v1/food/search",
+                                "/api/v1/food/{id}",
+                                "/api/v1/food/calc/**",
+                                "/api/v1/exercises/search",
+                                "/api/v1/exercises/{id}",
+                                "/api/v1/muscles",
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",

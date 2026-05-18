@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -234,26 +234,27 @@
                 fatsNorm = targets.targetFats || 0;
                 carbsNorm = targets.targetCarbs || 0;
             }
-        } catch (e) {}
+        } catch (e) { console.error('loadMealData targets error:', e); }
+
         try {
-            const kcalData = await request(`/meal/daily?localDateTime=${encodeURIComponent(selectedDate())}`);
-            if (kcalData) {
-                kcalToday = kcalData.kcal || 0;
-                proteinsToday = kcalData.proteins || 0;
-                fatsToday = kcalData.fats || 0;
-                carbsToday = kcalData.carbs || 0;
+            const daily = await request(`/meal/daily?localDateTime=${encodeURIComponent(selectedDate())}`);
+            if (daily) {
+                kcalToday = daily.kcal || 0;
+                proteinsToday = daily.proteins || 0;
+                fatsToday = daily.fats || 0;
+                carbsToday = daily.carbs || 0;
             }
-        } catch (e) {}
+        } catch (e) { console.error('loadMealData daily error:', e); }
         updateKcalChart();
     }
 
     async function addMeal(foodId) {
-        const weight = parseFloat(document.getElementById(`weight_${foodId}`).value);
+        const weight = safeFloat(document.getElementById(`weight_${foodId}`).value);
         if (!weight || weight <= 0) { showError('Укажите вес в граммах'); return; }
         try {
             await request('/meal/auto', {
                 method: 'POST',
-                body: JSON.stringify({ id: foodId, weight, name: 'auto', consumedAt: new Date().toISOString() })
+                body: JSON.stringify({ id: foodId, weight, consumedAt: new Date().toISOString() })
             });
             document.getElementById(`weight_${foodId}`).value = '';
             document.getElementById('foodSearch').value = '';
@@ -264,10 +265,10 @@
 
     async function addMealManual() {
         const name = document.getElementById('manualName').value.trim();
-        const kcal = parseFloat(document.getElementById('manualKcal').value);
-        const proteins = parseFloat(document.getElementById('manualProteins').value);
-        const fats = parseFloat(document.getElementById('manualFats').value);
-        const carbs = parseFloat(document.getElementById('manualCarbs').value);
+        const kcal = safeFloat(document.getElementById('manualKcal').value);
+        const proteins = safeFloat(document.getElementById('manualProteins').value);
+        const fats = safeFloat(document.getElementById('manualFats').value);
+        const carbs = safeFloat(document.getElementById('manualCarbs').value);
         if (!name) { showError('Введите название'); return; }
         if (isNaN(kcal) || kcal < 0) { showError('Укажите калории'); return; }
         try {
@@ -347,10 +348,10 @@
 
     async function saveMealEdit(id) {
         const name = document.getElementById(`meName_${id}`).value.trim();
-        const kcal = parseFloat(document.getElementById(`meKcal_${id}`).value);
-        const proteins = parseFloat(document.getElementById(`meProt_${id}`).value);
-        const fats = parseFloat(document.getElementById(`meFat_${id}`).value);
-        const carbs = parseFloat(document.getElementById(`meCarb_${id}`).value);
+        const kcal = safeFloat(document.getElementById(`meKcal_${id}`).value);
+        const proteins = safeFloat(document.getElementById(`meProt_${id}`).value);
+        const fats = safeFloat(document.getElementById(`meFat_${id}`).value);
+        const carbs = safeFloat(document.getElementById(`meCarb_${id}`).value);
         if (!name || isNaN(kcal)) return;
         try {
             await request('/meal', {

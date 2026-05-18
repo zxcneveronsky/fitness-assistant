@@ -6,11 +6,10 @@ import com.example.fitness_assistant.core.model.Set;
 import com.example.fitness_assistant.core.repository.ExerciseRepository;
 import com.example.fitness_assistant.core.repository.SetRepository;
 import com.example.fitness_assistant.core.repository.WorkoutSessionRepository;
-import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -22,8 +21,8 @@ public class GetAllSetsUseCase {
     private final WorkoutSessionRepository workoutSessionRepository;
     private final ExerciseRepository exerciseRepository;
 
-    public Page<Set> getAllSets(Long sessionId, Long exerciseId, UserDetails userDetails, Pageable pageable) {
-        Long userId = ((UserDetailsAdapter) userDetails).getUserId();
+    @Transactional(readOnly = true)
+    public Page<Set> getAllSets(Long sessionId, Long exerciseId, Long userId, Pageable pageable) {
         if (!workoutSessionRepository.existsById(sessionId, userId)) {
             throw new WorkoutSessionNotFoundException(sessionId);
         }

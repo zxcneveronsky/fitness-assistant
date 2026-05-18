@@ -61,7 +61,8 @@ public class JwtFilter extends OncePerRequestFilter {
                 }
             }
         } catch (JwtException | IllegalArgumentException e) {
-            log.warn("Невалидный JWT: {}", e.getMessage());
+            log.warn("Невалидный JWT | IP={} | URI={} | ошибка={}",
+                    request.getRemoteAddr(), request.getRequestURI(), e.getMessage());
         }
 
         filterChain.doFilter(request, response);

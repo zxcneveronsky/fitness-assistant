@@ -6,10 +6,8 @@ import com.example.fitness_assistant.core.model.WorkoutSession;
 import com.example.fitness_assistant.core.repository.UserRepository;
 import com.example.fitness_assistant.core.repository.WorkoutRepository;
 import com.example.fitness_assistant.core.repository.WorkoutSessionRepository;
-import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,9 +23,7 @@ public class CreateWorkoutSessionUseCase {
     private final UserRepository userRepository;
 
     @Transactional
-    public WorkoutSession createSession(Long workoutId, LocalDateTime startTime, UserDetails userDetails) {
-        Long userId = ((UserDetailsAdapter) userDetails).getUserId();
-
+    public WorkoutSession createSession(Long workoutId, LocalDateTime startTime, Long userId) {
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException(userId);
         }

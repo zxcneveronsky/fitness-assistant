@@ -14,6 +14,6 @@ public record LoginRequest(
 
         @NotNull(message = "Пароль не может быть пустым")
         @NotBlank(message = "Пароль не может быть пустым")
-        @Size(max = 255, message = "Пароль максимум 255 символов")
+        @Size(min = 6, max = 255, message = "Пароль от 6 до 255 символов")
         String password
 ) {}

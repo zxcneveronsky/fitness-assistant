@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -118,7 +118,7 @@
                         </div>
                     </div>
                 `).join('');
-        } catch (e) {}
+        } catch (e) { console.error('renderSets error:', e); }
     }
 
     function toggleEdit(setId) {
@@ -130,7 +130,7 @@
     }
 
     async function saveSet(setId, exerciseId) {
-        const weight = parseFloat(document.getElementById(`editW_${setId}`).value);
+        const weight = safeFloat(document.getElementById(`editW_${setId}`).value);
         const reps = parseInt(document.getElementById(`editR_${setId}`).value);
         if (isNaN(weight) || isNaN(reps) || weight < 0 || reps < 1) return;
         try {
@@ -139,7 +139,7 @@
                 body: JSON.stringify({ id: setId, sessionId, exerciseId, weight, reps })
             });
             loadSets(exerciseId);
-        } catch (e) {}
+        } catch (e) { console.error('updateSet error:', e); }
     }
 
     async function deleteSet(setId, exerciseId) {
@@ -147,7 +147,7 @@
         try {
             await request(`/workout/session/set/${setId}?sessionId=${sessionId}`, { method: 'DELETE' });
             loadSets(exerciseId);
-        } catch (e) {}
+        } catch (e) { console.error('deleteSet error:', e); }
     }
 
     renderActiveSessionBanner(); syncActiveSessions(); function logout() { clearToken(); window.location.href = '/index.html'; }
@@ -155,3 +155,5 @@
 </script>
 </body>
 </html>
+
+

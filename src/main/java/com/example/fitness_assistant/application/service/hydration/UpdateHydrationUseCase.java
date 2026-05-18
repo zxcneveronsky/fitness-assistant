@@ -1,14 +1,10 @@
 package com.example.fitness_assistant.application.service.hydration;
 
 import com.example.fitness_assistant.core.exception.HydrationNotFoundException;
-import com.example.fitness_assistant.core.exception.UserNotFoundException;
 import com.example.fitness_assistant.core.model.hydration.Hydration;
 import com.example.fitness_assistant.core.repository.HydrationRepository;
-import com.example.fitness_assistant.core.repository.UserRepository;
-import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,16 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class UpdateHydrationUseCase {
 
-    private final UserRepository userRepository;
     private final HydrationRepository hydrationRepository;
 
     @Transactional
-    public Hydration updateHydration(UserDetails userDetails, Hydration hydrationUpdate) {
-        Long userId = ((UserDetailsAdapter) userDetails).getUserId();
+    public Hydration updateHydration(Long userId, Hydration hydrationUpdate) {
         Long hydrationId = hydrationUpdate.getId();
-        if (!userRepository.existsById(userId)) {
-            throw new UserNotFoundException(userId);
-        }
         Hydration updatedHydration = hydrationRepository.findById(hydrationId, userId)
                 .map(existingHydration -> {
                     existingHydration.setName(hydrationUpdate.getName() != null ? hydrationUpdate.getName() : existingHydration.getName());

@@ -11,6 +11,7 @@ public record CreateHydrationRequest(
 
         @NotNull(message = "Количество не может быть пустым")
         @Positive(message = "Количество должно быть положительным")
+        @Max(value = 10, message = "Количество не может быть больше 10 литров")
         Double amount,
 
         @NotNull(message = "Дата приема должна быть указана")

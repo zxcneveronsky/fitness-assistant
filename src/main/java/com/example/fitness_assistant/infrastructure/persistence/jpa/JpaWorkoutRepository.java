@@ -11,17 +11,16 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface JpaWorkoutRepository extends JpaRepository<WorkoutEntity, Long> {
+    @EntityGraph(attributePaths = "user")
     Optional<WorkoutEntity> findByIdAndUserId(Long id, Long userId);
     boolean existsByIdAndUserId(Long id, Long userId);
     void deleteByIdAndUserId(Long id, Long userId);
 
-    @EntityGraph(attributePaths = {"exerciseIds"})
     Page<WorkoutEntity> findAllByUserId(Long userId, Pageable pageable);
 
     @Query(
             value = """
-            SELECT DISTINCT w FROM WorkoutEntity w
-            LEFT JOIN FETCH w.exerciseIds
+            SELECT w FROM WorkoutEntity w
             WHERE w.user.id = :userId
             AND LOWER(w.name) LIKE LOWER(CONCAT('%', :query, '%'))
             """,
@@ -30,5 +29,5 @@ public interface JpaWorkoutRepository extends JpaRepository<WorkoutEntity, Long>
             WHERE w.user.id = :userId
             AND LOWER(w.name) LIKE LOWER(CONCAT('%', :query, '%'))
             """)
-    Page<WorkoutEntity> searchWorkout(@Param("query") String query, Long userId, Pageable pageable);
+    Page<WorkoutEntity> searchWorkout(@Param("query") String query, @Param("userId") Long userId, Pageable pageable);
 }

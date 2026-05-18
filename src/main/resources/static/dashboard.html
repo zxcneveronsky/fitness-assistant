@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -184,7 +184,7 @@
                 <p class="text-[10px] text-blue-500 mt-3 uppercase tracking-widest font-black">КБЖУ продуктов</p>
             </div>
         </a>
-        <a href="/explore/calculator.html" class="feature-card p-3 md:p-8 flex items-center gap-3 md:gap-8 group">
+        <a href="/explore/food.html" class="feature-card p-3 md:p-8 flex items-center gap-3 md:gap-8 group">
             <div class="text-5xl group-hover:scale-110 transition duration-500 shrink-0">🧮</div>
             <div>
                 <h3 class="font-bold text-xl text-gray-900 leading-none">Калькулятор КБЖУ</h3>
@@ -261,17 +261,22 @@
     let carbsNorm = 0;
     let waterChartObj, kcalChartObj;
 
-    window.onload = async () => {
+    let lastLoadTime = 0;
+
+    window.addEventListener('pageshow', async () => {
         document.getElementById('nav-email').textContent = email || '';
         startMotivation();
         initCharts();
         renderActiveSessionBanner(); syncActiveSessions();
+        lastLoadTime = Date.now();
         await loadData();
-    };
+    });
 
-    window.addEventListener('pageshow', loadData);
     document.addEventListener('visibilitychange', () => {
-        if (!document.hidden) loadData();
+        if (!document.hidden && Date.now() - lastLoadTime > 30000) {
+            lastLoadTime = Date.now();
+            loadData();
+        }
     });
 
     const phrases = [
@@ -335,7 +340,7 @@
             document.getElementById('noProfileCard').classList.remove('hidden');
         }
 
-        const today = new Date().toISOString();
+        const today = new Date().toLocaleDateString('sv-SE') + 'T00:00:00';
         try {
             const kcalData = await request(`/meal/daily?localDateTime=${encodeURIComponent(today)}`);
             if (kcalData) {
@@ -347,12 +352,12 @@
                 document.getElementById('fat-current').textContent = fatsToday.toFixed(2);
                 document.getElementById('carb-current').textContent = carbsToday.toFixed(2);
             }
-        } catch (e) {}
+        } catch (e) { console.error('loadData meal error:', e); }
 
         try {
             const waterData = await request(`/hydration/daily?localDateTime=${encodeURIComponent(today)}`);
             if (waterData) waterToday = (waterData.totalAmount || 0) * 1000;
-        } catch (e) {}
+        } catch (e) { console.error('loadData hydration error:', e); }
 
         updateCharts();
     }
@@ -423,8 +428,8 @@
     function closeBodyModal() { document.getElementById('bodyModal').classList.remove('open'); }
 
     async function saveBodyParams() {
-        const weight = parseFloat(document.getElementById('modal-weight').value);
-        const height = parseFloat(document.getElementById('modal-height').value);
+        const weight = safeFloat(document.getElementById('modal-weight').value);
+        const height = safeFloat(document.getElementById('modal-height').value);
         try {
             await request('/profile', { method: 'PATCH', body: JSON.stringify({ weight, height }) });
             profile.weight = weight;

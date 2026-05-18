@@ -7,10 +7,8 @@ import com.example.fitness_assistant.core.model.UserProfile;
 import com.example.fitness_assistant.core.repository.TargetsRepository;
 import com.example.fitness_assistant.core.repository.UserProfileRepository;
 import com.example.fitness_assistant.core.repository.UserRepository;
-import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,8 +23,7 @@ public class CreateUserProfileUseCase {
     private final TargetCalculationService targetCalculationService;
 
     @Transactional
-    public UserProfile createUserProfile(UserDetails userDetails, UserProfile userProfile) {
-        Long userId = ((UserDetailsAdapter) userDetails).getUserId();
+    public UserProfile createUserProfile(Long userId, UserProfile userProfile) {
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException(userId);
         }

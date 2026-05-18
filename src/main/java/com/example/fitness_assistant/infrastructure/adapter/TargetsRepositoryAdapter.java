@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -30,6 +31,7 @@ public class TargetsRepositoryAdapter implements TargetsRepository {
     }
 
     @Override
+    @Transactional
     @CacheEvict(value = "targets", allEntries = true)
     public Targets save(Targets targets) {
         TargetsEntity entity = targetsMapper.toEntity(targets);

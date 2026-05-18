@@ -1,4 +1,4 @@
-﻿CREATE TABLE IF NOT EXISTS targets (
+CREATE TABLE IF NOT EXISTS targets (
     profile_id       BIGINT PRIMARY KEY REFERENCES users_profiles(user_id) ON DELETE CASCADE,
     target_kcal      DOUBLE PRECISION,
     target_proteins  DOUBLE PRECISION,

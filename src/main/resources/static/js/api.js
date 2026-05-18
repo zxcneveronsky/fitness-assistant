@@ -1,5 +1,15 @@
 const API = window.location.protocol + '//' + window.location.host + '/api/v1';
 
+function safeFloat(val) {
+    const n = parseFloat(val);
+    return isNaN(n) ? 0 : n;
+}
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
 function getToken() {
     return localStorage.getItem('token');
 }
@@ -18,9 +28,11 @@ function isAuth() {
 
 function getUserId() {
     try {
-        const payload = JSON.parse(atob(getToken().split('.')[1]));
+        const token = getToken();
+        if (!token) return null;
+        const payload = JSON.parse(atob(token.split('.')[1]));
         return payload.userId;
-    } catch (e) { return null; }
+    } catch (e) { console.error('getUserId error:', e); return null; }
 }
 
 async function deleteAccount() {
@@ -88,49 +100,11 @@ function renderActiveSessionBanner() {
         linkEl.href = `/session.html?sessionId=${as.id}`;
         banner.classList.remove('hidden');
     } else {
-        banner.innerHTML = `<div class="flex items-center justify-between px-10 py-2">
-            <span>⏳ <strong>Активная тренировка</strong> — <span>${as.name || 'Тренировка'}</span></span>
-            <a href="/session.html?sessionId=${as.id}" class="bg-yellow-200 text-yellow-800 px-4 py-1 rounded-lg font-semibold hover:bg-yellow-300">Продолжить</a>
-        </div>`;
+        banner.innerHTML = '<div class="flex items-center justify-between px-10 py-2">' +
+            '<span>⏳ <strong>Активная тренировка</strong> — <span>' + escapeHtml(as.name || 'Тренировка') + '</span></span>' +
+            '<a href="/session.html?sessionId=' + as.id + '" class="bg-yellow-200 text-yellow-800 px-4 py-1 rounded-lg font-semibold hover:bg-yellow-300">Продолжить</a></div>';
         banner.classList.remove('hidden');
     }
-}
-
-async function syncActiveSessions() {
-    const banner = document.getElementById('activeSessionBanner');
-    if (!banner) return;
-    try {
-        const data = await request('/workout/session/history?page=0&size=10');
-        if (data && data.content) {
-            const activeSessions = data.content.filter(s => !s.endTime);
-            const as = getActiveSession();
-            if (activeSessions.length > 0) {
-                const latest = activeSessions[0];
-                const existingName = localStorage.getItem('activeSessionName');
-                const name = existingName || 'Тренировка';
-                saveActiveSession(latest.id, name);
-                
-                if (activeSessions.length > 1) {
-                    banner.innerHTML = `<div class="flex items-center justify-between px-10 py-2">
-                        <span>⏳ <strong>${activeSessions.length} активные тренировки</strong></span>
-                        <div class="flex gap-2">
-                            ${activeSessions.slice(0, 3).map(s => `<a href="/session.html?sessionId=${s.id}" class="bg-yellow-200 text-yellow-800 px-3 py-1 rounded-lg text-sm hover:bg-yellow-300">Сессия #${s.id}</a>`).join('')}
-                        </div>
-                    </div>`;
-                    banner.classList.remove('hidden');
-                } else {
-                    banner.innerHTML = `<div class="flex items-center justify-between px-10 py-2">
-                        <span>⏳ <strong>Активная тренировка</strong> — <span id="bannerName">${name}</span></span>
-                        <a href="/session.html?sessionId=${latest.id}" class="bg-yellow-200 text-yellow-800 px-4 py-1 rounded-lg font-semibold hover:bg-yellow-300">Продолжить</a>
-                    </div>`;
-                    banner.classList.remove('hidden');
-                }
-            } else if (as) {
-                removeActiveSession();
-                banner.classList.add('hidden');
-            }
-        }
-    } catch (e) {}
 }
 
 function formatDate(date) {
@@ -151,7 +125,7 @@ async function getWorkoutNameById(id) {
         const n = w.name || w.exerciseName || null;
         if (n) workoutNameCache[id] = n;
         return n;
-    } catch (e) { return null; }
+    } catch (e) { console.error('getWorkoutNameById error:', e); return null; }
 }
 
 async function syncActiveSessions() {
@@ -173,14 +147,14 @@ async function syncActiveSessions() {
                 if (active.length > 1) {
                     var linksHtml = '';
                     for (var j = 0; j < names.length; j++) {
-                        linksHtml += '<a href="/session.html?sessionId=' + names[j].id + '" class="bg-yellow-200 text-yellow-800 px-3 py-1 rounded-lg text-sm hover:bg-yellow-300 whitespace-nowrap">' + names[j].name + '</a>';
+                        linksHtml += '<a href="/session.html?sessionId=' + names[j].id + '" class="bg-yellow-200 text-yellow-800 px-3 py-1 rounded-lg text-sm hover:bg-yellow-300 whitespace-nowrap">' + escapeHtml(names[j].name) + '</a>';
                     }
-                    banner.innerHTML = '<div class="flex items-center justify-between px-10 py-2" style="z-index:50;position:relative">' +
+                    banner.innerHTML = '<div class="flex items-center justify-between px-10 py-2">' +
                         '<span>⏳ <strong>' + active.length + ' активные тренировки</strong></span>' +
                         '<div class="flex gap-2 flex-wrap">' + linksHtml + '</div></div>';
                 } else {
-                    banner.innerHTML = '<div class="flex items-center justify-between px-10 py-2" style="z-index:50;position:relative">' +
-                        '<span>⏳ <strong>Активная тренировка</strong> — <span>' + names[0].name + '</span></span>' +
+                    banner.innerHTML = '<div class="flex items-center justify-between px-10 py-2">' +
+                        '<span>⏳ <strong>Активная тренировка</strong> — <span>' + escapeHtml(names[0].name) + '</span></span>' +
                         '<a href="/session.html?sessionId=' + active[0].id + '" class="bg-yellow-200 text-yellow-800 px-4 py-1 rounded-lg font-semibold hover:bg-yellow-300">Продолжить</a></div>';
                 }
                 banner.classList.remove('hidden');
@@ -189,5 +163,5 @@ async function syncActiveSessions() {
                 banner.classList.add('hidden');
             }
         }
-    } catch (e) {}
+    } catch (e) { console.error('syncActiveSessions error:', e); }
 }

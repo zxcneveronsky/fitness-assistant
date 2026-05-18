@@ -10,6 +10,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,21 +23,30 @@ public class ExerciseRepositoryAdapter implements ExerciseRepository {
     private final ExerciseMapper exerciseMapper;
 
     @Override
+    @Transactional(readOnly = true)
     @Cacheable("exercises")
     public Optional<Exercise> findById(Long id) {
         return jpaExerciseRepository.findById(id)
                 .map(exerciseMapper::toDomain);
     }
     @Override
+    @Transactional(readOnly = true)
     @Cacheable("exercises")
-    public List<Exercise> findAllByIdIn(List<Long> id) {
-        return jpaExerciseRepository.findAllByIdIn(id).stream().map(exerciseMapper::toDomain).toList();
+    public List<Exercise> findAllByIdIn(List<Long> ids) {
+        return jpaExerciseRepository.findAllByIdIn(ids).stream().map(exerciseMapper::toDomain).toList();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Exercise> searchExercise(String name, Long muscleId, Pageable pageable) {
         return jpaExerciseRepository.searchExercise(name, muscleId, pageable)
                 .map(exerciseMapper::toDomain);
+    }
+
+    @Override
+    public boolean existsAllByIdIn(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) return true;
+        return jpaExerciseRepository.countAllByIdIn(ids) == ids.size();
     }
 
     @Override

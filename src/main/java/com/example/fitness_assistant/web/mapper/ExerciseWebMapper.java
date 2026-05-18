@@ -7,6 +7,8 @@ import com.example.fitness_assistant.web.dto.response.ExerciseResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 
 @Component
 @RequiredArgsConstructor
@@ -16,12 +18,12 @@ public class ExerciseWebMapper {
 
     public Exercise toDomain(CreateExerciseRequest request) {
         return new Exercise(
-                null, // Этого поля нет в запросе, поэтому проставляем null
+                null,
                 request.exerciseName(),
                 request.description(),
-                request.musclesId().stream()
-                        .map(exerciseMuscleWebMapper::toDomain)
-                        .toList()
+                request.musclesId() != null
+                        ? request.musclesId().stream().map(exerciseMuscleWebMapper::toDomain).toList()
+                        : List.of()
         );
     }
 
@@ -30,9 +32,9 @@ public class ExerciseWebMapper {
                 request.id(),
                 request.exerciseName(),
                 request.description(),
-                request.musclesId().stream()
-                        .map(exerciseMuscleWebMapper::toDomain)
-                        .toList()
+                request.musclesId() != null
+                        ? request.musclesId().stream().map(exerciseMuscleWebMapper::toDomain).toList()
+                        : List.of()
         );
     }
 
@@ -41,9 +43,9 @@ public class ExerciseWebMapper {
                 exercise.getId(),
                 exercise.getName(),
                 exercise.getDescription(),
-                exercise.getMuscles().stream()
-                        .map(exerciseMuscleWebMapper::toResponse)
-                        .toList()
+                exercise.getMuscles() != null
+                        ? exercise.getMuscles().stream().map(exerciseMuscleWebMapper::toResponse).toList()
+                        : List.of()
         );
     }
 }

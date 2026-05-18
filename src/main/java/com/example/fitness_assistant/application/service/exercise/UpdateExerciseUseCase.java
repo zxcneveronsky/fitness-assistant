@@ -1,6 +1,7 @@
 package com.example.fitness_assistant.application.service.exercise;
 
 import com.example.fitness_assistant.core.exception.ExerciseNotFoundException;
+import com.example.fitness_assistant.core.exception.MuscleNotFoundException;
 import com.example.fitness_assistant.core.model.Exercise;
 import com.example.fitness_assistant.core.repository.ExerciseRepository;
 import com.example.fitness_assistant.core.repository.MuscleRepository;
@@ -26,14 +27,20 @@ public class UpdateExerciseUseCase {
                     existingExercise.setDescription(exerciseUpdate.getDescription() != null ? exerciseUpdate.getDescription() : existingExercise.getDescription());
                     if (exerciseUpdate.getMuscles() != null && !exerciseUpdate.getMuscles().isEmpty()) {
                         existingExercise.setMuscles(exerciseUpdate.getMuscles().stream()
-                                .map(muscle -> muscleRepository.getReferenceById(muscle.getId()))
+                                .map(muscle -> {
+                                    if (!muscleRepository.existsById(muscle.getId())) {
+                                        throw new MuscleNotFoundException(muscle.getId());
+                                    }
+                                    return muscleRepository.getReferenceById(muscle.getId());
+                                })
                                 .toList()
                         );
                     }
                     return exerciseRepository.save(existingExercise);
                 })
                 .orElseThrow(() -> new ExerciseNotFoundException(id));
-        log.info("Упражнение обновлено | id={}", id);
+        log.info("РЈРїСЂР°Р¶РЅРµРЅРёРµ РѕР±РЅРѕРІР»РµРЅРѕ | id={}", id);
         return exercise;
     }
 }
+

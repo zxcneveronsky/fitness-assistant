@@ -1,6 +1,7 @@
 package com.example.fitness_assistant.web.controller;
 
 import com.example.fitness_assistant.application.service.workoutsession.*;
+import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import com.example.fitness_assistant.web.dto.request.create.CreateWorkoutSessionRequest;
 import com.example.fitness_assistant.web.dto.request.update.UpdateWorkoutSessionRequest;
 import com.example.fitness_assistant.web.dto.response.WorkoutSessionResponse;
@@ -12,7 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -29,46 +29,46 @@ public class WorkoutSessionController {
 
     @GetMapping("/{id}")
     public WorkoutSessionResponse getWorkoutSessionById(
-            @AuthenticationPrincipal UserDetails userDetails,
+            @AuthenticationPrincipal UserDetailsAdapter adapter,
             @PathVariable Long id) {
         return workoutSessionWebMapper.toResponse(
-                findWorkoutSessionUseCase.findById(id, userDetails)
+                findWorkoutSessionUseCase.findById(id, adapter.getUserId())
         );
     }
 
     @GetMapping("/history")
     public Page<WorkoutSessionResponse> getAllWorkoutSession(
-            @AuthenticationPrincipal UserDetails userDetails,
-            @PageableDefault(size = 9) Pageable pageable) {
-        return getAllWorkoutSessionsUseCase.getAllSessions(userDetails, pageable)
+            @AuthenticationPrincipal UserDetailsAdapter adapter,
+            @PageableDefault(size = 12) Pageable pageable) {
+        return getAllWorkoutSessionsUseCase.getAllSessions(adapter.getUserId(), pageable)
                 .map(workoutSessionWebMapper::toResponse);
     }
 
     @PostMapping("/start")
     @ResponseStatus(HttpStatus.CREATED)
     public WorkoutSessionResponse createWorkoutSession(
-            @AuthenticationPrincipal UserDetails userDetails,
+            @AuthenticationPrincipal UserDetailsAdapter adapter,
             @Valid @RequestBody CreateWorkoutSessionRequest request) {
         return workoutSessionWebMapper.toResponse(
-                createWorkoutSessionUseCase.createSession(request.workoutId(), request.startTime(), userDetails)
+                createWorkoutSessionUseCase.createSession(request.workoutId(), request.startTime(), adapter.getUserId())
         );
     }
 
     @PatchMapping("/end")
     @ResponseStatus(HttpStatus.OK)
     public WorkoutSessionResponse updateWorkoutSession(
-            @AuthenticationPrincipal UserDetails userDetails,
+            @AuthenticationPrincipal UserDetailsAdapter adapter,
             @Valid @RequestBody UpdateWorkoutSessionRequest request) {
         return workoutSessionWebMapper.toResponse(
-                updateWorkoutSessionUseCase.updateSession(request.id(), request.endTime(), userDetails)
+                updateWorkoutSessionUseCase.updateSession(request.id(), request.endTime(), adapter.getUserId())
         );
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteWorkoutSession(
-            @AuthenticationPrincipal UserDetails userDetails,
+            @AuthenticationPrincipal UserDetailsAdapter adapter,
             @PathVariable Long id) {
-        deleteWorkoutSessionUseCase.deleteSession(id, userDetails);
+        deleteWorkoutSessionUseCase.deleteSession(id, adapter.getUserId());
     }
 }

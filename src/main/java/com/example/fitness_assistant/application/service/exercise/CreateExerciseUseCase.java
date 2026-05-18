@@ -1,5 +1,6 @@
 package com.example.fitness_assistant.application.service.exercise;
 
+import com.example.fitness_assistant.core.exception.MuscleNotFoundException;
 import com.example.fitness_assistant.core.model.Exercise;
 import com.example.fitness_assistant.core.repository.ExerciseRepository;
 import com.example.fitness_assistant.core.repository.MuscleRepository;
@@ -20,13 +21,19 @@ public class CreateExerciseUseCase {
     public Exercise createExercise(Exercise exercise) {
         exercise.setId(null);
         exercise.setMuscles(exercise.getMuscles().stream()
-                .map(muscle -> muscleRepository.getReferenceById(muscle.getId()))
+                .map(muscle -> {
+                    if (!muscleRepository.existsById(muscle.getId())) {
+                        throw new MuscleNotFoundException(muscle.getId());
+                    }
+                    return muscleRepository.getReferenceById(muscle.getId());
+                })
                 .toList()
         );
         Exercise savedExercise = exerciseRepository.save(exercise);
-        log.info("Упражнение создано | id={} | название='{}'",
+        log.info("РЈРїСЂР°Р¶РЅРµРЅРёРµ СЃРѕР·РґР°РЅРѕ | id={} | РЅР°Р·РІР°РЅРёРµ='{}'",
                 savedExercise.getId(), savedExercise.getName());
         return savedExercise;
     }
 
 }
+

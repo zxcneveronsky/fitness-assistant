@@ -10,6 +10,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -21,6 +22,7 @@ public class FoodRepositoryAdapter implements FoodRepository {
     private final FoodMapper foodMapper;
 
     @Override
+    @Transactional(readOnly = true)
     @Cacheable("food")
     public Optional<Food> findById(Long id) {
         return jpaFoodRepository.findById(id)
@@ -28,6 +30,7 @@ public class FoodRepositoryAdapter implements FoodRepository {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Food> searchFood(String name, Pageable pageable) {
         return jpaFoodRepository.searchFood(name, pageable)
                 .map(foodMapper::toDomain);

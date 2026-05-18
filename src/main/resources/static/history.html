@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -64,6 +64,7 @@
     async function loadHistory(page = 0) {
         currentPage = page;
         const data = await request(`/workout/session/history?page=${page}&size=10`);
+        if (!data) { container.innerHTML = ''; document.getElementById('pagination').innerHTML = ''; return; }
         totalPages = data.totalPages;
         const container = document.getElementById('historyList');
 

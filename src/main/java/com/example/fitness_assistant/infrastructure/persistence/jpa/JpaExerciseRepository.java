@@ -14,10 +14,13 @@ public interface JpaExerciseRepository extends JpaRepository<ExerciseEntity, Lon
     @Query("SELECT e FROM ExerciseEntity e LEFT JOIN FETCH e.muscles WHERE e.id IN :ids")
     List<ExerciseEntity> findAllByIdIn(@Param("ids") List<Long> ids);
 
+    @Query("SELECT COUNT(e) FROM ExerciseEntity e WHERE e.id IN :ids")
+    long countAllByIdIn(@Param("ids") List<Long> ids);
+
     @Query(
             value = """
             SELECT DISTINCT e FROM ExerciseEntity e
-            LEFT JOIN FETCH e.muscles m
+            LEFT JOIN e.muscles m
             WHERE (cast(:name as text) IS NULL
             OR LOWER(e.name) LIKE LOWER(CONCAT('%', cast(:name as text), '%'))
             OR LOWER(m.name) LIKE LOWER(CONCAT('%', cast(:name as text), '%')))

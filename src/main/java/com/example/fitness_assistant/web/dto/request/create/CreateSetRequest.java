@@ -13,7 +13,7 @@ public record CreateSetRequest (
     @PositiveOrZero(message = "Вес не может быть отрицательным")
     Double weight,
     @NotNull(message = "Повторения не могут быть пустыми")
-    @Positive(message = "Повторения не могут быть отрицательными")
+    @Min(value = 1, message = "Повторения должны быть не менее 1")
     @Max(value = 500, message = "Повторения не могут быть больше 500")
     Integer reps,
     @NotNull(message = "Дата подхода должна быть указана")

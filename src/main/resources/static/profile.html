@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -174,13 +174,13 @@
                 document.getElementById('targetHydration').value = t.targetHydration || '';
                 initialTargets = { kcal: t.targetKcal, prot: t.targetProteins, fat: t.targetFats, carb: t.targetCarbs, hydr: t.targetHydration };
             }
-        } catch (e) {}
+        } catch (e) { console.error('loadProfile error:', e); }
     }
 
     async function saveProfile(btn) {
         const name = document.getElementById('name').value.trim();
-        const weight = parseFloat(document.getElementById('weight').value);
-        const height = parseFloat(document.getElementById('height').value);
+        const weight = safeFloat(document.getElementById('weight').value);
+        const height = safeFloat(document.getElementById('height').value);
         const gender = document.getElementById('gender').value;
         const birthDate = document.getElementById('birthDate').value;
 
@@ -208,11 +208,11 @@
     }
 
     async function saveTargets(btn) {
-        const kcal = parseFloat(document.getElementById('targetKcal').value);
-        const prot = parseFloat(document.getElementById('targetProteins').value);
-        const fat = parseFloat(document.getElementById('targetFats').value);
-        const carb = parseFloat(document.getElementById('targetCarbs').value);
-        const hydr = parseFloat(document.getElementById('targetHydration').value);
+        const kcal = safeFloat(document.getElementById('targetKcal').value);
+        const prot = safeFloat(document.getElementById('targetProteins').value);
+        const fat = safeFloat(document.getElementById('targetFats').value);
+        const carb = safeFloat(document.getElementById('targetCarbs').value);
+        const hydr = safeFloat(document.getElementById('targetHydration').value);
 
         const t = {};
         if (kcal !== initialTargets.kcal) t.targetKcal = kcal;

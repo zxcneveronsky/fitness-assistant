@@ -5,6 +5,8 @@ import com.example.fitness_assistant.infrastructure.persistence.entity.ExerciseE
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 public class ExerciseMapper {
@@ -19,9 +21,9 @@ public class ExerciseMapper {
                 entity.getId(),
                 entity.getName(),
                 entity.getDescription(),
-                entity.getMuscles().stream()
-                        .map(muscleMapper::toDomain)
-                        .toList()
+                entity.getMuscles() != null
+                        ? entity.getMuscles().stream().map(muscleMapper::toDomain).toList()
+                        : List.of()
         );
     }
 
@@ -33,9 +35,9 @@ public class ExerciseMapper {
                 domain.getId(),
                 domain.getName(),
                 domain.getDescription(),
-                domain.getMuscles().stream()
-                        .map(muscleMapper::toEntity)
-                        .toList()
+                domain.getMuscles() != null
+                        ? domain.getMuscles().stream().map(muscleMapper::toEntity).toList()
+                        : List.of()
         );
     }
 }

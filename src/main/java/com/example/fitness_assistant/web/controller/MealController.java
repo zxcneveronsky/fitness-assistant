@@ -1,6 +1,7 @@
 package com.example.fitness_assistant.web.controller;
 
 import com.example.fitness_assistant.application.service.meal.*;
+import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import com.example.fitness_assistant.web.dto.request.create.CreateMealAutoRequest;
 import com.example.fitness_assistant.web.dto.request.create.CreateMealManualRequest;
 import com.example.fitness_assistant.web.dto.request.update.UpdateMealRequest;
@@ -16,7 +17,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -35,61 +35,61 @@ public class MealController {
     private final DailyNutritionWebMapper dailyNutritionWebMapper;
 
     @GetMapping("/{id}")
-    public MealResponse getMealById(@AuthenticationPrincipal UserDetails userDetails,@PathVariable Long id){
-        return mealWebMapper.toResponse(findMealUseCase.findById(id,userDetails));
+    public MealResponse getMealById(@AuthenticationPrincipal UserDetailsAdapter adapter, @PathVariable Long id){
+        return mealWebMapper.toResponse(findMealUseCase.findById(id, adapter.getUserId()));
     }
 
     @GetMapping("/search")
     public Page<MealResponse> searchMeal(
-            @AuthenticationPrincipal UserDetails userDetails,
+            @AuthenticationPrincipal UserDetailsAdapter adapter,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime localDateTime,
-            @PageableDefault(size = 9) Pageable pageable) {
-        return findMealUseCase.findMeal(localDateTime,userDetails,pageable)
+            @PageableDefault(size = 12) Pageable pageable) {
+        return findMealUseCase.findMeal(localDateTime, adapter.getUserId(), pageable)
                 .map(mealWebMapper::toResponse);
     }
 
     @GetMapping("/daily")
     public DailyNutritionResponse getDailyMeal(
-            @AuthenticationPrincipal UserDetails userDetails,
+            @AuthenticationPrincipal UserDetailsAdapter adapter,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime localDateTime) {
-        return dailyNutritionWebMapper.toResponse(getDailyNutritionUseCase.getDailyNutrition(localDateTime,userDetails));
+        return dailyNutritionWebMapper.toResponse(getDailyNutritionUseCase.getDailyNutrition(localDateTime, adapter.getUserId()));
     }
 
     @PostMapping("/manual")
     @ResponseStatus(HttpStatus.CREATED)
     public MealResponse createMealManual(
-            @AuthenticationPrincipal UserDetails userDetails,
+            @AuthenticationPrincipal UserDetailsAdapter adapter,
             @Valid @RequestBody CreateMealManualRequest request) {
         return mealWebMapper.toResponse(
-                createMealUseCase.createMealManual(userDetails, mealWebMapper.toDomain(request))
+                createMealUseCase.createMealManual(adapter.getUserId(), mealWebMapper.toDomain(request))
         );
     }
 
     @PostMapping("/auto")
     @ResponseStatus(HttpStatus.CREATED)
     public MealResponse createMealAuto(
-            @AuthenticationPrincipal UserDetails userDetails,
+            @AuthenticationPrincipal UserDetailsAdapter adapter,
             @Valid @RequestBody CreateMealAutoRequest request) {
         return mealWebMapper.toResponse(
-                createMealUseCase.createMealAuto(userDetails,request.id(),request.weight(),mealWebMapper.toDomain(request))
+                createMealUseCase.createMealAuto(adapter.getUserId(), request.id(), request.weight(), mealWebMapper.toDomain(request))
         );
     }
 
     @PatchMapping
     @ResponseStatus(HttpStatus.OK)
     public MealResponse updateMeal(
-            @AuthenticationPrincipal UserDetails userDetails,
+            @AuthenticationPrincipal UserDetailsAdapter adapter,
             @Valid @RequestBody UpdateMealRequest request) {
         return mealWebMapper.toResponse(
-                updateMealUseCase.updateMeal(userDetails,mealWebMapper.toDomain(request))
+                updateMealUseCase.updateMeal(adapter.getUserId(), mealWebMapper.toDomain(request))
         );
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteMeal(
-            @AuthenticationPrincipal UserDetails userDetails,
+            @AuthenticationPrincipal UserDetailsAdapter adapter,
             @PathVariable Long id) {
-        deleteMealUseCase.deleteMeal(id, userDetails);
+        deleteMealUseCase.deleteMeal(id, adapter.getUserId());
     }
 }

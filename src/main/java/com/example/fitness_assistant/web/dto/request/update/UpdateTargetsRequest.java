@@ -3,7 +3,7 @@ package com.example.fitness_assistant.web.dto.request.update;
 import jakarta.validation.constraints.PositiveOrZero;
 
 public record UpdateTargetsRequest(
-        @PositiveOrZero(message = "Калирии не могут быть отрицательными")
+        @PositiveOrZero(message = "Калории не могут быть отрицательными")
         Double targetKcal,
         @PositiveOrZero(message = "Белки не могут быть отрицательными")
         Double targetProteins,

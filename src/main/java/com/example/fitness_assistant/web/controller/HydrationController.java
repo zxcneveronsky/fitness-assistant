@@ -1,6 +1,7 @@
 package com.example.fitness_assistant.web.controller;
 
 import com.example.fitness_assistant.application.service.hydration.*;
+import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import com.example.fitness_assistant.web.dto.request.create.CreateHydrationRequest;
 import com.example.fitness_assistant.web.dto.request.update.UpdateHydrationRequest;
 import com.example.fitness_assistant.web.dto.response.hydration.DailyHydrationResponse;
@@ -15,7 +16,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -34,53 +34,51 @@ public class HydrationController {
     private final DailyHydrationWebMapper dailyHydrationWebMapper;
 
     @GetMapping("/{id}")
-    public HydrationResponse getHydrationById(@AuthenticationPrincipal UserDetails userDetails,@PathVariable Long id){
-        return hydrationWebMapper.toResponse(findHydrationUseCase.findById(id,userDetails));
+    public HydrationResponse getHydrationById(@AuthenticationPrincipal UserDetailsAdapter adapter, @PathVariable Long id){
+        return hydrationWebMapper.toResponse(findHydrationUseCase.findById(id, adapter.getUserId()));
     }
-
-
 
     @GetMapping("/search")
     public Page<HydrationResponse> searchHydration(
-            @AuthenticationPrincipal UserDetails userDetails,
+            @AuthenticationPrincipal UserDetailsAdapter adapter,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime localDateTime,
-            @PageableDefault(size = 9) Pageable pageable) {
-        return findHydrationUseCase.findHydration(localDateTime, userDetails, pageable)
+            @PageableDefault(size = 12) Pageable pageable) {
+        return findHydrationUseCase.findHydration(localDateTime, adapter.getUserId(), pageable)
                 .map(hydrationWebMapper::toResponse);
     }
 
     @GetMapping("/daily")
     public DailyHydrationResponse getDailyHydration(
-            @AuthenticationPrincipal UserDetails userDetails,
+            @AuthenticationPrincipal UserDetailsAdapter adapter,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime localDateTime) {
-        return dailyHydrationWebMapper.toResponse(getDailyHydrationUseCase.getDailyHydration(localDateTime, userDetails));
+        return dailyHydrationWebMapper.toResponse(getDailyHydrationUseCase.getDailyHydration(localDateTime, adapter.getUserId()));
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public HydrationResponse createHydration(
-            @AuthenticationPrincipal UserDetails userDetails,
+            @AuthenticationPrincipal UserDetailsAdapter adapter,
             @Valid @RequestBody CreateHydrationRequest request) {
         return hydrationWebMapper.toResponse(
-                createHydrationUseCase.createHydration(userDetails, hydrationWebMapper.toDomain(request))
+                createHydrationUseCase.createHydration(adapter.getUserId(), hydrationWebMapper.toDomain(request))
         );
     }
 
     @PatchMapping
     @ResponseStatus(HttpStatus.OK)
     public HydrationResponse updateHydration(
-            @AuthenticationPrincipal UserDetails userDetails,
+            @AuthenticationPrincipal UserDetailsAdapter adapter,
             @Valid @RequestBody UpdateHydrationRequest request) {
         return hydrationWebMapper.toResponse(
-                updateHydrationUseCase.updateHydration(userDetails, hydrationWebMapper.toDomain(request))
+                updateHydrationUseCase.updateHydration(adapter.getUserId(), hydrationWebMapper.toDomain(request))
         );
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteHydration(
-            @AuthenticationPrincipal UserDetails userDetails,
+            @AuthenticationPrincipal UserDetailsAdapter adapter,
             @PathVariable Long id) {
-        deleteHydrationUseCase.deleteHydration(id, userDetails);
+        deleteHydrationUseCase.deleteHydration(id, adapter.getUserId());
     }
 }

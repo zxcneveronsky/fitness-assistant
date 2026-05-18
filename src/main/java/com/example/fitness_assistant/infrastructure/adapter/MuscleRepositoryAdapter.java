@@ -17,6 +17,11 @@ public class MuscleRepositoryAdapter implements MuscleRepository {
     private final MuscleMapper muscleMapper;
 
     @Override
+    public boolean existsById(Long id){
+        return jpaMuscleRepository.existsById(id);
+    }
+
+    @Override
     @Cacheable("muscles")
     public Muscle getReferenceById(Long id){
         return muscleMapper.toDomain(jpaMuscleRepository.getReferenceById(id));

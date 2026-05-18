@@ -4,6 +4,7 @@ import com.example.fitness_assistant.application.service.profile.CreateUserProfi
 import com.example.fitness_assistant.application.service.profile.DeleteProfileUseCase;
 import com.example.fitness_assistant.application.service.profile.FindProfileUseCase;
 import com.example.fitness_assistant.application.service.profile.UpdateUserProfileUseCase;
+import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import com.example.fitness_assistant.web.dto.request.create.CreateUserProfileRequest;
 import com.example.fitness_assistant.web.dto.request.update.UpdateUserProfileRequest;
 import com.example.fitness_assistant.web.dto.response.UserProfileResponse;
@@ -12,7 +13,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -28,29 +28,29 @@ public class UserProfileController {
     private final UserProfileWebMapper userProfileWebMapper;
 
     @GetMapping
-    public UserProfileResponse getProfile(@AuthenticationPrincipal UserDetails userDetails) {
-        return userProfileWebMapper.toResponse(findProfileUseCase.findUserProfile(userDetails));
+    public UserProfileResponse getProfile(@AuthenticationPrincipal UserDetailsAdapter adapter) {
+        return userProfileWebMapper.toResponse(findProfileUseCase.findUserProfile(adapter.getUserId()));
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserProfileResponse createProfile(@AuthenticationPrincipal UserDetails userDetails, @Valid @RequestBody CreateUserProfileRequest request) {
+    public UserProfileResponse createProfile(@AuthenticationPrincipal UserDetailsAdapter adapter, @Valid @RequestBody CreateUserProfileRequest request) {
         return userProfileWebMapper.toResponse(
-                createUserProfileUseCase.createUserProfile(userDetails,userProfileWebMapper.toDomain(request))
+                createUserProfileUseCase.createUserProfile(adapter.getUserId(), userProfileWebMapper.toDomain(request))
         );
     }
 
     @PatchMapping
     @ResponseStatus(HttpStatus.OK)
-    public UserProfileResponse updateProfile(@AuthenticationPrincipal UserDetails userDetails,@Valid @RequestBody UpdateUserProfileRequest request) {
+    public UserProfileResponse updateProfile(@AuthenticationPrincipal UserDetailsAdapter adapter, @Valid @RequestBody UpdateUserProfileRequest request) {
         return userProfileWebMapper.toResponse(
-                updateUserProfileUseCase.updateUserProfile(userDetails,userProfileWebMapper.toDomain(request))
+                updateUserProfileUseCase.updateUserProfile(adapter.getUserId(), userProfileWebMapper.toDomain(request))
         );
     }
 
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteProfile(@AuthenticationPrincipal UserDetails userDetails) {
-        deleteProfileUseCase.deleteUserProfile(userDetails);
+    public void deleteProfile(@AuthenticationPrincipal UserDetailsAdapter adapter) {
+        deleteProfileUseCase.deleteUserProfile(adapter.getUserId());
     }
 }

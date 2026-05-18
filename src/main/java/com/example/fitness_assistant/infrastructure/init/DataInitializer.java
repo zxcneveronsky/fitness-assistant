@@ -161,6 +161,7 @@ public class DataInitializer implements CommandLineRunner {
         try {
             return Double.parseDouble(value.replace(",", ".").trim());
         } catch (NumberFormatException e) {
+            log.warn("Не удалось распарсить число '{}' в CSV, установлено 0.0", value);
             return 0.0;
         }
     }
@@ -169,6 +170,7 @@ public class DataInitializer implements CommandLineRunner {
         try {
             return Long.parseLong(value.trim());
         } catch (NumberFormatException e) {
+            log.warn("Не удалось распарсить ID '{}' в exercises.csv", value);
             return null;
         }
     }

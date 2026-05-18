@@ -10,8 +10,10 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import org.springframework.data.jpa.repository.EntityGraph;
 
 public interface JpaMealRepository extends JpaRepository<MealEntity, Long> {
+    @EntityGraph(attributePaths = "user")
     Optional<MealEntity> findByIdAndUserId(Long id, Long userId);
     boolean existsByIdAndUserId(Long id, Long userId);
     void deleteByIdAndUserId(Long id, Long userId);

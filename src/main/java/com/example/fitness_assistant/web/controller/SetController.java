@@ -1,6 +1,7 @@
 package com.example.fitness_assistant.web.controller;
 
 import com.example.fitness_assistant.application.service.set.*;
+import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import com.example.fitness_assistant.web.dto.request.create.CreateSetRequest;
 import com.example.fitness_assistant.web.dto.request.update.UpdateSetRequest;
 import com.example.fitness_assistant.web.dto.response.SetResponse;
@@ -12,7 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,52 +28,51 @@ public class SetController {
 
     @GetMapping
     public Page<SetResponse> getAllSets(
-            @AuthenticationPrincipal UserDetails userDetails,
+            @AuthenticationPrincipal UserDetailsAdapter adapter,
             @RequestParam Long sessionId,
             @RequestParam Long exerciseId,
-            @PageableDefault(size = 9) Pageable pageable) {
-        return getAllSetsUseCase.getAllSets(sessionId, exerciseId, userDetails, pageable)
+            @PageableDefault(size = 12) Pageable pageable) {
+        return getAllSetsUseCase.getAllSets(sessionId, exerciseId, adapter.getUserId(), pageable)
                 .map(setWebMapper::toResponse);
     }
 
     @GetMapping("/{id}")
     public SetResponse getSetById(
-            @AuthenticationPrincipal UserDetails userDetails,
+            @AuthenticationPrincipal UserDetailsAdapter adapter,
             @PathVariable Long id,
             @RequestParam Long sessionId) {
         return setWebMapper.toResponse(
-                findSetUseCase.findById(id, sessionId, userDetails)
+                findSetUseCase.findById(id, sessionId, adapter.getUserId())
         );
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public SetResponse createSet(
-            @AuthenticationPrincipal UserDetails userDetails,
+            @AuthenticationPrincipal UserDetailsAdapter adapter,
             @Valid @RequestBody CreateSetRequest request) {
         return setWebMapper.toResponse(
-                createSetUseCase.createSet(userDetails, setWebMapper.toDomain(request))
+                createSetUseCase.createSet(adapter.getUserId(), setWebMapper.toDomain(request))
         );
     }
 
     @PatchMapping
     @ResponseStatus(HttpStatus.OK)
     public SetResponse updateSet(
-            @AuthenticationPrincipal UserDetails userDetails,
+            @AuthenticationPrincipal UserDetailsAdapter adapter,
             @Valid @RequestBody UpdateSetRequest request) {
         return setWebMapper.toResponse(
-                updateSetUseCase.updateSet(userDetails, setWebMapper.toDomain(request))
+                updateSetUseCase.updateSet(adapter.getUserId(), setWebMapper.toDomain(request))
         );
     }
-
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteSet(
-            @AuthenticationPrincipal UserDetails userDetails,
+            @AuthenticationPrincipal UserDetailsAdapter adapter,
             @PathVariable Long id,
             @RequestParam Long sessionId) {
-        deleteSetUseCase.deleteSet(id, sessionId, userDetails);
+        deleteSetUseCase.deleteSet(id, sessionId, adapter.getUserId());
     }
 
 }

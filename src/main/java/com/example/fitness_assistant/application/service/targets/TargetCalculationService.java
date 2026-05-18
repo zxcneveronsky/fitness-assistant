@@ -2,20 +2,33 @@ package com.example.fitness_assistant.application.service.targets;
 
 import com.example.fitness_assistant.core.model.Targets;
 import com.example.fitness_assistant.core.model.UserProfile;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.Period;
 
 @Service
+@Slf4j
 public class TargetCalculationService {
+
+    private static final double PROTEIN_RATIO = 0.30;
+    private static final double FAT_RATIO = 0.30;
+    private static final double CARB_RATIO = 0.40;
+    private static final int KCAL_PER_G_PROTEIN = 4;
+    private static final int KCAL_PER_G_FAT = 9;
+    private static final int KCAL_PER_G_CARBS = 4;
+    private static final double ACTIVITY_MULTIPLIER = 1.5;
+    private static final double HYDRATION_MALE_RATE = 0.035;
+    private static final double HYDRATION_FEMALE_RATE = 0.031;
 
     public void balanceMacrosByCalories(Targets targets) {
         Double kcal = targets.getTargetKcal();
+        if (kcal == null) return;
 
-        targets.setTargetProteins((kcal * 0.30) / 4);
-        targets.setTargetFats((kcal * 0.30) / 9);
-        targets.setTargetCarbs((kcal * 0.40) / 4);
+        targets.setTargetProteins((kcal * PROTEIN_RATIO) / KCAL_PER_G_PROTEIN);
+        targets.setTargetFats((kcal * FAT_RATIO) / KCAL_PER_G_FAT);
+        targets.setTargetCarbs((kcal * CARB_RATIO) / KCAL_PER_G_CARBS);
     }
 
     public void balanceCaloriesByMacros(Targets targets) {
@@ -23,7 +36,8 @@ public class TargetCalculationService {
         Double f = targets.getTargetFats();
         Double c = targets.getTargetCarbs();
 
-        Double totalKcal = (p * 4) + (c * 4) + (f * 9);
+        if (p == null || f == null || c == null) return;
+        Double totalKcal = (p * KCAL_PER_G_PROTEIN) + (c * KCAL_PER_G_CARBS) + (f * KCAL_PER_G_FAT);
 
         targets.setTargetKcal(totalKcal);
     }
@@ -51,20 +65,26 @@ public class TargetCalculationService {
     }
 
     public void applyAutoTargets(Targets targets, UserProfile profile) {
-        Integer age = getAge(profile);
-        UserProfile.Gender gender = profile.getGender();
         Double weight = profile.getWeight();
         Double height = profile.getHeight();
+        UserProfile.Gender gender = profile.getGender();
+
+        if (weight == null || height == null || gender == null) {
+            log.warn("Недостаточно данных для авторасчёта: weight={}, height={}, gender={}", weight, height, gender);
+            return;
+        }
+
+        Integer age = getAge(profile);
         Double kcal = 0.0;
         Double hydration = 0.0;
         if (gender == UserProfile.Gender.MALE) {
             kcal = (10 * weight) + (6.25 * height) - (5 * age) + 5;
-            hydration = weight * 0.035;
+            hydration = weight * HYDRATION_MALE_RATE;
         } else if (gender == UserProfile.Gender.FEMALE) {
             kcal = (10 * weight) + (6.25 * height) - (5 * age) - 161;
-            hydration = weight * 0.031;
+            hydration = weight * HYDRATION_FEMALE_RATE;
         }
-        targets.setTargetKcal(kcal*1.5);
+        targets.setTargetKcal(kcal * ACTIVITY_MULTIPLIER);
         targets.setTargetHydration(hydration);
         balanceMacrosByCalories(targets);
     }
@@ -74,6 +94,10 @@ public class TargetCalculationService {
     }
 
     private Integer getAge(UserProfile profile) {
+        if (profile.getBirthDate() == null) {
+            log.warn("Дата рождения не указана, возраст = 0");
+            return 0;
+        }
         return Period.between(profile.getBirthDate(), LocalDate.now()).getYears();
     }
 }

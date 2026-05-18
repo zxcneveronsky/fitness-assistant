@@ -17,7 +17,7 @@ public class WorkoutMapper {
                 entity.getId(),
                 entity.getUser().getId(),
                 entity.getName(),
-                new ArrayList<>(entity.getExerciseIds())
+                entity.getExerciseIds() != null ? new ArrayList<>(entity.getExerciseIds()) : new ArrayList<>()
         );
     }
 
@@ -27,7 +27,7 @@ public class WorkoutMapper {
         }
         return new WorkoutEntity(
                 domain.getId(),
-                null, // Это поле проставляется в адаптере через GetReferenceById
+                null, // Это поле проставляется в адаптере через getReferenceById
                 domain.getName(),
                 domain.getExercisesIds() != null ? new ArrayList<>(domain.getExercisesIds()) : new ArrayList<>()
         );

@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Optional;
@@ -36,15 +37,17 @@ public class MealRepositoryAdapter implements MealRepository {
 
     @Override
     public Page<Meal> searchMeal(LocalDateTime localDateTime, Long userId, Pageable pageable) {
-        LocalDateTime startOfDay = localDateTime != null ? localDateTime.toLocalDate().atStartOfDay() : null;
-        LocalDateTime endOfDay = localDateTime != null ? localDateTime.toLocalDate().atTime(LocalTime.MAX) : null;
+        LocalDate date = localDateTime != null ? localDateTime.toLocalDate() : LocalDate.now();
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
         return jpaMealRepository.searchMeal(userId, startOfDay, endOfDay, pageable)
                 .map(mealMapper::toDomain);
     }
     @Override
     public DailyNutrition getDailyNutrition(LocalDateTime localDateTime, Long userId) {
-        LocalDateTime startOfDay = localDateTime != null ? localDateTime.toLocalDate().atStartOfDay() : null;
-        LocalDateTime endOfDay = localDateTime != null ? localDateTime.toLocalDate().atTime(LocalTime.MAX) : null;
+        LocalDate date = localDateTime != null ? localDateTime.toLocalDate() : LocalDate.now();
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
         return dailyNutritionMapper.toDomain(jpaMealRepository.getDailyNutrition(userId, startOfDay, endOfDay));
     }
 

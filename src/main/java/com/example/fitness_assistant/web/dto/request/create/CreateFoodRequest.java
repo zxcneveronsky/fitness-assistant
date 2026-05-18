@@ -11,7 +11,6 @@ public record CreateFoodRequest(
         @Size(max = 255, message = "Название продукта слишком длинное")
         String name,
 
-        @NotNull(message = "Название бренда не может быть пустым")
         @Size(max = 255, message = "Название бренда слишком длинное")
         String brands,
 

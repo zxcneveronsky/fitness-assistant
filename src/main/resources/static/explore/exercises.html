@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -46,7 +46,7 @@
             const container = document.getElementById('muscleChips');
             container.innerHTML = '<button onclick="setMuscle(null)" class="px-3 py-1.5 rounded-full text-xs font-bold border transition-colors whitespace-nowrap shrink-0 ' + (selectedMuscleId === null ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-500 border-gray-200 hover:border-blue-300') + '">Все</button>' +
                 muscles.map(m => `<button onclick="setMuscle(${m.id})" class="px-3 py-1.5 rounded-full text-xs font-bold border transition-colors whitespace-nowrap shrink-0 ${selectedMuscleId === m.id ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-500 border-gray-200 hover:border-blue-300'}">${m.name}</button>`).join('');
-        } catch (e) {}
+        } catch (e) { console.error('loadChips error:', e); }
     }
 
     function setMuscle(id) {

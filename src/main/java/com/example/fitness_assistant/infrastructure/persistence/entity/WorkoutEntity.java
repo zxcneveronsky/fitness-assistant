@@ -2,14 +2,19 @@ package com.example.fitness_assistant.infrastructure.persistence.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(of = "id")
 @Entity
 @Table(name = "workouts")
 public class WorkoutEntity {
@@ -25,6 +30,8 @@ public class WorkoutEntity {
     private String name;
 
     @ElementCollection
+    @OrderColumn(name = "exercise_order")
+    @BatchSize(size = 15)
     @CollectionTable(
             name = "workout_exercises",
             joinColumns = @JoinColumn(name = "workout_id")

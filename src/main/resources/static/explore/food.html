@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -82,7 +82,6 @@
 
     function toggleDetail(id) {
         const detail = document.getElementById(`detail_${id}`);
-        const arrow = document.getElementById(`arrow_${id}`);
         if (!detail) return;
         const isOpen = !detail.classList.contains('hidden');
         if (expandedFoodId && expandedFoodId !== id) {
@@ -94,7 +93,7 @@
     }
 
     async function calculate(id) {
-        const weight = parseFloat(document.getElementById(`calcWeight_${id}`).value);
+        const weight = safeFloat(document.getElementById(`calcWeight_${id}`).value);
         if (!weight || weight <= 0) return;
         const data = await request(`/food/calc/${id}?weight=${weight}`);
         document.getElementById(`calcKcal_${id}`).textContent = data.kcal.toFixed(2);
@@ -117,7 +116,7 @@
         try {
             await request('/meal/auto', {
                 method: 'POST',
-                body: JSON.stringify({ id: foodId, weight, name: 'auto', consumedAt: new Date().toISOString() })
+                body: JSON.stringify({ id: foodId, weight, consumedAt: new Date().toISOString() })
             });
             btn.className = 'bg-green-100 text-green-700 px-4 py-2 rounded-lg text-xs font-bold w-full';
             btn.textContent = '✅ Сохранено';
@@ -143,3 +142,4 @@
 </script>
 </body>
 </html>
+

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -136,7 +136,7 @@
     }
 
     async function addSet(exerciseId) {
-        const weight = parseFloat(document.getElementById(`weight_${exerciseId}`).value);
+        const weight = safeFloat(document.getElementById(`weight_${exerciseId}`).value);
         const reps = parseInt(document.getElementById(`reps_${exerciseId}`).value);
         if (!weight || !reps) { showError('Введите вес и повторы'); return; }
         try {
@@ -176,7 +176,7 @@
                         </div>
                     </div>`
                 ).join('');
-        } catch (e) {}
+        } catch (e) { console.error('loadSets error:', e); }
     }
 
     function toggleEdit(setId) {
@@ -188,7 +188,7 @@
     }
 
     async function saveSet(setId, exerciseId) {
-        const weight = parseFloat(document.getElementById(`editW_${setId}`).value);
+        const weight = safeFloat(document.getElementById(`editW_${setId}`).value);
         const reps = parseInt(document.getElementById(`editR_${setId}`).value);
         if (isNaN(weight) || isNaN(reps) || weight < 0 || reps < 1) { showError('Введите корректные вес и повторы'); return; }
         try {

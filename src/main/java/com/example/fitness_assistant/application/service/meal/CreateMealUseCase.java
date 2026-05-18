@@ -6,10 +6,8 @@ import com.example.fitness_assistant.core.model.meal.Meal;
 import com.example.fitness_assistant.core.repository.FoodRepository;
 import com.example.fitness_assistant.core.repository.MealRepository;
 import com.example.fitness_assistant.core.repository.UserRepository;
-import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,22 +20,20 @@ public class CreateMealUseCase {
     private final UserRepository userRepository;
 
     @Transactional
-    public Meal createMealManual(UserDetails userDetails, Meal meal) {
+    public Meal createMealManual(Long userId, Meal meal) {
         meal.setId(null);
-        Long userId = ((UserDetailsAdapter) userDetails).getUserId();
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException(userId);
         }
         meal.setUserId(userId);
         Meal savedMeal = mealRepository.save(meal);
-        log.info("Приём пищи создан | id={}", savedMeal.getId());
+        log.info("Приём пищи создан | id={} | название='{}'", savedMeal.getId(), savedMeal.getName());
         return savedMeal;
     }
 
     @Transactional
-    public Meal createMealAuto(UserDetails userDetails,Long id,Double weight, Meal meal) {
+    public Meal createMealAuto(Long userId, Long id, Double weight, Meal meal) {
         meal.setId(null);
-        Long userId = ((UserDetailsAdapter) userDetails).getUserId();
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException(userId);
         }
@@ -54,7 +50,7 @@ public class CreateMealUseCase {
                     return mealRepository.save(meal);
                 }
         ).orElseThrow(()->new FoodNotFoundException(id));
-        log.info("Приём пищи создан | id={}", savedMeal.getId());
+        log.info("Приём пищи создан | id={} | название='{}'", savedMeal.getId(), savedMeal.getName());
         return savedMeal;
 
     }

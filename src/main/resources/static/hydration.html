@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -117,11 +117,14 @@
             try {
                 const targets = await request('/profile/targets');
                 if (targets) waterNorm = (targets.targetHydration || 2) * 1000;
-            } catch (e) {}
-            try {
-                const waterData = await request(`/hydration/daily?localDateTime=${encodeURIComponent(selectedWaterDate())}`);
-                if (waterData) waterToday = (waterData.totalAmount || 0) * 1000;
-            } catch (e) {}
+        } catch (e) { console.error('loadWaterData targets error:', e); }
+
+        try {
+            const data = await request(`/hydration/daily?localDateTime=${encodeURIComponent(selectedWaterDate())}`);
+            if (data) {
+                waterToday = (data.totalAmount || 0) * 1000;
+            }
+        } catch (e) { console.error('loadWaterData hydration error:', e); }
             updateWaterChart();
         }
 
@@ -132,7 +135,7 @@
 
         async function addWater() {
             const name = document.getElementById('waterName').value || 'Вода';
-            const amount = parseFloat(document.getElementById('waterAmount').value);
+            const amount = safeFloat(document.getElementById('waterAmount').value);
             if (!amount || amount <= 0) { showError('Укажите объём'); return; }
             try {
                 await request('/hydration', { method: 'POST', body: JSON.stringify({ name, amount, consumedAt: selectedWaterDate() }) });
@@ -191,7 +194,7 @@
 
         async function saveWaterEdit(id) {
             const name = document.getElementById(`wName_${id}`).value.trim();
-            const amount = parseFloat(document.getElementById(`wAmt_${id}`).value);
+            const amount = safeFloat(document.getElementById(`wAmt_${id}`).value);
             if (!name || isNaN(amount) || amount <= 0) return;
             try {
                 await request('/hydration', {

@@ -7,10 +7,8 @@ import com.example.fitness_assistant.core.model.Targets;
 import com.example.fitness_assistant.core.model.UserProfile;
 import com.example.fitness_assistant.core.repository.TargetsRepository;
 import com.example.fitness_assistant.core.repository.UserProfileRepository;
-import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,9 +22,8 @@ public class UpdateUserProfileUseCase {
     private final TargetCalculationService targetCalculationService;
 
     @Transactional
-    public UserProfile updateUserProfile(UserDetails userDetails, UserProfile profileUpdate) {
-        Long id = ((UserDetailsAdapter) userDetails).getUserId();
-        UserProfile updatedProfile = userProfileRepository.findById(id)
+    public UserProfile updateUserProfile(Long userId, UserProfile profileUpdate) {
+        UserProfile updatedProfile = userProfileRepository.findById(userId)
                 .map(existingProfile -> {
                     existingProfile.setName(profileUpdate.getName() != null ? profileUpdate.getName() : existingProfile.getName());
                     existingProfile.setBirthDate(profileUpdate.getBirthDate() != null ? profileUpdate.getBirthDate() : existingProfile.getBirthDate());
@@ -35,9 +32,9 @@ public class UpdateUserProfileUseCase {
                     existingProfile.setGender(profileUpdate.getGender() != null ? profileUpdate.getGender() : existingProfile.getGender());
                     return userProfileRepository.save(existingProfile);
                 })
-                .orElseThrow(() -> new UserProfileNotFoundException(id));
+                .orElseThrow(() -> new UserProfileNotFoundException(userId));
 
-        targetsRepository.findById(id).ifPresent(targets -> {
+        targetsRepository.findById(userId).ifPresent(targets -> {
             if (Boolean.TRUE.equals(targets.getUseAutopilot())) {
                 targetCalculationService.applyAutoTargets(targets, updatedProfile);
                 targetsRepository.save(targets);
@@ -49,20 +46,19 @@ public class UpdateUserProfileUseCase {
     }
 
     @Transactional
-    public Targets updateAutopilotStatus(UserDetails userDetails, boolean enabled) {
-        Long id = ((UserDetailsAdapter) userDetails).getUserId();
-        UserProfile profile = userProfileRepository.findById(id)
-                .orElseThrow(() -> new UserProfileNotFoundException(id));
+    public Targets updateAutopilotStatus(Long userId, boolean enabled) {
+        UserProfile profile = userProfileRepository.findById(userId)
+                .orElseThrow(() -> new UserProfileNotFoundException(userId));
 
-        Targets targets = targetsRepository.findById(id)
-                .orElseThrow(() -> new TargetsNotFoundException(id));
+        Targets targets = targetsRepository.findById(userId)
+                .orElseThrow(() -> new TargetsNotFoundException(userId));
         targets.setUseAutopilot(enabled);
         if (enabled) {
             targetCalculationService.applyAutoTargets(targets, profile);
         }
         Targets saved = targetsRepository.save(targets);
 
-        log.info("Статус автопилота обновлён | userId={} | enabled={}", id, enabled);
+        log.info("Статус автопилота обновлён | userId={} | enabled={}", userId, enabled);
         return saved;
     }
 }
