@@ -37,6 +37,9 @@ public class CreateMealUseCase {
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException(userId);
         }
+        if (weight == null) {
+            throw new IllegalArgumentException("Вес не может быть null");
+        }
         Double k = weight / 100.0;
         Meal savedMeal =  foodRepository.findById(id).map(
                 food ->{

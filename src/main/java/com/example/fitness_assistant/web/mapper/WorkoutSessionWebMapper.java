@@ -11,7 +11,6 @@ public class WorkoutSessionWebMapper {
         return new WorkoutSessionResponse(
                 domain.getId(),
                 domain.getWorkoutId(),
-                domain.getUserId(),
                 domain.getStartTime(),
                 domain.getEndTime()
         );

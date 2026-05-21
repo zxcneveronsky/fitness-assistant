@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 public record WorkoutSessionResponse(
         Long id,
         Long workoutId,
-        Long userId,
         LocalDateTime startTime,
         LocalDateTime endTime
 ) {}
