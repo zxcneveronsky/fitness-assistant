@@ -5,7 +5,6 @@ import com.example.fitness_assistant.core.repository.MuscleRepository;
 import com.example.fitness_assistant.infrastructure.mapper.MuscleMapper;
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaMuscleRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -22,15 +21,15 @@ public class MuscleRepositoryAdapter implements MuscleRepository {
     }
 
     @Override
-    @Cacheable("muscles")
-    public Muscle getReferenceById(Long id){
-        return muscleMapper.toDomain(jpaMuscleRepository.getReferenceById(id));
+    public List<Muscle> findAllById(List<Long> ids) {
+        return jpaMuscleRepository.findAllById(ids).stream()
+                .map(muscleMapper::toDomain)
+                .toList();
     }
 
     @Override
-    @Cacheable("muscles")
-    public List<Muscle> findAll() {
-        return jpaMuscleRepository.findAll().stream()
+    public List<Muscle> searchMuscles(String name) {
+        return jpaMuscleRepository.searchMuscles(name).stream()
                 .map(muscleMapper::toDomain)
                 .toList();
     }

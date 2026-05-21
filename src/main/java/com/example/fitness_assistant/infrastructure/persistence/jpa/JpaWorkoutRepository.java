@@ -22,12 +22,14 @@ public interface JpaWorkoutRepository extends JpaRepository<WorkoutEntity, Long>
             value = """
             SELECT w FROM WorkoutEntity w
             WHERE w.user.id = :userId
-            AND LOWER(w.name) LIKE LOWER(CONCAT('%', :query, '%'))
+            AND (cast(:query as text) IS NULL
+                 OR LOWER(w.name) LIKE LOWER(CONCAT('%', cast(:query as text), '%')))
             """,
             countQuery = """
             SELECT COUNT(w) FROM WorkoutEntity w
             WHERE w.user.id = :userId
-            AND LOWER(w.name) LIKE LOWER(CONCAT('%', :query, '%'))
+            AND (cast(:query as text) IS NULL
+                 OR LOWER(w.name) LIKE LOWER(CONCAT('%', cast(:query as text), '%')))
             """)
     Page<WorkoutEntity> searchWorkout(@Param("query") String query, @Param("userId") Long userId, Pageable pageable);
 }

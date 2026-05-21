@@ -28,10 +28,8 @@ public class CreateWorkoutUseCase {
             throw new UserNotFoundException(userId);
         }
         List<Long> ids = workout.getExercisesIds();
-        if (ids != null && !ids.isEmpty()) {
-            if (!exerciseRepository.existsAllByIdIn(ids)) {
-                throw new ExerciseNotFoundException(ids.get(0));
-            }
+        if (!exerciseRepository.existsAllByIdIn(ids)) {
+            throw new ExerciseNotFoundException(ids.getFirst());
         }
         workout.setUserId(userId);
         Workout savedWorkout = workoutRepository.save(workout);

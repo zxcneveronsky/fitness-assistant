@@ -4,5 +4,5 @@ CREATE TABLE IF NOT EXISTS users_profiles (
     birth_date DATE,
     weight     DOUBLE PRECISION,
     height     DOUBLE PRECISION,
-    gender     VARCHAR(10) CHECK (gender IN ('MALE', 'FEMALE'))
+    gender     VARCHAR(10) NOT NULL CHECK (gender IN ('MALE', 'FEMALE'))
 );

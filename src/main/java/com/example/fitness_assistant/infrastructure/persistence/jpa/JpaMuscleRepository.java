@@ -3,7 +3,12 @@ package com.example.fitness_assistant.infrastructure.persistence.jpa;
 import com.example.fitness_assistant.infrastructure.persistence.entity.MuscleEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface JpaMuscleRepository extends JpaRepository<MuscleEntity,Long> {}
+public interface JpaMuscleRepository extends JpaRepository<MuscleEntity, Long> {
+
+    @Query("SELECT m FROM MuscleEntity m WHERE cast(:name as text) IS NULL OR LOWER(m.name) LIKE LOWER(CONCAT('%', cast(:name as text), '%'))")
+    List<MuscleEntity> searchMuscles(@Param("name") String name);
+}

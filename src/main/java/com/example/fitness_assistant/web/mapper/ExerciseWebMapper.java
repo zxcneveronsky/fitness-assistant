@@ -21,9 +21,7 @@ public class ExerciseWebMapper {
                 null,
                 request.exerciseName(),
                 request.description(),
-                request.musclesId() != null
-                        ? request.musclesId().stream().map(exerciseMuscleWebMapper::toDomain).toList()
-                        : List.of()
+                request.musclesId().stream().map(exerciseMuscleWebMapper::toDomain).toList()
         );
     }
 
@@ -32,9 +30,7 @@ public class ExerciseWebMapper {
                 request.id(),
                 request.exerciseName(),
                 request.description(),
-                request.musclesId() != null
-                        ? request.musclesId().stream().map(exerciseMuscleWebMapper::toDomain).toList()
-                        : List.of()
+                request.musclesId().stream().map(exerciseMuscleWebMapper::toDomain).toList()
         );
     }
 

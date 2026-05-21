@@ -32,7 +32,7 @@ public class UserProfileEntity {
     private Double height;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 10)
+    @Column(length = 10, nullable = false)
     private Gender gender;
 
     public enum Gender {

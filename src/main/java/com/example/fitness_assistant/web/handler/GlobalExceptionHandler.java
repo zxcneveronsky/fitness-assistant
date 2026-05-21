@@ -73,8 +73,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<Object> handleJsonParse(HttpMessageNotReadableException ex) {
-        ex.getMostSpecificCause();
-        String message = ex.getMostSpecificCause().getMessage();
+        Throwable cause = ex.getMostSpecificCause();
+        String message = cause != null ? cause.getMessage() : ex.getMessage();
         return buildResponse("Некорректный JSON: " + message, HttpStatus.BAD_REQUEST);
     }
 

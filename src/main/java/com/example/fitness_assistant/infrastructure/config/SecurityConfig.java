@@ -52,7 +52,7 @@ public class SecurityConfig {
                                 "/api/v1/food/calc/**",
                                 "/api/v1/exercises/search",
                                 "/api/v1/exercises/{id}",
-                                "/api/v1/muscles",
+                                "/api/v1/muscles/search",
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",

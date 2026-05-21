@@ -1,4 +1,4 @@
-package com.example.fitness_assistant.application.service.exercise;
+package com.example.fitness_assistant.application.service.muscle;
 
 import com.example.fitness_assistant.core.model.Muscle;
 import com.example.fitness_assistant.core.repository.MuscleRepository;
@@ -12,14 +12,14 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class GetAllMusclesUseCase {
+public class FindMuscleUseCase {
 
     private final MuscleRepository muscleRepository;
 
     @Transactional(readOnly = true)
-    public List<Muscle> getAllMuscles() {
-        List<Muscle> muscles = muscleRepository.findAll();
-        log.info("Получены все мышцы | найдено={}", muscles.size());
+    public List<Muscle> searchMuscles(String name) {
+        List<Muscle> muscles = muscleRepository.searchMuscles(name);
+        log.info("Поиск мышц | name='{}' | найдено={}", name, muscles.size());
         return muscles;
     }
 }
