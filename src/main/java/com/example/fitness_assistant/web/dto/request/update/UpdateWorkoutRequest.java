@@ -11,5 +11,5 @@ public record UpdateWorkoutRequest(
         @Size(max = 255, message = "Название слишком длинное")
         String name,
 
-        List<Long> exerciseIds
+        List<@NotNull(message = "ID упражнения не может быть пустой ссылкой") Long> exerciseIds
 ) { }

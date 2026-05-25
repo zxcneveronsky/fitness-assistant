@@ -32,7 +32,7 @@ public class UserProfileMapper {
         }
         return new UserProfileEntity(
                 domain.getId(),
-                userMapper.toEntity(domain.getUser()),
+                null, // Это поле проставляется в адаптере через getReference
                 domain.getName(),
                 domain.getBirthDate(),
                 domain.getWeight(),

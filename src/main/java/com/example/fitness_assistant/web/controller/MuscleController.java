@@ -4,6 +4,7 @@ import com.example.fitness_assistant.application.service.muscle.FindMuscleUseCas
 import com.example.fitness_assistant.web.dto.response.MuscleResponse;
 import com.example.fitness_assistant.web.mapper.MuscleWebMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,6 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/muscles")
 @RequiredArgsConstructor
+@Validated
 public class MuscleController {
 
     private final FindMuscleUseCase findMuscleUseCase;
