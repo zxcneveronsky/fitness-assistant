@@ -62,7 +62,7 @@ public class FoodController {
         );
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteFood(@PathVariable Long id) {
         deleteFoodUseCase.deleteFood(id);

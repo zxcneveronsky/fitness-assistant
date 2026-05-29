@@ -59,7 +59,7 @@ public class ExerciseController {
         );
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteExercise(@PathVariable Long id) {
         deleteExerciseUseCase.deleteExercise(id);
