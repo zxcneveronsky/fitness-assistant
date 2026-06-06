@@ -1,6 +1,10 @@
 package com.example.fitness_assistant.web.controller;
 
-import com.example.fitness_assistant.application.service.meal.*;
+import com.example.fitness_assistant.application.service.meal.CreateMealUseCase;
+import com.example.fitness_assistant.application.service.meal.DeleteMealUseCase;
+import com.example.fitness_assistant.application.service.meal.FindMealUseCase;
+import com.example.fitness_assistant.application.service.meal.GetDailyNutritionUseCase;
+import com.example.fitness_assistant.application.service.meal.UpdateMealUseCase;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import com.example.fitness_assistant.web.dto.request.create.CreateMealAutoRequest;
 import com.example.fitness_assistant.web.dto.request.create.CreateMealManualRequest;
@@ -46,7 +50,7 @@ public class MealController {
             @AuthenticationPrincipal UserDetailsAdapter adapter,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime localDateTime,
             @PageableDefault(size = 12) Pageable pageable) {
-        return findMealUseCase.findMeal(localDateTime, adapter.getUserId(), pageable)
+        return findMealUseCase.searchMeal(localDateTime, adapter.getUserId(), pageable)
                 .map(mealWebMapper::toResponse);
     }
 

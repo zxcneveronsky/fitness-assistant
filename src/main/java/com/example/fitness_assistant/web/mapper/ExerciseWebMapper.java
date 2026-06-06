@@ -19,18 +19,18 @@ public class ExerciseWebMapper {
     public Exercise toDomain(CreateExerciseRequest request) {
         return new Exercise(
                 null,
-                request.exerciseName(),
+                request.name(),
                 request.description(),
-                request.musclesId().stream().map(exerciseMuscleWebMapper::toDomain).toList()
+                request.muscleIds().stream().map(exerciseMuscleWebMapper::toDomain).toList()
         );
     }
 
     public Exercise toDomain(UpdateExerciseRequest request) {
         return new Exercise(
                 request.id(),
-                request.exerciseName(),
+                request.name(),
                 request.description(),
-                request.musclesId().stream().map(exerciseMuscleWebMapper::toDomain).toList()
+                request.muscleIds().stream().map(exerciseMuscleWebMapper::toDomain).toList()
         );
     }
 

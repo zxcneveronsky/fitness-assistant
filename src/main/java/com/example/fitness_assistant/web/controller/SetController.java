@@ -1,6 +1,10 @@
 package com.example.fitness_assistant.web.controller;
 
-import com.example.fitness_assistant.application.service.set.*;
+import com.example.fitness_assistant.application.service.set.CreateSetUseCase;
+import com.example.fitness_assistant.application.service.set.DeleteSetUseCase;
+import com.example.fitness_assistant.application.service.set.FindSetUseCase;
+import com.example.fitness_assistant.application.service.set.FindAllSetsUseCase;
+import com.example.fitness_assistant.application.service.set.UpdateSetUseCase;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import com.example.fitness_assistant.web.dto.request.create.CreateSetRequest;
 import com.example.fitness_assistant.web.dto.request.update.UpdateSetRequest;
@@ -23,7 +27,7 @@ import org.springframework.web.bind.annotation.*;
 public class SetController {
     private final CreateSetUseCase createSetUseCase;
     private final FindSetUseCase findSetUseCase;
-    private final GetAllSetsUseCase getAllSetsUseCase;
+    private final FindAllSetsUseCase findAllSetsUseCase;
     private final UpdateSetUseCase updateSetUseCase;
     private final DeleteSetUseCase deleteSetUseCase;
     private final SetWebMapper setWebMapper;
@@ -34,7 +38,7 @@ public class SetController {
             @RequestParam Long sessionId,
             @RequestParam Long exerciseId,
             @PageableDefault(size = 12) Pageable pageable) {
-        return getAllSetsUseCase.getAllSets(sessionId, exerciseId, adapter.getUserId(), pageable)
+        return findAllSetsUseCase.findAll(sessionId, exerciseId, adapter.getUserId(), pageable)
                 .map(setWebMapper::toResponse);
     }
 

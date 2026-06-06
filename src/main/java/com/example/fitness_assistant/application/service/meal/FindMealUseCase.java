@@ -19,7 +19,7 @@ public class FindMealUseCase {
     private final MealRepository mealRepository;
 
     @Transactional(readOnly = true)
-    public Page<Meal> findMeal(LocalDateTime localDateTime, Long userId, Pageable pageable){
+    public Page<Meal> searchMeal(LocalDateTime localDateTime, Long userId, Pageable pageable){
         Page<Meal> meals = mealRepository.searchMeal(localDateTime,userId,pageable);
         log.info("Поиск приёмов пищи завершён | userId={} | найдено={} | страница={}/{}",
                 userId, meals.getTotalElements(), meals.getNumber() + 1, meals.getTotalPages());

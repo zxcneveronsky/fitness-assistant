@@ -29,7 +29,7 @@ public class WorkoutMapper {
                 domain.getId(),
                 null, // Это поле проставляется в адаптере через getReferenceById
                 domain.getName(),
-                domain.getExercisesIds() != null ? new ArrayList<>(domain.getExercisesIds()) : new ArrayList<>()
+                domain.getExerciseIds() != null ? new ArrayList<>(domain.getExerciseIds()) : new ArrayList<>()
         );
     }
 }

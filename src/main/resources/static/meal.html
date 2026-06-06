@@ -74,11 +74,12 @@
         </div>
 
         <div id="autoMode">
-            <div class="flex gap-2 sm:gap-3 mb-4">
-                <input id="foodSearch" placeholder="Поиск продуктов..." class="flex-1 px-3 sm:px-4 py-2 sm:py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-sm">
-                <button onclick="searchFood()" class="bg-blue-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl font-semibold text-sm hover:bg-blue-700">Найти</button>
+            <div class="mb-4">
+                <button onclick="openFoodSelector()" id="selectFoodBtn" class="w-full border-2 border-dashed border-gray-300 rounded-xl py-8 text-gray-400 hover:border-blue-400 hover:text-blue-600 hover:bg-blue-50 transition-colors font-medium text-center">
+                    + Выбрать продукты
+                </button>
+                <div id="selectedFoods" class="mt-3 space-y-2"></div>
             </div>
-            <div id="foodResults" class="space-y-2 max-h-96 overflow-y-auto mb-4"></div>
         </div>
 
         <div id="manualMode" class="hidden">
@@ -121,8 +122,49 @@
     if (!isAuth()) window.location.href = '/login.html';
     if (isAuth()) document.getElementById('logoLink').href = '/dashboard.html';
 
-    let expandedFoodId = null;
+    let selectedFoods = [];
     let kcalChartObj = null;
+
+    (function() {
+        const stored = sessionStorage.getItem('foodSelection');
+        if (stored) {
+            try { selectedFoods = JSON.parse(stored); } catch(e) {}
+            sessionStorage.removeItem('foodSelection');
+        }
+        sessionStorage.removeItem('foodReturnTo');
+    })();
+
+    function openFoodSelector() {
+        sessionStorage.setItem('foodSelection', JSON.stringify(selectedFoods));
+        sessionStorage.setItem('foodReturnTo', window.location.pathname);
+        window.location.href = '/explore/food.html?mode=select';
+    }
+
+    function renderSelectedFoods() {
+        const container = document.getElementById('selectedFoods');
+        if (selectedFoods.length === 0) {
+            container.innerHTML = '<p class="text-gray-400 text-sm">Продукты не выбраны</p>';
+            return;
+        }
+        container.innerHTML = selectedFoods.map(f => `
+            <div class="bg-blue-50 rounded-xl px-4 py-3">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="font-medium text-sm">${f.name}</span>
+                    <button onclick="removeSelectedFood(${f.id})" class="text-red-400 hover:text-red-600 text-sm font-bold">✕</button>
+                </div>
+                <div class="flex items-center gap-2">
+                    <input id="fw_${f.id}" type="number" placeholder="Вес (г)" class="w-24 px-3 py-1.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-500">
+                    <button onclick="addMeal(${f.id})" class="bg-green-600 text-white px-4 py-1.5 rounded-lg text-sm font-semibold hover:bg-green-700">💾 Сохранить</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function removeSelectedFood(id) {
+        selectedFoods = selectedFoods.filter(f => f.id !== id);
+        renderSelectedFoods();
+    }
+
     let kcalNorm = 2000;
     let kcalToday = 0;
     let proteinsToday = 0;
@@ -148,55 +190,6 @@
             autoTab.className = 'flex-1 py-3 rounded-xl font-semibold text-sm transition-all bg-gray-100 text-gray-500 hover:bg-gray-200';
             manualTab.className = 'flex-1 py-3 rounded-xl font-semibold text-sm transition-all bg-blue-600 text-white';
         }
-    }
-
-    async function searchFood() {
-        const q = document.getElementById('foodSearch').value;
-        const data = await request(`/food/search?name=${encodeURIComponent(q)}&size=20`);
-        expandedFoodId = null;
-        document.getElementById('foodResults').innerHTML = data.content.map(f => `
-            <div class="bg-white rounded-2xl p-5 border border-gray-100 hover:shadow-lg transition-shadow cursor-pointer" onclick="toggleDetail(${f.id})">
-                <div class="flex items-start justify-between">
-                    <div>
-                        <h3 class="font-bold text-lg">${f.name}</h3>
-                        <p class="text-sm text-gray-400">${f.brands || 'Нет бренда'}</p>
-                    </div>
-                    <span class="text-gray-300 text-sm mt-1.5" id="arrow_${f.id}">▼</span>
-                </div>
-                <div class="flex items-center gap-1 mt-3 mb-1">
-                    <span class="text-xs text-gray-400 font-medium">Пищевая ценность на 100 г</span>
-                </div>
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 text-center">
-                    <div><span class="font-bold text-blue-600 text-lg">${f.kcal.toFixed(2)}</span><br><span class="text-gray-400 text-sm">ккал</span></div>
-                    <div><span class="font-bold text-lg">${f.proteins.toFixed(2)}</span><br><span class="text-gray-400 text-sm">белки</span></div>
-                    <div><span class="font-bold text-lg">${f.fats.toFixed(2)}</span><br><span class="text-gray-400 text-sm">жиры</span></div>
-                    <div><span class="font-bold text-lg">${f.carbs.toFixed(2)}</span><br><span class="text-gray-400 text-sm">углеводы</span></div>
-                </div>
-                <div id="detail_${f.id}" class="hidden mt-3 pt-3 border-t border-gray-200" onclick="event.stopPropagation()">
-                    <div class="flex items-center gap-2">
-                        <span class="text-sm text-gray-500">Вес (г):</span>
-                        <input id="weight_${f.id}" type="number" placeholder="100" class="w-20 px-3 py-1.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-500" onclick="event.stopPropagation()">
-                        <button onclick="addMeal(${f.id})" class="bg-green-600 text-white px-4 py-1.5 rounded-lg text-sm font-semibold hover:bg-green-700">💾 Сохранить</button>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    function toggleDetail(id) {
-        const detail = document.getElementById(`detail_${id}`);
-        const arrow = document.getElementById(`arrow_${id}`);
-        if (!detail) return;
-        const isOpen = !detail.classList.contains('hidden');
-        if (expandedFoodId && expandedFoodId !== id) {
-            const prevDetail = document.getElementById(`detail_${expandedFoodId}`);
-            const prevArrow = document.getElementById(`arrow_${expandedFoodId}`);
-            if (prevDetail) prevDetail.classList.add('hidden');
-            if (prevArrow) prevArrow.textContent = '▼';
-        }
-        detail.classList.toggle('hidden');
-        arrow.textContent = isOpen ? '▼' : '▲';
-        expandedFoodId = isOpen ? null : id;
     }
 
     function initKcalChart() {
@@ -249,16 +242,14 @@
     }
 
     async function addMeal(foodId) {
-        const weight = safeFloat(document.getElementById(`weight_${foodId}`).value);
+        const weight = safeFloat(document.getElementById(`fw_${foodId}`).value);
         if (!weight || weight <= 0) { showError('Укажите вес в граммах'); return; }
         try {
             await request('/meal/auto', {
                 method: 'POST',
                 body: JSON.stringify({ id: foodId, weight, consumedAt: new Date().toISOString() })
             });
-            document.getElementById(`weight_${foodId}`).value = '';
-            document.getElementById('foodSearch').value = '';
-            document.getElementById('foodResults').innerHTML = '';
+            removeSelectedFood(foodId);
             loadMeals();
         } catch (e) { showError(e.message); }
     }
@@ -366,6 +357,7 @@
     document.getElementById('mealDate').value = new Date().toISOString().split('T')[0];
     renderActiveSessionBanner(); syncActiveSessions(); function logout() { clearToken(); window.location.href = '/index.html'; }
     initKcalChart(); loadMealData(); loadMeals();
+    renderSelectedFoods();
 </script>
 </body>
 </html>

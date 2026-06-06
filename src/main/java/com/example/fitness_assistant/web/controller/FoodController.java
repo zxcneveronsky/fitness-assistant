@@ -1,6 +1,10 @@
 package com.example.fitness_assistant.web.controller;
 
-import com.example.fitness_assistant.application.service.food.*;
+import com.example.fitness_assistant.application.service.food.CalculateFoodUseCase;
+import com.example.fitness_assistant.application.service.food.CreateFoodUseCase;
+import com.example.fitness_assistant.application.service.food.DeleteFoodUseCase;
+import com.example.fitness_assistant.application.service.food.FindFoodUseCase;
+import com.example.fitness_assistant.application.service.food.UpdateFoodUseCase;
 import com.example.fitness_assistant.web.dto.request.create.CreateFoodRequest;
 import com.example.fitness_assistant.web.dto.request.update.UpdateFoodRequest;
 import com.example.fitness_assistant.web.dto.response.FoodResponse;
@@ -37,7 +41,7 @@ public class FoodController {
     public Page<FoodResponse> searchFood(
             @RequestParam(required = false) String name,
             @PageableDefault(size = 12) Pageable pageable) {
-        return findFoodUseCase.findFood(name, pageable)
+        return findFoodUseCase.searchFood(name, pageable)
                 .map(foodWebMapper::toResponse);
     }
 

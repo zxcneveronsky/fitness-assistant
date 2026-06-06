@@ -19,30 +19,131 @@
     <span>⏳ <strong>Активная тренировка</strong> — <span id="bannerName"></span></span>
     <a id="bannerLink" href="" class="bg-yellow-200 text-yellow-800 px-4 py-1 rounded-lg font-semibold hover:bg-yellow-300">Продолжить</a>
 </div>
-<div class="max-w-6xl mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-6">💪 Поиск упражнений</h1>
-    <div class="flex gap-3 mb-4">
-        <input id="searchInput" placeholder="Поиск по названию или мышце..." class="flex-1 px-3 sm:px-4 py-2 sm:py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-sm">
-        <button onclick="search()" class="bg-blue-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl font-semibold text-sm hover:bg-blue-700">Найти</button>
+    <div class="max-w-6xl mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold mb-6">💪 Поиск упражнений</h1>
+        <div class="flex gap-3 mb-4">
+            <input id="searchInput" placeholder="Поиск по названию или мышце..." class="flex-1 px-3 sm:px-4 py-2 sm:py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-sm">
+            <button onclick="search()" class="bg-blue-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl font-semibold text-sm hover:bg-blue-700">Найти</button>
+            <button id="favFilterBtn" onclick="toggleFavFilter()" class="px-4 py-2 rounded-xl font-semibold text-sm border transition-colors whitespace-nowrap">♡ Избранное</button>
+        </div>
+        <div id="muscleChips" class="flex gap-2 mb-4 overflow-x-auto pb-1" style="scrollbar-width:thin;-webkit-overflow-scrolling:touch"></div>
+        <div id="results" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        <div id="pagination" class="flex justify-center items-center gap-2 mt-6"></div>
     </div>
-    <div id="muscleChips" class="flex gap-2 mb-4 overflow-x-auto pb-1" style="scrollbar-width:thin;-webkit-overflow-scrolling:touch"></div>
-    <div id="results" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-    <div id="pagination" class="flex justify-center items-center gap-2 mt-6"></div>
-</div>
 <script src="/js/api.js"></script>
 <script>
     if (isAuth()) {
         document.getElementById('logoLink').href = '/dashboard.html';
         document.getElementById('navAuth').innerHTML = '<a href="/dashboard.html" class="text-sm font-semibold bg-blue-600 text-white px-5 py-2 rounded-full hover:bg-blue-700">Дашборд</a>';
+    } else {
+        document.getElementById('favFilterBtn').classList.add('hidden');
+    }
+
+    const selectMode = new URLSearchParams(window.location.search).get('mode') === 'select';
+    let selectedIds = new Set();
+    let exerciseNameMap = {};
+
+    if (selectMode) {
+        document.querySelector('h1').textContent = '💪 Выберите упражнения';
+        try {
+            const stored = JSON.parse(sessionStorage.getItem('workoutSelection') || '[]');
+            selectedIds = new Set(stored.map(e => e.id));
+            stored.forEach(e => { exerciseNameMap[e.id] = e.name; });
+        } catch(e) {}
+        const container = document.querySelector('.max-w-6xl.mx-auto.px-4.py-8');
+        const confirmBar = document.createElement('div');
+        confirmBar.className = 'sticky bottom-0 bg-white border-t border-gray-200 p-4 -mx-4 -mb-8 mt-6 shadow-lg';
+        confirmBar.innerHTML = `
+            <div class="max-w-6xl mx-auto flex items-center justify-between">
+                <span class="text-sm text-gray-500">Выбрано: <span id="selectionCount" class="font-bold text-blue-600">${selectedIds.size}</span></span>
+                <div class="flex gap-3">
+                    <button onclick="cancelSelection()" class="px-6 py-3 rounded-xl font-semibold border border-gray-200 hover:bg-gray-50">Отмена</button>
+                    <button onclick="confirmSelection()" class="px-8 py-3 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700">Подтвердить</button>
+                </div>
+            </div>
+        `;
+        container.appendChild(confirmBar);
     }
 
     let currentPage = 0;
     let totalPages = 0;
     let selectedMuscleId = null;
+    let favoritesOnly = false;
+    let favoriteIds = new Set();
+
+    async function loadFavoriteIds() {
+        if (!isAuth()) return;
+        try {
+            const ids = await request('/favorite/exercise/ids');
+            favoriteIds = new Set(ids);
+        } catch (e) {
+            console.error('loadFavoriteIds error:', e);
+        }
+    }
+
+    async function toggleFavFilter() {
+        if (!isAuth()) return;
+        favoritesOnly = !favoritesOnly;
+        const btn = document.getElementById('favFilterBtn');
+        btn.className = favoritesOnly
+            ? 'px-4 py-2 rounded-xl font-semibold text-sm border whitespace-nowrap bg-blue-600 text-white border-blue-600'
+            : 'px-4 py-2 rounded-xl font-semibold text-sm border transition-colors whitespace-nowrap';
+        btn.textContent = favoritesOnly ? '♥ Избранное' : '♡ Избранное';
+        search(0);
+    }
+
+    async function toggleFavorite(id, btn) {
+        if (!isAuth()) return;
+        const isFilled = btn.textContent === '♥';
+        try {
+            if (isFilled) {
+                await request(`/favorite/exercise/${id}`, { method: 'DELETE' });
+                favoriteIds.delete(id);
+                if (favoritesOnly) {
+                    btn.closest('.bg-white').remove();
+                } else {
+                    btn.textContent = '♡';
+                }
+            } else {
+                await request(`/favorite/exercise/${id}`, { method: 'POST' });
+                favoriteIds.add(id);
+                btn.textContent = '♥';
+            }
+        } catch (e) {
+            console.error('toggleFavorite error:', e);
+        }
+    }
+
+    function toggleSelection(id, name, checkbox) {
+        if (checkbox.checked) {
+            selectedIds.add(id);
+            exerciseNameMap[id] = name;
+        } else {
+            selectedIds.delete(id);
+        }
+        const count = document.getElementById('selectionCount');
+        if (count) count.textContent = selectedIds.size;
+    }
+
+    function confirmSelection() {
+        const selected = Array.from(selectedIds).map(id => ({
+            id,
+            name: exerciseNameMap[id] || 'Упражнение'
+        }));
+        sessionStorage.setItem('workoutSelection', JSON.stringify(selected));
+        const returnTo = sessionStorage.getItem('workoutReturnTo') || '/workout.html';
+        sessionStorage.removeItem('workoutReturnTo');
+        window.location.href = returnTo;
+    }
+
+    function cancelSelection() {
+        sessionStorage.removeItem('workoutReturnTo');
+        window.location.href = '/workout.html';
+    }
 
     async function loadChips() {
         try {
-            const muscles = await request('/muscles/search');
+            const muscles = await request('/muscle/search');
             const container = document.getElementById('muscleChips');
             container.innerHTML = '<button onclick="setMuscle(null)" class="px-3 py-1.5 rounded-full text-xs font-bold border transition-colors whitespace-nowrap shrink-0 ' + (selectedMuscleId === null ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-500 border-gray-200 hover:border-blue-300') + '">Все</button>' +
                 muscles.map(m => `<button onclick="setMuscle(${m.id})" class="px-3 py-1.5 rounded-full text-xs font-bold border transition-colors whitespace-nowrap shrink-0 ${selectedMuscleId === m.id ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-500 border-gray-200 hover:border-blue-300'}">${m.name}</button>`).join('');
@@ -58,20 +159,30 @@
     async function search(page = 0) {
         currentPage = page;
         const q = document.getElementById('searchInput').value;
-        let endpoint = `/exercises/search?page=${page}&size=9`;
+        let endpoint = favoritesOnly ? `/favorite/exercise?page=${page}&size=9` : `/exercise/search?page=${page}&size=9`;
         if (q) endpoint += `&name=${encodeURIComponent(q)}`;
         if (selectedMuscleId) endpoint += `&muscleId=${selectedMuscleId}`;
         const data = await request(endpoint);
         totalPages = data.totalPages;
         document.getElementById('results').innerHTML = data.content.length === 0
             ? '<p class="text-gray-400 col-span-3 text-center py-8">Ничего не найдено</p>'
-            : data.content.map(ex => `
-            <div class="bg-white rounded-2xl p-5 border border-gray-100 hover:shadow-lg transition-shadow">
-                <h3 class="font-bold text-lg">${ex.exerciseName || 'Без названия'}</h3>
+            : data.content.map(ex => {
+            const exName = ex.name || 'Без названия';
+            const isFav = favoriteIds.has(ex.id);
+            return `
+            <div class="bg-white rounded-2xl p-5 border border-gray-100 hover:shadow-lg transition-shadow relative${selectMode ? ' pl-10' : ''}">
+                ${selectMode
+                    ? `<div class="absolute top-3 left-3">
+                        <input type="checkbox" ${selectedIds.has(ex.id) ? 'checked' : ''} onchange="toggleSelection(${ex.id}, '${exName.replace(/'/g, "\\'")}', this)" class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500 cursor-pointer">
+                       </div>
+                       <button onclick="event.stopPropagation(); toggleFavorite(${ex.id}, this)" class="absolute top-3 right-3 text-xl text-red-500 hover:scale-110 transition-transform">${isFav ? '♥' : '♡'}</button>`
+                    : (isAuth() ? `<button onclick="event.stopPropagation(); toggleFavorite(${ex.id}, this)" class="absolute top-3 right-3 text-xl text-red-500 hover:scale-110 transition-transform">${isFav ? '♥' : '♡'}</button>` : '')
+                }
+                <h3 class="font-bold text-lg">${exName}</h3>
                 <p class="text-sm text-gray-500 mt-2">${ex.description || 'Нет описания'}</p>
                 <div class="flex flex-wrap gap-1 mt-3">${(ex.muscles || []).map(m => `<span class="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded-full">${m.name}</span>`).join('')}</div>
             </div>
-        `).join('');
+        `}).join('');
         renderPagination();
     }
     function renderPagination() {
@@ -86,7 +197,7 @@
         el.innerHTML = html;
     }
     document.getElementById('searchInput').addEventListener('keydown', e => { if (e.key === 'Enter') search(); if (isAuth()) { renderActiveSessionBanner(); syncActiveSessions(); } });
-    loadChips(); search(); renderActiveSessionBanner(); if (isAuth()) syncActiveSessions();
+    loadChips(); search(); renderActiveSessionBanner(); if (isAuth()) { syncActiveSessions(); loadFavoriteIds().then(search); }
 </script>
 </body>
 </html>

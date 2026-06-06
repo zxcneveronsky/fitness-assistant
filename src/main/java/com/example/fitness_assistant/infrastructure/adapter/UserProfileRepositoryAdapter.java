@@ -8,8 +8,6 @@ import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaUserProfi
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaUserRepository;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +23,6 @@ public class UserProfileRepositoryAdapter implements UserProfileRepository {
     private final EntityManager entityManager;
 
     @Override
-    @Cacheable("userProfiles")
     public Optional<UserProfile> findById(Long id) {
         return jpaUserProfileRepository.findById(id)
                 .map(userProfileMapper::toDomain);
@@ -33,21 +30,19 @@ public class UserProfileRepositoryAdapter implements UserProfileRepository {
 
     @Override
     @Transactional
-    @CacheEvict(value = "userProfiles", allEntries = true)
     public UserProfile save(UserProfile userProfile) {
-        UserProfileEntity entity = userProfileMapper.toEntity(userProfile);
-        entity.setUser(jpaUserRepository.getReferenceById(userProfile.getId()));
+        UserProfileEntity userProfileEntity = userProfileMapper.toEntity(userProfile);
+        userProfileEntity.setUser(jpaUserRepository.getReferenceById(userProfile.getId()));
         if (!jpaUserProfileRepository.existsById(userProfile.getId())) {
-            entityManager.persist(entity);
-            return userProfileMapper.toDomain(entity);
+            entityManager.persist(userProfileEntity);
+            return userProfileMapper.toDomain(userProfileEntity);
         } else {
-            UserProfileEntity merged = entityManager.merge(entity);
+            UserProfileEntity merged = entityManager.merge(userProfileEntity);
             return userProfileMapper.toDomain(merged);
         }
     }
 
     @Override
-    @CacheEvict(value = "userProfiles", allEntries = true)
     public void deleteById(Long id) {
         jpaUserProfileRepository.deleteById(id);
     }

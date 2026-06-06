@@ -17,7 +17,7 @@ public class DeleteProfileUseCase {
     @Transactional
     public void deleteUserProfile(Long userId) {
         if (!userProfileRepository.existsById(userId)) {
-            throw new UserProfileNotFoundException(userId);
+            throw new UserProfileNotFoundException();
         }
         userProfileRepository.deleteById(userId);
         log.info("Профиль удалён | userId={}", userId);

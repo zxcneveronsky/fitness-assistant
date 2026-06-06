@@ -20,7 +20,7 @@ public class WorkoutWebMapper {
                 null, // Этого поля нет в запросе, поэтому проставляем null
                 null, // Этого поля нет в запросе, поэтому проставляем null
                 request.name(),
-                request.exercisesIds());
+                request.exerciseIds());
     }
     public Workout toDomain(UpdateWorkoutRequest request){
         return new Workout(
@@ -33,7 +33,7 @@ public class WorkoutWebMapper {
         return new WorkoutResponse(
                 workout.getId(),
                 workout.getName(),
-                workout.getExercisesIds()
+                workout.getExerciseIds()
         );
     }
     public WorkoutWithExerciseResponse toResponse(WorkoutWithExercise workout){

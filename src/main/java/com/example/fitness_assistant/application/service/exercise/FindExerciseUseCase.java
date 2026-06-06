@@ -19,7 +19,7 @@ public class FindExerciseUseCase {
     private final ExerciseRepository exerciseRepository;
 
     @Transactional(readOnly = true)
-    public Page<Exercise> findExercise(String name, Long muscleId, Pageable pageable) {
+    public Page<Exercise> searchExercise(String name, Long muscleId, Pageable pageable) {
         Page<Exercise> exercises = exerciseRepository.searchExercise(name, muscleId, pageable);
         log.info("Поиск упражнений завершён | name='{}' | найдено={} | страница={}/{}",
                 name,

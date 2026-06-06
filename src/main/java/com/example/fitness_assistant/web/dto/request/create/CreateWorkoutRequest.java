@@ -12,6 +12,6 @@ public record CreateWorkoutRequest(
         @Size(max = 255, message = "Название слишком длинное")
         String name,
         @NotEmpty(message = "Список упражнений не может быть пустым")
-        List<@NotNull(message = "ID упражнения не может быть пустой ссылкой") Long> exercisesIds
+        List<@NotNull(message = "ID упражнения не может быть пустой ссылкой") Long> exerciseIds
 ) {
 }

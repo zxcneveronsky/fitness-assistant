@@ -19,7 +19,7 @@ public class UpdateTargetsUseCase {
     @Transactional
     public Targets updateTargets(Long userId, Targets request) {
         Targets targets = targetsRepository.findById(userId)
-                .orElseThrow(() -> new TargetsNotFoundException(userId));
+                .orElseThrow(() -> new TargetsNotFoundException());
 
         if (request.getTargetKcal() != null || targetCalculationService.hasMacros(request) || request.getTargetHydration() != null) {
             targets.setUseAutopilot(false);

@@ -1,6 +1,10 @@
 package com.example.fitness_assistant.web.controller;
 
-import com.example.fitness_assistant.application.service.hydration.*;
+import com.example.fitness_assistant.application.service.hydration.CreateHydrationUseCase;
+import com.example.fitness_assistant.application.service.hydration.DeleteHydrationUseCase;
+import com.example.fitness_assistant.application.service.hydration.FindHydrationUseCase;
+import com.example.fitness_assistant.application.service.hydration.GetDailyHydrationUseCase;
+import com.example.fitness_assistant.application.service.hydration.UpdateHydrationUseCase;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import com.example.fitness_assistant.web.dto.request.create.CreateHydrationRequest;
 import com.example.fitness_assistant.web.dto.request.update.UpdateHydrationRequest;
@@ -45,7 +49,7 @@ public class HydrationController {
             @AuthenticationPrincipal UserDetailsAdapter adapter,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime localDateTime,
             @PageableDefault(size = 12) Pageable pageable) {
-        return findHydrationUseCase.findHydration(localDateTime, adapter.getUserId(), pageable)
+        return findHydrationUseCase.searchHydration(localDateTime, adapter.getUserId(), pageable)
                 .map(hydrationWebMapper::toResponse);
     }
 

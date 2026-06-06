@@ -16,9 +16,9 @@ public class FindProfileUseCase {
     private final UserProfileRepository userProfileRepository;
 
     @Transactional(readOnly = true)
-    public UserProfile findUserProfile(Long userId) {
+    public UserProfile findById(Long userId) {
         UserProfile profile = userProfileRepository.findById(userId)
-                .orElseThrow(() -> new UserProfileNotFoundException(userId));
+                .orElseThrow(() -> new UserProfileNotFoundException());
         log.info("Профиль найден | userId={}", userId);
         return profile;
     }

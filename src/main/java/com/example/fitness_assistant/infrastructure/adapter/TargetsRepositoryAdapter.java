@@ -8,8 +8,6 @@ import com.example.fitness_assistant.infrastructure.persistence.entity.UserProfi
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaTargetsRepository;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +22,6 @@ public class TargetsRepositoryAdapter implements TargetsRepository {
     private final EntityManager entityManager;
 
     @Override
-    @Cacheable("targets")
     public Optional<Targets> findById(Long profileId) {
         return jpaTargetsRepository.findById(profileId)
                 .map(targetsMapper::toDomain);
@@ -32,21 +29,19 @@ public class TargetsRepositoryAdapter implements TargetsRepository {
 
     @Override
     @Transactional
-    @CacheEvict(value = "targets", allEntries = true)
     public Targets save(Targets targets) {
-        TargetsEntity entity = targetsMapper.toEntity(targets);
-        entity.setProfile(entityManager.getReference(UserProfileEntity.class, targets.getProfileId()));
+        TargetsEntity targetsEntity = targetsMapper.toEntity(targets);
+        targetsEntity.setProfile(entityManager.getReference(UserProfileEntity.class, targets.getProfileId()));
         if (!jpaTargetsRepository.existsById(targets.getProfileId())) {
-            entityManager.persist(entity);
-            return targetsMapper.toDomain(entity);
+            entityManager.persist(targetsEntity);
+            return targetsMapper.toDomain(targetsEntity);
         } else {
-            TargetsEntity merged = entityManager.merge(entity);
+            TargetsEntity merged = entityManager.merge(targetsEntity);
             return targetsMapper.toDomain(merged);
         }
     }
 
     @Override
-    @CacheEvict(value = "targets", allEntries = true)
     public void deleteById(Long profileId) {
         jpaTargetsRepository.deleteById(profileId);
     }

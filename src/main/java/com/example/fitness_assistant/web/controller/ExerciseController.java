@@ -18,7 +18,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/exercises")
+@RequestMapping("/api/v1/exercise")
 @RequiredArgsConstructor
 @Validated
 public class ExerciseController {
@@ -39,7 +39,7 @@ public class ExerciseController {
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Long muscleId,
             @PageableDefault(size = 12) Pageable pageable) {
-        return findExerciseUseCase.findExercise(name, muscleId, pageable)
+        return findExerciseUseCase.searchExercise(name, muscleId, pageable)
                 .map(exerciseWebMapper::toResponse);
     }
 

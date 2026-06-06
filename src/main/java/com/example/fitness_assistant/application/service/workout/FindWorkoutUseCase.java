@@ -24,7 +24,7 @@ public class FindWorkoutUseCase {
     private final ExerciseRepository exerciseRepository;
 
     @Transactional(readOnly = true)
-    public Page<Workout> findWorkout(String name, Long userId, Pageable pageable) {
+    public Page<Workout> searchWorkout(String name, Long userId, Pageable pageable) {
         Page<Workout> workouts = workoutRepository.searchWorkout(name, userId, pageable);
         log.info("Поиск тренировок завершён | name='{}' | найдено={} | страница={}/{}",
                 name, workouts.getTotalElements(), workouts.getNumber() + 1, workouts.getTotalPages());
@@ -33,16 +33,16 @@ public class FindWorkoutUseCase {
 
     @Transactional(readOnly = true)
     public WorkoutWithExercise findById(Long id, Long userId){
-        Workout w = workoutRepository.findById(id, userId)
+        Workout workout = workoutRepository.findById(id, userId)
                 .orElseThrow(() -> new WorkoutNotFoundException(id));
-        List<Long> ids = w.getExercisesIds();
-        WorkoutWithExercise workout = new WorkoutWithExercise(
-                w.getId(),
-                w.getUserId(),
-                w.getName(),
+        List<Long> ids = workout.getExerciseIds();
+        WorkoutWithExercise workoutWithExercise = new WorkoutWithExercise(
+                workout.getId(),
+                workout.getUserId(),
+                workout.getName(),
                 ids != null ? exerciseRepository.findAllByIdIn(ids) : List.of()
         );
         log.info("Тренировка найдена | id={}", id);
-        return workout;
+        return workoutWithExercise;
     }
 }

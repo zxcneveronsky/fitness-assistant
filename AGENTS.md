@@ -31,9 +31,46 @@ web/mapper/         → Domain ↔ DTO
 
 ---
 
-## ✅ Готово
+## 🔒 Консистенция кода (обязательно)
 
-- [x] **⏱ Таймер отдыха между подходами** — `session.html`, фронт + Web Audio API, чисто UI
+### URL naming
+- Все URL в единственном числе: `/exercise`, `/muscle`, `/food`, `/meal`, `/workout`, `/workout/session`, `/workout/session/set`
+
+### DTO поля
+- Название: `name` (не `exerciseName`, `foodName`, `workoutName`)
+- Списки ID: `exerciseIds`, `muscleIds`, `foodIds` (не `exercisesIds`, `musclesId`, `foodsIds`)
+- `userId` в response DTO не возвращаем
+
+### Use case naming
+- `search{Entity}(...nullable params...)` — поиск с фильтрами, возвращает `Page<Entity>`
+- `findById(...)` — точный поиск одной записи
+- `findAll(...)` — все записи пользователя
+- `get{Data}(...)` — агрегаты/расчёты (например `getDailyNutrition`, `getDailyHydration`)
+- Класс: `Find{Entity}UseCase` — может содержать `findById` + `search{Entity}`
+
+### @Transactional
+- Только в use case'ах (`application/service/`)
+- В адаптерах, мапперах, контроллерах — НЕТ
+
+### Cache
+- Кэшируем только reference data: Exercise, Food, Muscle
+- UserProfile, Targets — НЕ кэшируем (часто меняются, per-user)
+- Cache names в `application.yml`: `spring.cache.cache-names: exercise, food, muscle`
+- `@EnableCaching` на `Application.java`. `CacheManager` бин не создаём
+
+### Переменные (Java)
+- `Page<Entity> result` → `Page<Entity> {entity}s` (множественное число)
+- `Entity saved = repo.save(...)` → `Entity saved{Entity} = repo.save(...)`
+- `Entity entity = mapper.toEntity(domain)` → `Entity {name}Entity = mapper.toEntity(domain)` (в адаптерах)
+- `Entity merged = em.merge(entity)` → `Entity merged{Name}Entity = em.merge({name}Entity)`
+- Без однобуквенных (`w`, `e`, `s`, `f`)
+- `findById` → переменная `{entity}` (без `saved`/`updated`)
+
+### Exception-конструкторы
+- UserProfileNotFoundException, TargetsNotFoundException — без id (их id = userId)
+
+### Исключения
+- `CreateUserProfileUseCase: Targets targets = new Targets()` — новый объект, не из БД
 
 ---
 
@@ -64,13 +101,13 @@ CREATE TABLE favorite_foods (
 - Ports: `FavoriteExerciseRepository`, `FavoriteFoodRepository`
 - Adapters + Mappers
 - Toggle: `POST /favorite/exercise/{id}` / `POST /favorite/food/{id}` (add if not exists, remove if exists)
-- List: `GET /favorite/exercises`, `GET /favorite/foods`
+- List: `GET /favorite/exercise`, `GET /favorite/food`
 - Эндпоинты без body, только path variable (toggle)
 
 **Фронт:**
 - Heart icon ♡/♥ на карточках в `explore/exercises.html` и `explore/food.html`
 - Фильтр «⭐ Избранное» (галочка/кнопка) — показывает только избранное
-- При загрузке страницы: `GET /favorite/exercises` → маппинг Set<Long>, подсветка сердечек
+- При загрузке страницы: `GET /favorite/exercise` → маппинг `Set<Long>`, подсветка сердечек
 
 ---
 

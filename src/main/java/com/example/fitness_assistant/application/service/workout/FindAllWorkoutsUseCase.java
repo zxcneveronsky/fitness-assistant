@@ -12,11 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class GetAllWorkoutsUseCase {
+public class FindAllWorkoutsUseCase {
     private final WorkoutRepository workoutRepository;
 
     @Transactional(readOnly = true)
-    public Page<Workout> getAllWorkouts(Long userId, Pageable pageable) {
+    public Page<Workout> findAll(Long userId, Pageable pageable) {
         Page<Workout> workouts = workoutRepository.findAllByUserId(userId, pageable);
         log.info("Поиск тренировок завершён | найдено={} | страница={}/{}",
                 workouts.getTotalElements(), workouts.getNumber() + 1, workouts.getTotalPages());

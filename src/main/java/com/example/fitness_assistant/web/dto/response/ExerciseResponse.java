@@ -4,7 +4,7 @@ import java.util.List;
 
 public record ExerciseResponse(
         Long id,
-        String exerciseName,
+        String name,
         String description,
         List<ExerciseMuscleResponse> muscles
 ) {

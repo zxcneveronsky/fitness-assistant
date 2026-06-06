@@ -118,7 +118,7 @@
         try {
             const w = await request(`/workout/${wid}`);
             if (!w) return;
-            workoutName = w.name || w.exerciseName;
+            workoutName = w.name;
             exercises = w.exercises || [];
             document.getElementById('sessionTitle').textContent = `🚀 ${workoutName}`;
 
@@ -146,7 +146,7 @@
 
             const w = await request(`/workout/${session.workoutId}`);
             if (!w) return;
-            workoutName = w.name || w.exerciseName;
+            workoutName = w.name;
             exercises = w.exercises || [];
             document.getElementById('sessionTitle').textContent = `🚀 ${workoutName}`;
 
@@ -167,7 +167,7 @@
         }
         container.innerHTML = exercises.map((ex, idx) => `
             <div class="bg-white rounded-2xl p-5 border border-gray-100">
-                <h3 class="font-bold text-lg">${idx + 1}. ${ex.name || ex.exerciseName}</h3>
+                <h3 class="font-bold text-lg">${idx + 1}. ${ex.name}</h3>
                 <div class="flex gap-2 mt-3">
                     <input id="weight_${ex.id}" type="number" step="0.5" placeholder="Вес" class="w-20 sm:w-28 px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-200 rounded-lg sm:rounded-xl text-sm">
                     <input id="reps_${ex.id}" type="number" placeholder="Повторы" class="w-16 sm:w-24 px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-200 rounded-lg sm:rounded-xl text-sm">

@@ -31,7 +31,7 @@ public class UserProfileController {
 
     @GetMapping
     public UserProfileResponse getProfile(@AuthenticationPrincipal UserDetailsAdapter adapter) {
-        return userProfileWebMapper.toResponse(findProfileUseCase.findUserProfile(adapter.getUserId()));
+        return userProfileWebMapper.toResponse(findProfileUseCase.findById(adapter.getUserId()));
     }
 
     @PostMapping

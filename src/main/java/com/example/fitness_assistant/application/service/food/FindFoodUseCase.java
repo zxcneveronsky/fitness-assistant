@@ -18,14 +18,14 @@ public class FindFoodUseCase {
     private final FoodRepository foodRepository;
 
     @Transactional(readOnly = true)
-    public Page<Food> findFood(String name, Pageable pageable) {
-        Page<Food> foodPage = foodRepository.searchFood(name, pageable);
+    public Page<Food> searchFood(String name, Pageable pageable) {
+        Page<Food> foods = foodRepository.searchFood(name, pageable);
         log.info("Поиск продуктов завершён | name='{}' | найдено={} | страница={}/{}",
                 name,
-                foodPage.getTotalElements(),
-                foodPage.getNumber() + 1,
-                foodPage.getTotalPages());
-        return foodPage;
+                foods.getTotalElements(),
+                foods.getNumber() + 1,
+                foods.getTotalPages());
+        return foods;
     }
     @Transactional(readOnly = true)
     public Food findById(Long id) {

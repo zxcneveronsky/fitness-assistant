@@ -1,6 +1,10 @@
 package com.example.fitness_assistant.web.controller;
 
-import com.example.fitness_assistant.application.service.workout.*;
+import com.example.fitness_assistant.application.service.workout.CreateWorkoutUseCase;
+import com.example.fitness_assistant.application.service.workout.DeleteWorkoutUseCase;
+import com.example.fitness_assistant.application.service.workout.FindWorkoutUseCase;
+import com.example.fitness_assistant.application.service.workout.FindAllWorkoutsUseCase;
+import com.example.fitness_assistant.application.service.workout.UpdateWorkoutUseCase;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import com.example.fitness_assistant.web.dto.request.create.CreateWorkoutRequest;
 import com.example.fitness_assistant.web.dto.request.update.UpdateWorkoutRequest;
@@ -26,13 +30,13 @@ public class WorkoutController {
     private final CreateWorkoutUseCase createWorkoutUseCase;
     private final DeleteWorkoutUseCase deleteWorkoutUseCase;
     private final FindWorkoutUseCase findWorkoutUseCase;
-    private final GetAllWorkoutsUseCase getAllWorkoutsUseCase;
+    private final FindAllWorkoutsUseCase findAllWorkoutsUseCase;
     private final UpdateWorkoutUseCase updateWorkoutUseCase;
     private final WorkoutWebMapper workoutWebMapper;
 
     @GetMapping
     public Page<WorkoutResponse> getAllWorkouts(@AuthenticationPrincipal UserDetailsAdapter adapter, @PageableDefault(size = 12) Pageable pageable) {
-        return getAllWorkoutsUseCase.getAllWorkouts(adapter.getUserId(), pageable)
+        return findAllWorkoutsUseCase.findAll(adapter.getUserId(), pageable)
                 .map(workoutWebMapper::toResponse);
     }
 
@@ -45,7 +49,7 @@ public class WorkoutController {
     public Page<WorkoutResponse> searchWorkout(@AuthenticationPrincipal UserDetailsAdapter adapter,
                                                 @RequestParam(required = false) String name,
                                                 @PageableDefault(size = 12) Pageable pageable) {
-        return findWorkoutUseCase.findWorkout(name, adapter.getUserId(), pageable)
+        return findWorkoutUseCase.searchWorkout(name, adapter.getUserId(), pageable)
                 .map(workoutWebMapper::toResponse);
     }
 

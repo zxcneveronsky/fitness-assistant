@@ -30,7 +30,7 @@ public class CreateWorkoutSessionUseCase {
         if (!workoutRepository.existsById(workoutId, userId)) {
             throw new WorkoutNotFoundException(workoutId);
         }
-        WorkoutSession session = workoutSessionRepository.save(
+        WorkoutSession savedSession = workoutSessionRepository.save(
                 new WorkoutSession(
                     null,
                     workoutId,
@@ -39,7 +39,7 @@ public class CreateWorkoutSessionUseCase {
                     null
                 )
         );
-        log.info("Сессия тренировки создана | id={}", session.getId());
-        return session;
+        log.info("Сессия тренировки создана | id={}", savedSession.getId());
+        return savedSession;
     }
 }

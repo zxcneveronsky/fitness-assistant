@@ -43,11 +43,11 @@ public class HydrationRepositoryAdapter implements HydrationRepository {
     }
 
     @Override
-    public DailyHydration getDailyWater(LocalDateTime localDateTime, Long userId) {
+    public DailyHydration getDailyHydration(LocalDateTime localDateTime, Long userId) {
         LocalDate date = localDateTime != null ? localDateTime.toLocalDate() : LocalDate.now();
         LocalDateTime startOfDay = date.atStartOfDay();
         LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
-        return dailyHydrationMapper.toDomain(jpaHydrationRepository.getDailyWater(userId, startOfDay, endOfDay));
+        return dailyHydrationMapper.toDomain(jpaHydrationRepository.getDailyHydration(userId, startOfDay, endOfDay));
     }
 
 

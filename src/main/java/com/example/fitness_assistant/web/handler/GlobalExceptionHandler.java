@@ -32,14 +32,20 @@ public class GlobalExceptionHandler {
             SetNotFoundException.class,
             TargetsNotFoundException.class,
             MuscleNotFoundException.class,
+            FavoriteExerciseNotFoundException.class,
+            FavoriteFoodNotFoundException.class,
             EntityNotFoundException.class
     })
     public ResponseEntity<Object> handleNotFoundExceptions(RuntimeException ex) {
         return buildResponse(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(UserAlreadyExistsException.class)
-    public ResponseEntity<Object> handleUserAlreadyExists(UserAlreadyExistsException ex) {
+    @ExceptionHandler({
+            UserAlreadyExistsException.class,
+            FavoriteExerciseAlreadyExistsException.class,
+            FavoriteFoodAlreadyExistsException.class
+    })
+    public ResponseEntity<Object> handleAlreadyExists(RuntimeException ex) {
         return buildResponse(ex.getMessage(), HttpStatus.CONFLICT);
     }
 

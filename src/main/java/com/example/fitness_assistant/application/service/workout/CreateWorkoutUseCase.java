@@ -27,7 +27,7 @@ public class CreateWorkoutUseCase {
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException(userId);
         }
-        List<Long> ids = workout.getExercisesIds();
+        List<Long> ids = workout.getExerciseIds();
         if (!exerciseRepository.existsAllByIdIn(ids)) {
             throw new ExerciseNotFoundException(ids.getFirst());
         }

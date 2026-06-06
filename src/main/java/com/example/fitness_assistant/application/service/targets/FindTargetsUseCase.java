@@ -16,9 +16,9 @@ public class FindTargetsUseCase {
     private final TargetsRepository targetsRepository;
 
     @Transactional(readOnly = true)
-    public Targets findTargets(Long userId) {
+    public Targets findById(Long userId) {
         Targets targets = targetsRepository.findById(userId)
-                .orElseThrow(() -> new TargetsNotFoundException(userId));
+                .orElseThrow(() -> new TargetsNotFoundException());
         log.info("Цели найдены | userId={}", userId);
         return targets;
     }

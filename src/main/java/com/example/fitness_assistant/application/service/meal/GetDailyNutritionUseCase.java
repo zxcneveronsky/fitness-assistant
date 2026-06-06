@@ -16,8 +16,8 @@ public class GetDailyNutritionUseCase {
     private final MealRepository mealRepository;
     @Transactional(readOnly = true)
     public DailyNutrition getDailyNutrition(LocalDateTime localDateTime, Long userId){
-        DailyNutrition nutrition = mealRepository.getDailyNutrition(localDateTime,userId);
+        DailyNutrition dailyNutrition = mealRepository.getDailyNutrition(localDateTime,userId);
         log.info("Дневная норма питания получена | userId={}", userId);
-        return nutrition;
+        return dailyNutrition;
     }
 }

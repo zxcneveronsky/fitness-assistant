@@ -81,7 +81,7 @@
         container.innerHTML = workoutExercises.map(ex => `
             <div class="flex items-center justify-between bg-gray-50 rounded-xl px-4 py-3">
                 <div>
-                    <span class="font-semibold">${ex.name || ex.exerciseName}</span>
+                    <span class="font-semibold">${ex.name}</span>
                     <span class="text-gray-400 text-sm ml-2">${(ex.muscles || []).map(m => m.name).join(', ')}</span>
                 </div>
                 <button onclick="removeExercise(${ex.id})" class="text-red-400 hover:text-red-600 text-sm font-bold">Убрать</button>
@@ -91,14 +91,14 @@
 
     async function searchExercises() {
         const q = document.getElementById('searchInput').value;
-        const data = await request(`/exercises/search?name=${encodeURIComponent(q)}&size=10`);
+        const data = await request(`/exercise/search?name=${encodeURIComponent(q)}&size=10`);
         const container = document.getElementById('searchResults');
         container.innerHTML = data.content.map(ex => {
             const alreadyAdded = workoutExercises.some(e => e.id === ex.id);
             if (alreadyAdded) return '';
             return `
                 <div class="flex items-center justify-between bg-white border rounded-xl px-4 py-2">
-                    <span>${ex.name || ex.exerciseName}</span>
+                    <span>${ex.name}</span>
                     <button onclick="addExercise(${ex.id})" class="bg-blue-600 text-white px-3 py-1 rounded-lg text-sm hover:bg-blue-700">+</button>
                 </div>
             `;

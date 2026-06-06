@@ -39,7 +39,7 @@ public class TargetsController {
 
     @GetMapping("/targets")
     public TargetsResponse getTarget(@AuthenticationPrincipal UserDetailsAdapter adapter) {
-        return targetsWebMapper.toTargetsResponse(findTargetsUseCase.findTargets(adapter.getUserId()));
+        return targetsWebMapper.toTargetsResponse(findTargetsUseCase.findById(adapter.getUserId()));
     }
 
     @PatchMapping("/targets/status")

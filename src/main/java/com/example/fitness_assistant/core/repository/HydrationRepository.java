@@ -14,5 +14,5 @@ public interface HydrationRepository {
     Hydration save(Hydration hydration);
     void deleteById(Long id, Long userId);
     boolean existsById(Long id, Long userId);
-    DailyHydration getDailyWater(LocalDateTime localDateTime, Long userId);
+    DailyHydration getDailyHydration(LocalDateTime localDateTime, Long userId);
 }

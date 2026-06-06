@@ -26,12 +26,12 @@ public class UpdateWorkoutUseCase {
         Workout updatedWorkout = workoutRepository.findById(workoutId, userId)
                 .map(existingWorkout -> {
                     existingWorkout.setName(workoutUpdate.getName() != null ? workoutUpdate.getName() : existingWorkout.getName());
-                    if (workoutUpdate.getExercisesIds() != null) {
-                        List<Long> ids = workoutUpdate.getExercisesIds();
+                    if (workoutUpdate.getExerciseIds() != null) {
+                        List<Long> ids = workoutUpdate.getExerciseIds();
                         if (!exerciseRepository.existsAllByIdIn(ids)) {
                             throw new ExerciseNotFoundException(ids.get(0));
                         }
-                        existingWorkout.setExercisesIds(ids);
+                        existingWorkout.setExerciseIds(ids);
                     }
                     return workoutRepository.save(existingWorkout);
                 })

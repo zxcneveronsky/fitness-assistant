@@ -55,7 +55,7 @@
         if (workoutCache[workoutId]) return workoutCache[workoutId];
         try {
             const w = await request('/workout/' + workoutId);
-            const n = w.name || w.exerciseName || 'Тренировка';
+            const n = w.name || 'Тренировка';
             workoutCache[workoutId] = n;
             return n;
         } catch (e) { return 'Тренировка'; }

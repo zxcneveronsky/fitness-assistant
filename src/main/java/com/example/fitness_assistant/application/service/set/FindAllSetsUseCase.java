@@ -16,13 +16,13 @@ import org.springframework.data.domain.Pageable;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class GetAllSetsUseCase {
+public class FindAllSetsUseCase {
     private final SetRepository setRepository;
     private final WorkoutSessionRepository workoutSessionRepository;
     private final ExerciseRepository exerciseRepository;
 
     @Transactional(readOnly = true)
-    public Page<Set> getAllSets(Long sessionId, Long exerciseId, Long userId, Pageable pageable) {
+    public Page<Set> findAll(Long sessionId, Long exerciseId, Long userId, Pageable pageable) {
         if (!workoutSessionRepository.existsById(sessionId, userId)) {
             throw new WorkoutSessionNotFoundException(sessionId);
         }

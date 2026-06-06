@@ -32,7 +32,7 @@ public class UpdateUserProfileUseCase {
                     existingProfile.setGender(profileUpdate.getGender() != null ? profileUpdate.getGender() : existingProfile.getGender());
                     return userProfileRepository.save(existingProfile);
                 })
-                .orElseThrow(() -> new UserProfileNotFoundException(userId));
+                .orElseThrow(() -> new UserProfileNotFoundException());
 
         targetsRepository.findById(userId).ifPresent(targets -> {
             if (Boolean.TRUE.equals(targets.getUseAutopilot())) {
@@ -48,17 +48,17 @@ public class UpdateUserProfileUseCase {
     @Transactional
     public Targets updateAutopilotStatus(Long userId, boolean enabled) {
         UserProfile profile = userProfileRepository.findById(userId)
-                .orElseThrow(() -> new UserProfileNotFoundException(userId));
+                .orElseThrow(() -> new UserProfileNotFoundException());
 
         Targets targets = targetsRepository.findById(userId)
-                .orElseThrow(() -> new TargetsNotFoundException(userId));
+                .orElseThrow(() -> new TargetsNotFoundException());
         targets.setUseAutopilot(enabled);
         if (enabled) {
             targetCalculationService.applyAutoTargets(targets, profile);
         }
-        Targets saved = targetsRepository.save(targets);
+        Targets savedTargets = targetsRepository.save(targets);
 
         log.info("Статус автопилота обновлён | userId={} | enabled={}", userId, enabled);
-        return saved;
+        return savedTargets;
     }
 }

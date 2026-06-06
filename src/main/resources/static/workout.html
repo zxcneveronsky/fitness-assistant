@@ -44,17 +44,15 @@
         <h2 class="font-bold text-lg mb-4">Создать тренировку</h2>
         <div class="mb-4">
             <label class="text-sm text-gray-500 font-medium">Название</label>
-            <input id="workoutName" placeholder="Например: Грудень день" class="w-full mt-1 px-3 sm:px-4 py-2 sm:py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-sm">
+            <input id="workoutName" placeholder="Например: День груди" class="w-full mt-1 px-3 sm:px-4 py-2 sm:py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-sm">
         </div>
         <div class="mb-4">
-            <label class="text-sm text-gray-500 font-medium">Добавить упражнения</label>
-            <div class="flex gap-2 mt-1">
-                <input id="searchInput" placeholder="Поиск упражнений..." class="flex-1 px-3 sm:px-4 py-1.5 sm:py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-sm">
-                <button onclick="searchExercises()" class="bg-gray-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl hover:bg-gray-700 text-sm">Найти</button>
-            </div>
-            <div id="searchResults" class="mt-2 max-h-96 overflow-y-auto space-y-3"></div>
+            <label class="text-sm text-gray-500 font-medium">Упражнения</label>
+            <button onclick="openExerciseSelector()" id="selectExerciseBtn" class="w-full mt-1 border-2 border-dashed border-gray-300 rounded-xl py-8 text-gray-400 hover:border-blue-400 hover:text-blue-600 hover:bg-blue-50 transition-colors font-medium text-center">
+                + Выбрать упражнения
+            </button>
+            <div id="selectedExercises" class="mt-3 space-y-1"></div>
         </div>
-        <div id="selectedExercises" class="mb-4 space-y-1"></div>
         <p id="workoutError" class="text-red-500 text-sm mb-2 hidden"></p>
         <button onclick="createWorkout()" class="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-blue-700 w-full">Создать тренировку</button>
     </div>
@@ -68,43 +66,23 @@
 
     let selectedExercises = [];
 
-    async function searchExercises() {
-        const q = document.getElementById('searchInput').value;
-        const data = await request(`/exercises/search?name=${encodeURIComponent(q)}&size=20`);
-        const container = document.getElementById('searchResults');
-        container.innerHTML = data.content.map(ex => {
-            const checked = selectedExercises.some(e => e.id === ex.id);
-            const name = (ex.name || ex.exerciseName || '').replace(/'/g, "\\'");
-            const muscles = (ex.muscles || []).map(m => `<span class="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded-full">${m.name}</span>`).join('');
-            return `
-                <div class="bg-white rounded-2xl p-5 border border-gray-100 hover:shadow-lg transition-shadow">
-                    <div class="flex items-start gap-3">
-                        <input type="checkbox" id="ex_${ex.id}" ${checked ? 'checked' : ''} onchange="toggleExercise(${ex.id}, '${name}')" class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500 cursor-pointer mt-1">
-                        <div class="flex-1">
-                            <label for="ex_${ex.id}" class="font-bold text-lg cursor-pointer select-none">${ex.name || ex.exerciseName}</label>
-                            <p class="text-sm text-gray-500 mt-1">${ex.description || 'Нет описания'}</p>
-                            ${muscles ? `<div class="flex flex-wrap gap-1 mt-2">${muscles}</div>` : ''}
-                        </div>
-                    </div>
-                </div>
-            `;
-        }).join('');
-    }
-
-    function toggleExercise(id, name) {
-        const idx = selectedExercises.findIndex(e => e.id === id);
-        if (idx === -1) {
-            selectedExercises.push({ id, name });
-        } else {
-            selectedExercises.splice(idx, 1);
+    (function() {
+        const stored = sessionStorage.getItem('workoutSelection');
+        if (stored) {
+            try { selectedExercises = JSON.parse(stored); } catch(e) {}
+            sessionStorage.removeItem('workoutSelection');
         }
-        renderSelected();
+        sessionStorage.removeItem('workoutReturnTo');
+    })();
+
+    function openExerciseSelector() {
+        sessionStorage.setItem('workoutSelection', JSON.stringify(selectedExercises));
+        sessionStorage.setItem('workoutReturnTo', window.location.pathname);
+        window.location.href = '/explore/exercises.html?mode=select';
     }
 
     function removeSelected(id) {
         selectedExercises = selectedExercises.filter(e => e.id !== id);
-        const checkbox = document.getElementById(`ex_${id}`);
-        if (checkbox) checkbox.checked = false;
         renderSelected();
     }
 
@@ -126,7 +104,7 @@
         try {
             const w = await request('/workout', {
                 method: 'POST',
-                body: JSON.stringify({ name, exercisesIds: selectedExercises.map(e => e.id) })
+                body: JSON.stringify({ name, exerciseIds: selectedExercises.map(e => e.id) })
             });
             document.getElementById('workoutName').value = '';
             selectedExercises = [];

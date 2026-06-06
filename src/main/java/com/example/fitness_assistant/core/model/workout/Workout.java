@@ -15,5 +15,5 @@ public class Workout {
     private Long id;
     private Long userId;
     private String name;
-    private List<Long> exercisesIds;
+    private List<Long> exerciseIds;
 }

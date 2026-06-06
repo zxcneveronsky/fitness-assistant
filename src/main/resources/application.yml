@@ -28,7 +28,7 @@ spring:
 
   cache:
     type: caffeine
-    cache-names: exercises, food, muscles, userProfiles, targets
+    cache-names: exercise, food, muscle
     caffeine:
       spec: maximumSize=500,expireAfterAccess=1h
 

@@ -32,7 +32,7 @@ public interface JpaHydrationRepository extends JpaRepository<HydrationEntity, L
             "WHERE h.user.id = :userId " +
             "AND h.consumedAt >= :startOfDay " +
             "AND h.consumedAt < :endOfDay")
-    DailyHydrationProjection getDailyWater(@Param("userId") Long userId,
+    DailyHydrationProjection getDailyHydration(@Param("userId") Long userId,
                                            @Param("startOfDay") LocalDateTime startOfDay,
                                            @Param("endOfDay") LocalDateTime endOfDay);
 }

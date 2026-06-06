@@ -10,7 +10,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,21 +22,18 @@ public class ExerciseRepositoryAdapter implements ExerciseRepository {
     private final ExerciseMapper exerciseMapper;
 
     @Override
-    @Transactional(readOnly = true)
-    @Cacheable("exercises")
+    @Cacheable("exercise")
     public Optional<Exercise> findById(Long id) {
         return jpaExerciseRepository.findById(id)
                 .map(exerciseMapper::toDomain);
     }
     @Override
-    @Transactional(readOnly = true)
-    @Cacheable("exercises")
+    @Cacheable("exercise")
     public List<Exercise> findAllByIdIn(List<Long> ids) {
         return jpaExerciseRepository.findAllByIdIn(ids).stream().map(exerciseMapper::toDomain).toList();
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Page<Exercise> searchExercise(String name, Long muscleId, Pageable pageable) {
         return jpaExerciseRepository.searchExercise(name, muscleId, pageable)
                 .map(exerciseMapper::toDomain);
@@ -50,13 +46,13 @@ public class ExerciseRepositoryAdapter implements ExerciseRepository {
     }
 
     @Override
-    @CacheEvict(value = "exercises", allEntries = true)
+    @CacheEvict(value = "exercise", allEntries = true)
     public Exercise save(Exercise exercise) {
         return exerciseMapper.toDomain(jpaExerciseRepository.save(exerciseMapper.toEntity(exercise)));
     }
 
     @Override
-    @CacheEvict(value = "exercises", allEntries = true)
+    @CacheEvict(value = "exercise", allEntries = true)
     public void deleteById(Long id) {
         jpaExerciseRepository.deleteById(id);
     }

@@ -10,11 +10,11 @@ public record UpdateExerciseRequest(
         @NotNull(message = "ID упражнения не может быть пустым")
         Long id,
         @Size(max = 255, message = "Название слишком длинное")
-        String exerciseName,
+        String name,
         @Size(max = 1000, message = "Описание слишком длинное")
         String description,
         @Valid
-        List<UpdateMuscleRequest> musclesId
+        List<UpdateMuscleRequest> muscleIds
 ) {
     public record UpdateMuscleRequest(
             @NotNull(message = "ID мышцы не может быть пустым")

@@ -37,10 +37,10 @@ public class WorkoutSessionRepositoryAdapter implements WorkoutSessionRepository
 
     @Override
     public WorkoutSession save(WorkoutSession session) {
-        WorkoutSessionEntity entity = workoutSessionMapper.toEntity(session);
-        entity.setWorkout(jpaWorkoutRepository.getReferenceById(session.getWorkoutId()));
-        entity.setUser(jpaUserRepository.getReferenceById(session.getUserId()));
-        return workoutSessionMapper.toDomain(jpaWorkoutSessionRepository.save(entity));
+        WorkoutSessionEntity workoutSessionEntity = workoutSessionMapper.toEntity(session);
+        workoutSessionEntity.setWorkout(jpaWorkoutRepository.getReferenceById(session.getWorkoutId()));
+        workoutSessionEntity.setUser(jpaUserRepository.getReferenceById(session.getUserId()));
+        return workoutSessionMapper.toDomain(jpaWorkoutSessionRepository.save(workoutSessionEntity));
     }
 
     @Override

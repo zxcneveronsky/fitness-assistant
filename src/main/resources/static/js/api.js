@@ -122,7 +122,7 @@ async function getWorkoutNameById(id) {
     if (workoutNameCache[id]) return workoutNameCache[id];
     try {
         const w = await request('/workout/' + id);
-        const n = w.name || w.exerciseName || null;
+        const n = w.name || null;
         if (n) workoutNameCache[id] = n;
         return n;
     } catch (e) { console.error('getWorkoutNameById error:', e); return null; }

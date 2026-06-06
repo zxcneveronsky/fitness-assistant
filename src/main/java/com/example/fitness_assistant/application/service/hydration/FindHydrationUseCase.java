@@ -20,7 +20,7 @@ public class FindHydrationUseCase {
     private final HydrationRepository hydrationRepository;
 
     @Transactional(readOnly = true)
-    public Page<Hydration> findHydration(LocalDateTime localDateTime, Long userId, Pageable pageable) {
+    public Page<Hydration> searchHydration(LocalDateTime localDateTime, Long userId, Pageable pageable) {
         Page<Hydration> hydrations = hydrationRepository.searchHydration(localDateTime, userId, pageable);
         log.info("Поиск гидратации завершён | userId={} | найдено={} | страница={}/{}",
                 userId, hydrations.getTotalElements(), hydrations.getNumber() + 1, hydrations.getTotalPages());

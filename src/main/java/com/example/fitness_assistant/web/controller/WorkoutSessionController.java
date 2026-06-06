@@ -1,6 +1,10 @@
 package com.example.fitness_assistant.web.controller;
 
-import com.example.fitness_assistant.application.service.workoutsession.*;
+import com.example.fitness_assistant.application.service.workoutsession.CreateWorkoutSessionUseCase;
+import com.example.fitness_assistant.application.service.workoutsession.DeleteWorkoutSessionUseCase;
+import com.example.fitness_assistant.application.service.workoutsession.FindWorkoutSessionUseCase;
+import com.example.fitness_assistant.application.service.workoutsession.FindAllWorkoutSessionsUseCase;
+import com.example.fitness_assistant.application.service.workoutsession.UpdateWorkoutSessionUseCase;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import com.example.fitness_assistant.web.dto.request.create.CreateWorkoutSessionRequest;
 import com.example.fitness_assistant.web.dto.request.update.UpdateWorkoutSessionRequest;
@@ -24,7 +28,7 @@ public class WorkoutSessionController {
 
     private final CreateWorkoutSessionUseCase createWorkoutSessionUseCase;
     private final FindWorkoutSessionUseCase findWorkoutSessionUseCase;
-    private final GetAllWorkoutSessionsUseCase getAllWorkoutSessionsUseCase;
+    private final FindAllWorkoutSessionsUseCase findAllWorkoutSessionsUseCase;
     private final UpdateWorkoutSessionUseCase updateWorkoutSessionUseCase;
     private final DeleteWorkoutSessionUseCase deleteWorkoutSessionUseCase;
     private final WorkoutSessionWebMapper workoutSessionWebMapper;
@@ -42,7 +46,7 @@ public class WorkoutSessionController {
     public Page<WorkoutSessionResponse> getAllWorkoutSession(
             @AuthenticationPrincipal UserDetailsAdapter adapter,
             @PageableDefault(size = 12) Pageable pageable) {
-        return getAllWorkoutSessionsUseCase.getAllSessions(adapter.getUserId(), pageable)
+        return findAllWorkoutSessionsUseCase.findAll(adapter.getUserId(), pageable)
                 .map(workoutSessionWebMapper::toResponse);
     }
 
