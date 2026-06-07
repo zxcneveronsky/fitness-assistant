@@ -3,8 +3,11 @@ package com.example.fitness_assistant.application.service.profile;
 import com.example.fitness_assistant.application.service.targets.TargetCalculationService;
 import com.example.fitness_assistant.core.exception.TargetsNotFoundException;
 import com.example.fitness_assistant.core.exception.UserProfileNotFoundException;
+import com.example.fitness_assistant.core.model.BodyWeight;
 import com.example.fitness_assistant.core.model.Targets;
 import com.example.fitness_assistant.core.model.UserProfile;
+import java.time.LocalDate;
+import com.example.fitness_assistant.core.repository.BodyWeightRepository;
 import com.example.fitness_assistant.core.repository.TargetsRepository;
 import com.example.fitness_assistant.core.repository.UserProfileRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +23,7 @@ public class UpdateUserProfileUseCase {
     private final UserProfileRepository userProfileRepository;
     private final TargetsRepository targetsRepository;
     private final TargetCalculationService targetCalculationService;
+    private final BodyWeightRepository bodyWeightRepository;
 
     @Transactional
     public UserProfile updateUserProfile(Long userId, UserProfile profileUpdate) {
@@ -40,6 +44,10 @@ public class UpdateUserProfileUseCase {
                 targetsRepository.save(targets);
             }
         });
+
+        if (profileUpdate.getWeight() != null) {
+            bodyWeightRepository.save(new BodyWeight(null, userId, profileUpdate.getWeight(), LocalDate.now()));
+        }
 
         log.info("Профиль обновлён | userId={}", updatedProfile.getId());
         return updatedProfile;

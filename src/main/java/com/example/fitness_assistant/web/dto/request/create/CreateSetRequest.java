@@ -11,6 +11,7 @@ public record CreateSetRequest (
     Long exerciseId,
     @NotNull(message = "Вес не может быть пустым")
     @PositiveOrZero(message = "Вес не может быть отрицательным")
+    @Max(value = 10000, message = "Вес не может быть больше 10000 кг")
     Double weight,
     @NotNull(message = "Повторения не могут быть пустыми")
     @Min(value = 1, message = "Повторения должны быть не менее 1")

@@ -5,10 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Профиль — Fitness Assistant</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         .dash-card { transition: all 0.5s cubic-bezier(0.15, 0.83, 0.66, 1); border-radius: 2.2rem; border: 1px solid #f2f2f7; background: #ffffff; }
         .dash-card:hover { transform: translateY(-4px); box-shadow: 0 20px 50px rgba(0,0,0,0.05); }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(4px); z-index: 100; display: none; align-items: center; justify-content: center; padding: 1rem; }
+        .modal-overlay.open { display: flex; }
+        .modal-box { border-radius: 2rem; background: #fff; max-width: 400px; width: 100%; padding: 2rem; box-shadow: 0 40px 80px rgba(0,0,0,0.15); }
     </style>
 </head>
 <body class="font-['Inter'] bg-gray-50 min-h-screen">
@@ -143,6 +147,63 @@
         </div>
 
     </div>
+
+    <div class="mt-8 dash-card p-6 md:p-8">
+        <div class="flex items-center gap-4 mb-6">
+            <div class="w-14 h-14 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-2xl font-black">⚖️</div>
+            <div class="flex-1">
+                <h2 class="font-bold text-xl">История веса</h2>
+                <p class="text-xs text-gray-400">Динамика изменений</p>
+            </div>
+            <button onclick="openWeightModal()" class="text-xs font-black bg-purple-50 text-purple-600 px-4 py-2.5 rounded-xl hover:bg-purple-100 transition uppercase tracking-widest">➕ Записать</button>
+        </div>
+
+        <div class="flex flex-wrap gap-2 mb-6">
+            <button onclick="setWeightRange(7, this)" class="weight-range-btn text-xs font-bold px-4 py-2 rounded-xl bg-blue-600 text-white">Неделя</button>
+            <button onclick="setWeightRange(30, this)" class="weight-range-btn text-xs font-bold px-4 py-2 rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200">Месяц</button>
+            <button onclick="setWeightRange(180, this)" class="weight-range-btn text-xs font-bold px-4 py-2 rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200">Полгода</button>
+            <div class="flex gap-2 items-center ml-auto">
+                <input type="date" id="weightFrom" class="text-xs border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:border-blue-500">
+                <input type="date" id="weightTo" class="text-xs border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:border-blue-500">
+                <button id="applyRangeBtn" onclick="applyCustomWeightRange()" class="text-xs font-bold bg-gray-100 text-gray-600 px-3 py-2 rounded-xl hover:bg-gray-200">Применить</button>
+            </div>
+        </div>
+
+        <div class="h-64 mb-6">
+            <canvas id="weightHistoryChart"></canvas>
+        </div>
+
+        <div id="weightTableContainer">
+            <table class="w-full text-sm" id="weightTable">
+                <thead>
+                    <tr class="text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100">
+                        <th class="text-left py-3">Дата</th>
+                        <th class="text-right py-3">Вес (кг)</th>
+                        <th class="text-right py-3 w-20"></th>
+                    </tr>
+                </thead>
+                <tbody id="weightTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="weightModal">
+        <div class="modal-box animate__animated animate__fadeInUp">
+            <div class="flex justify-between items-center mb-6">
+                <h2 id="weightModalTitle" class="font-black text-xl text-gray-900">Записать вес</h2>
+                <button onclick="closeWeightModal()" class="text-gray-400 hover:text-gray-600 text-2xl font-bold">&times;</button>
+            </div>
+            <div class="mb-4">
+                <label class="text-xs font-bold text-gray-400 uppercase tracking-widest">Вес (кг)</label>
+                <input id="weightModalInput" type="number" step="0.1" min="5" max="500" placeholder="75.0" class="w-full mt-2 px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-lg font-bold transition">
+            </div>
+            <div class="mb-6">
+                <label class="text-xs font-bold text-gray-400 uppercase tracking-widest">Дата</label>
+                <input id="weightModalDate" type="date" class="w-full mt-2 px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-sm transition">
+            </div>
+            <button id="saveWeightBtn" onclick="saveWeightRecord()" class="bg-purple-600 text-white font-bold py-4 w-full rounded-xl text-base shadow-xl shadow-purple-100 hover:bg-purple-700 transition">Сохранить</button>
+        </div>
+    </div>
 </main>
 <script src="/js/api.js"></script>
 <script>
@@ -189,6 +250,8 @@
             return;
         }
 
+        const origText = btn.textContent;
+        const origClass = btn.className;
         btn.disabled = true;
         btn.textContent = '⏳ Сохраняю...';
         try {
@@ -198,11 +261,17 @@
                 await request('/profile', { method: 'POST', body: JSON.stringify({ name, weight, height, gender, birthDate }) });
             }
             await loadProfile();
+            await loadWeightHistory();
             btn.className = 'bg-green-100 text-green-700 py-3 rounded-xl font-bold w-full text-sm';
             btn.textContent = '✅ Сохранено';
+            setTimeout(function() {
+                btn.disabled = false;
+                btn.textContent = origText;
+                btn.className = origClass;
+            }, 6500);
         } catch (e) {
             btn.disabled = false;
-            btn.textContent = '💾 Сохранить параметры';
+            btn.textContent = origText;
             showError(e.message);
         }
     }
@@ -223,6 +292,8 @@
 
         if (Object.keys(t).length === 0) { showError('Нет изменений'); return; }
 
+        const origText = btn.textContent;
+        const origClass = btn.className;
         btn.disabled = true;
         btn.textContent = '⏳ Сохраняю...';
         try {
@@ -230,14 +301,21 @@
             await loadProfile();
             btn.className = 'bg-green-100 text-green-700 py-3 rounded-xl font-bold text-sm';
             btn.textContent = '✅ Сохранено';
+            setTimeout(function() {
+                btn.disabled = false;
+                btn.textContent = origText;
+                btn.className = origClass;
+            }, 6500);
         } catch (e) {
             btn.disabled = false;
-            btn.textContent = '💾 Сохранить';
+            btn.textContent = origText;
             showError(e.message);
         }
     }
 
     async function enableAutopilot(btn) {
+        const origText = btn.textContent;
+        const origClass = btn.className;
         btn.disabled = true;
         btn.textContent = '⏳ Включаю...';
         try {
@@ -245,9 +323,14 @@
             await loadProfile();
             btn.className = 'bg-green-100 text-green-700 py-3 rounded-xl font-bold text-sm';
             btn.textContent = '✅ Авторасчёт включён';
+            setTimeout(function() {
+                btn.disabled = false;
+                btn.textContent = origText;
+                btn.className = origClass;
+            }, 6500);
         } catch (e) {
             btn.disabled = false;
-            btn.textContent = '🤖 Авторасчёт';
+            btn.textContent = origText;
             showError(e.message);
         }
     }
@@ -270,8 +353,243 @@
         setTimeout(() => el.classList.add('hidden'), 3000);
     }
 
+    let weightHistoryData = [];
+    let weightHistoryChart = null;
+    let currentWeightRange = 30;
+
+    function subDays(n) {
+        const d = new Date();
+        d.setDate(d.getDate() - n);
+        return d.toISOString().split('T')[0];
+    }
+
+    function formatShortDate(dateStr) {
+        if (!dateStr) return '';
+        const d = new Date(dateStr + 'T00:00:00');
+        return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
+    }
+
+    async function loadWeightHistory() {
+        const to = new Date().toISOString().split('T')[0];
+        const from = subDays(currentWeightRange);
+        try {
+            weightHistoryData = await request('/profile/weight?from=' + encodeURIComponent(from) + '&to=' + encodeURIComponent(to));
+            if (!weightHistoryData) weightHistoryData = [];
+            renderWeightHistoryChart();
+            renderWeightTable();
+        } catch (e) { console.error('loadWeightHistory error:', e); }
+    }
+
+    function renderWeightHistoryChart() {
+        const ctx = document.getElementById('weightHistoryChart');
+        if (!ctx) return;
+        if (weightHistoryChart) { weightHistoryChart.destroy(); weightHistoryChart = null; }
+        if (!weightHistoryData || weightHistoryData.length === 0) {
+            renderWeightTable();
+            return;
+        }
+        const sorted = [...weightHistoryData].sort(function(a, b) {
+            if (a.measuredAt !== b.measuredAt) return a.measuredAt.localeCompare(b.measuredAt);
+            return a.id - b.id;
+        });
+        const labels = sorted.map(function(w) {
+            if (!w.measuredAt) return '';
+            const d = new Date(w.measuredAt + 'T00:00:00');
+            return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
+        });
+        const values = sorted.map(function(w) { return w.weightKg; });
+        weightHistoryChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: values,
+                    borderColor: '#7c3aed',
+                    backgroundColor: 'rgba(124,58,237,0.08)',
+                    borderWidth: 2,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#7c3aed',
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            title: function(ctx) {
+                                if (!ctx.length) return '';
+                                const idx = ctx[0].dataIndex;
+                                const w = sorted[idx];
+                                if (!w || !w.measuredAt) return '';
+                                const d = new Date(w.measuredAt + 'T00:00:00');
+                                return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+                            },
+                            label: function(ctx) { return ctx.parsed.y + ' кг'; }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { font: { size: 10 }, maxTicksLimit: 10 },
+                        grid: { display: false }
+                    },
+                    y: {
+                        ticks: { font: { size: 10 } },
+                        grid: { color: '#f3f4f6' }
+                    }
+                }
+            }
+        });
+    }
+
+    function renderWeightTable() {
+        const tbody = document.getElementById('weightTableBody');
+        if (!tbody) return;
+        if (!weightHistoryData || weightHistoryData.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="3" class="text-center text-gray-400 py-8 text-sm font-medium">Нет записей</td></tr>';
+            return;
+        }
+        tbody.innerHTML = weightHistoryData.map(function(w) {
+            return '<tr class="border-b border-gray-50 hover:bg-gray-50/50 transition">' +
+                '<td class="py-3 font-medium">' + escapeHtml(formatShortDate(w.measuredAt)) + '</td>' +
+                '<td class="py-3 text-right font-bold">' + w.weightKg.toFixed(1) + '</td>' +
+                '<td class="py-3 text-right whitespace-nowrap">' +
+                    '<button onclick="editWeightRecord(' + w.id + ', ' + w.weightKg + ', \'' + w.measuredAt + '\')" class="text-blue-400 hover:text-blue-600 text-sm font-bold px-2" title="Редактировать">✏️</button>' +
+                    '<button onclick="deleteWeightRecord(' + w.id + ', this)" class="text-red-400 hover:text-red-600 text-sm font-bold px-2 py-1 rounded-lg hover:bg-red-50 transition" title="Удалить запись">🗑️</button>' +
+                '</td>' +
+                '</tr>';
+        }).join('');
+    }
+
+    async function deleteWeightRecord(id, btn) {
+        if (!confirm('Удалить запись веса?')) return;
+        if (btn) {
+            btn.disabled = true;
+            btn.textContent = '⏳';
+        }
+        try {
+            await request('/profile/weight/' + id, { method: 'DELETE' });
+            await loadWeightHistory();
+            await loadProfile();
+        } catch (e) {
+            if (btn) {
+                btn.disabled = false;
+                btn.textContent = '🗑️';
+            }
+            alert('Ошибка: ' + e.message);
+        }
+    }
+
+    function setWeightRange(days, btn) {
+        currentWeightRange = days;
+        document.querySelectorAll('.weight-range-btn').forEach(function(b) {
+            b.className = 'weight-range-btn text-xs font-bold px-4 py-2 rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200';
+        });
+        btn.className = 'weight-range-btn text-xs font-bold px-4 py-2 rounded-xl bg-blue-600 text-white';
+        loadWeightHistory();
+    }
+
+    function applyCustomWeightRange() {
+        const from = document.getElementById('weightFrom').value;
+        const to = document.getElementById('weightTo').value;
+        if (!from || !to) { alert('Выберите обе даты'); return; }
+        document.querySelectorAll('.weight-range-btn').forEach(function(btn) {
+            btn.className = 'weight-range-btn text-xs font-bold px-4 py-2 rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200';
+        });
+        const applyBtn = document.getElementById('applyRangeBtn');
+        applyBtn.disabled = true;
+        applyBtn.textContent = '⏳';
+        loadWeightHistoryCustom(from, to, applyBtn);
+    }
+
+    async function loadWeightHistoryCustom(from, to, applyBtn) {
+        try {
+            weightHistoryData = await request('/profile/weight?from=' + encodeURIComponent(from) + '&to=' + encodeURIComponent(to));
+            if (!weightHistoryData) weightHistoryData = [];
+            renderWeightHistoryChart();
+            renderWeightTable();
+        } catch (e) {
+            console.error('loadWeightHistoryCustom error:', e);
+            alert('Ошибка загрузки: ' + e.message);
+        } finally {
+            if (applyBtn) {
+                applyBtn.disabled = false;
+                applyBtn.textContent = 'Применить';
+            }
+        }
+    }
+
+    let editingWeightId = null;
+
+    function openWeightModal() {
+        editingWeightId = null;
+        document.getElementById('weightModalInput').value = '';
+        document.getElementById('weightModalDate').value = new Date().toISOString().split('T')[0];
+        document.getElementById('weightModalTitle').textContent = 'Записать вес';
+        const btn = document.getElementById('saveWeightBtn');
+        btn.textContent = 'Сохранить';
+        btn.className = 'bg-purple-600 text-white font-bold py-4 w-full rounded-xl text-base shadow-xl shadow-purple-100 hover:bg-purple-700 transition';
+        document.getElementById('weightModal').classList.add('open');
+    }
+
+    function editWeightRecord(id, weightKg, measuredAt) {
+        editingWeightId = id;
+        document.getElementById('weightModalInput').value = weightKg;
+        document.getElementById('weightModalDate').value = measuredAt;
+        document.getElementById('weightModalTitle').textContent = 'Редактировать вес';
+        const btn = document.getElementById('saveWeightBtn');
+        btn.textContent = 'Обновить';
+        btn.className = 'bg-blue-600 text-white font-bold py-4 w-full rounded-xl text-base shadow-xl shadow-blue-100 hover:bg-blue-700 transition';
+        document.getElementById('weightModal').classList.add('open');
+    }
+
+    function closeWeightModal() { document.getElementById('weightModal').classList.remove('open'); }
+
+    async function saveWeightRecord() {
+        const val = parseFloat(document.getElementById('weightModalInput').value);
+        const date = document.getElementById('weightModalDate').value;
+        if (!val || val < 5 || val > 500) { alert('Введите вес от 5 до 500 кг'); return; }
+        if (!date) { alert('Выберите дату'); return; }
+        const btn = document.getElementById('saveWeightBtn');
+        const origText = btn.textContent;
+        const origClass = btn.className;
+        btn.disabled = true;
+        btn.textContent = '⏳ Сохраняю...';
+        try {
+            if (editingWeightId) {
+                await request('/profile/weight', { method: 'PATCH', body: JSON.stringify({ id: editingWeightId, weightKg: val, measuredAt: date }) });
+            } else {
+                await request('/profile/weight', { method: 'POST', body: JSON.stringify({ weightKg: val, measuredAt: date }) });
+            }
+            btn.textContent = '✅ ' + (editingWeightId ? 'Обновлено' : 'Записано');
+            btn.className = 'bg-green-100 text-green-700 font-bold py-4 w-full rounded-xl text-base transition';
+            setTimeout(function() {
+                closeWeightModal();
+                btn.disabled = false;
+                btn.textContent = origText;
+                btn.className = origClass;
+            }, 6500);
+            await loadWeightHistory();
+            await loadProfile();
+        } catch (e) {
+            btn.disabled = false;
+            btn.textContent = origText;
+            btn.className = origClass;
+            alert('Ошибка: ' + e.message);
+        }
+    }
+
     renderActiveSessionBanner(); syncActiveSessions(); function logout() { clearToken(); window.location.href = '/index.html'; }
+
+    document.getElementById('weightTo').value = new Date().toISOString().split('T')[0];
+    document.getElementById('weightFrom').value = subDays(30);
+
     loadProfile();
+    loadWeightHistory();
 </script>
 </body>
 </html>

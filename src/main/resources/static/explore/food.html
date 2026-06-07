@@ -223,6 +223,8 @@
     }
 
     async function saveMeal(foodId, weight, btn) {
+        const origText = btn.textContent;
+        const origClass = btn.className;
         btn.disabled = true;
         btn.textContent = '⏳ Сохраняю...';
         try {
@@ -232,9 +234,14 @@
             });
             btn.className = 'bg-green-100 text-green-700 px-4 py-2 rounded-lg text-xs font-bold w-full';
             btn.textContent = '✅ Сохранено';
+            setTimeout(function() {
+                btn.disabled = false;
+                btn.textContent = origText;
+                btn.className = origClass;
+            }, 6500);
         } catch (e) {
             btn.disabled = false;
-            btn.textContent = '💾 Сохранить приём пищи';
+            btn.textContent = origText;
         }
     }
 

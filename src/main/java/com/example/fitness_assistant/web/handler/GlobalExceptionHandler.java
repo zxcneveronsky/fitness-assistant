@@ -34,6 +34,7 @@ public class GlobalExceptionHandler {
             MuscleNotFoundException.class,
             FavoriteExerciseNotFoundException.class,
             FavoriteFoodNotFoundException.class,
+            BodyWeightNotFoundException.class,
             EntityNotFoundException.class
     })
     public ResponseEntity<Object> handleNotFoundExceptions(RuntimeException ex) {

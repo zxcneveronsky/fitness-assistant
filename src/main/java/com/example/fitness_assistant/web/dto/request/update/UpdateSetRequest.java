@@ -10,6 +10,7 @@ public record UpdateSetRequest(
         @NotNull(message = "ID упражнения не может быть пустым")
         Long exerciseId,
         @PositiveOrZero(message = "Вес не может быть отрицательным")
+        @Max(value = 10000, message = "Вес не может быть больше 10000 кг")
         Double weight,
         @Positive(message = "Повторения не могут быть отрицательными")
         @Max(value = 500, message = "Повторения не могут быть больше 500")

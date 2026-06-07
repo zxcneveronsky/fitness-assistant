@@ -2,8 +2,11 @@ package com.example.fitness_assistant.application.service.profile;
 
 import com.example.fitness_assistant.application.service.targets.TargetCalculationService;
 import com.example.fitness_assistant.core.exception.UserNotFoundException;
+import com.example.fitness_assistant.core.model.BodyWeight;
 import com.example.fitness_assistant.core.model.Targets;
 import com.example.fitness_assistant.core.model.UserProfile;
+import java.time.LocalDate;
+import com.example.fitness_assistant.core.repository.BodyWeightRepository;
 import com.example.fitness_assistant.core.repository.TargetsRepository;
 import com.example.fitness_assistant.core.repository.UserProfileRepository;
 import com.example.fitness_assistant.core.repository.UserRepository;
@@ -21,6 +24,7 @@ public class CreateUserProfileUseCase {
     private final UserRepository userRepository;
     private final TargetsRepository targetsRepository;
     private final TargetCalculationService targetCalculationService;
+    private final BodyWeightRepository bodyWeightRepository;
 
     @Transactional
     public UserProfile createUserProfile(Long userId, UserProfile userProfile) {
@@ -35,6 +39,10 @@ public class CreateUserProfileUseCase {
         targets.setUseAutopilot(true);
         targetCalculationService.applyAutoTargets(targets, savedProfile);
         targetsRepository.save(targets);
+
+        if (userProfile.getWeight() != null) {
+            bodyWeightRepository.save(new BodyWeight(null, userId, userProfile.getWeight(), LocalDate.now()));
+        }
 
         log.info("Профиль создан | userId={}", savedProfile.getId());
         return savedProfile;
