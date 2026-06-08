@@ -301,9 +301,12 @@
     async function loadMeals() {
         await loadMealData();
         const data = await request(`/meal/search?localDateTime=${encodeURIComponent(selectedDate())}&size=50`);
-        document.getElementById('mealList').innerHTML = data.content.length === 0
+        const meals = (data.content || []).sort(function(a, b) {
+            return new Date(b.consumedAt) - new Date(a.consumedAt);
+        });
+        document.getElementById('mealList').innerHTML = meals.length === 0
             ? '<p class="text-gray-400 text-center py-8">Сегодня ещё ничего не съедено</p>'
-            : data.content.map(m => `
+            : meals.map(m => `
                 <div class="bg-white rounded-xl p-4 border border-gray-100 flex items-center justify-between" id="mealRow_${m.id}">
                     <div class="flex-1">
                         <div id="mealView_${m.id}">

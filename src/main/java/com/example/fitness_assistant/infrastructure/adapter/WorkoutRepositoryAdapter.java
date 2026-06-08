@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -38,6 +39,13 @@ public class WorkoutRepositoryAdapter implements WorkoutRepository {
     public Page<Workout> searchWorkout(String name,Long userId, Pageable pageable) {
         return jpaWorkoutRepository.searchWorkout(name, userId, pageable)
                 .map(workoutMapper::toDomain);
+    }
+
+    @Override
+    public List<Workout> findAllById(List<Long> ids) {
+        return jpaWorkoutRepository.findAllById(ids).stream()
+                .map(workoutMapper::toDomain)
+                .toList();
     }
 
     @Override

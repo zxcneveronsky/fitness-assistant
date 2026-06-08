@@ -53,6 +53,7 @@ public class SecurityConfig {
                                 "/api/v1/exercise/search",
                                 "/api/v1/exercise/{id}",
                                 "/api/v1/muscle/search",
+                                "/exercise-history.html",
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",

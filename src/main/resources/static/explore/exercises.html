@@ -178,7 +178,7 @@
                        <button onclick="event.stopPropagation(); toggleFavorite(${ex.id}, this)" class="absolute top-3 right-3 text-xl text-red-500 hover:scale-110 transition-transform">${isFav ? '♥' : '♡'}</button>`
                     : (isAuth() ? `<button onclick="event.stopPropagation(); toggleFavorite(${ex.id}, this)" class="absolute top-3 right-3 text-xl text-red-500 hover:scale-110 transition-transform">${isFav ? '♥' : '♡'}</button>` : '')
                 }
-                <h3 class="font-bold text-lg">${exName}</h3>
+                <a href="/exercise-history.html?exerciseId=${ex.id}&name=${encodeURIComponent(exName)}" class="font-bold text-lg hover:text-blue-600">${exName}</a>
                 <p class="text-sm text-gray-500 mt-2">${ex.description || 'Нет описания'}</p>
                 <div class="flex flex-wrap gap-1 mt-3">${(ex.muscles || []).map(m => `<span class="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded-full">${m.name}</span>`).join('')}</div>
             </div>

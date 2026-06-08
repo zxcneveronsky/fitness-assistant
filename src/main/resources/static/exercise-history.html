@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>История упражнения — Fitness Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .dash-card { transition: all 0.5s cubic-bezier(0.15, 0.83, 0.66, 1); border-radius: 2.2rem; border: 1px solid #f2f2f7; background: #ffffff; }
+        .dash-card:hover { transform: translateY(-4px); box-shadow: 0 20px 50px rgba(0,0,0,0.05); }
+    </style>
+</head>
+<body class="font-['Inter'] bg-gray-50 min-h-screen">
+<nav class="bg-white border-b border-gray-100 h-16 px-4 md:px-10 flex items-center justify-between">
+    <a id="logoLink" href="/index.html" class="font-extrabold text-xl tracking-tighter">Fitness<span class="text-blue-600">Assistant</span></a>
+    <div class="hidden md:flex gap-3 items-center text-sm">
+        <a href="/dashboard.html" class="text-gray-600 hover:text-black">Главная</a>
+        <a href="/meal.html" class="text-gray-600 hover:text-black">Еда</a>
+        <a href="/hydration.html" class="text-gray-600 hover:text-black">Вода</a>
+        <a href="/workout.html" class="text-gray-600 hover:text-black">Тренировки</a>
+        <a href="/history.html" class="text-gray-600 hover:text-black">История</a>
+        <a href="/profile.html" class="text-gray-600 hover:text-black">Профиль</a>
+        <button onclick="logout()" class="text-red-500 hover:text-red-700 ml-4">Выйти</button>
+        <button onclick="deleteAccount()" class="text-gray-400 hover:text-red-600 ml-2 text-sm" title="Удалить аккаунт">🗑️</button>
+    </div>
+    <button onclick="document.getElementById('mobileMenu').classList.toggle('hidden')" class="md:hidden text-gray-600 text-2xl px-2">☰</button>
+</nav>
+<div id="mobileMenu" class="hidden md:hidden bg-white border-b border-gray-100 px-4 py-3 space-y-2 text-sm">
+    <a href="/dashboard.html" class="block text-gray-600 hover:text-black">Главная</a>
+    <a href="/meal.html" class="block text-gray-600 hover:text-black">Еда</a>
+    <a href="/hydration.html" class="block text-gray-600 hover:text-black">Вода</a>
+    <a href="/workout.html" class="block text-gray-600 hover:text-black">Тренировки</a>
+    <a href="/history.html" class="block text-gray-600 hover:text-black">История</a>
+    <a href="/profile.html" class="block text-gray-600 hover:text-black">Профиль</a>
+    <hr class="border-gray-100">
+    <button onclick="logout()" class="block text-red-500 hover:text-red-700 w-full text-left">Выйти</button>
+    <button onclick="deleteAccount()" class="block text-gray-400 hover:text-red-600 w-full text-left text-xs">Удалить аккаунт</button>
+</div>
+<div id="activeSessionBanner" class="hidden bg-yellow-50 border-b border-yellow-200 px-4 md:px-10 py-2 text-sm flex items-center justify-between" style="position:sticky;top:64px;z-index:40">
+    <span>⏳ <strong>Активная тренировка</strong> — <span id="bannerName"></span></span>
+    <a id="bannerLink" href="" class="bg-yellow-200 text-yellow-800 px-4 py-1 rounded-lg font-semibold hover:bg-yellow-300">Продолжить</a>
+</div>
+<main class="max-w-6xl mx-auto px-4 py-8">
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <a href="/explore/exercises.html" class="text-sm text-blue-600 hover:text-blue-800 mb-2 inline-block">← К упражнениям</a>
+            <h1 id="exerciseTitle" class="text-3xl font-bold">Загрузка...</h1>
+        </div>
+    </div>
+    <p id="historyError" class="text-red-500 text-sm mb-4 hidden"></p>
+
+    <div class="flex flex-wrap gap-2 mb-6">
+        <button onclick="setRange(7, this)" class="range-btn text-xs font-bold px-4 py-2 rounded-xl bg-blue-600 text-white">Неделя</button>
+        <button onclick="setRange(30, this)" class="range-btn text-xs font-bold px-4 py-2 rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200">Месяц</button>
+        <button onclick="setRange(180, this)" class="range-btn text-xs font-bold px-4 py-2 rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200">Полгода</button>
+        <button onclick="setRange(365, this)" class="range-btn text-xs font-bold px-4 py-2 rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200">Год</button>
+        <div class="flex gap-2 items-center ml-auto">
+            <input type="date" id="dateFrom" class="text-xs border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:border-blue-500">
+            <input type="date" id="dateTo" class="text-xs border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:border-blue-500">
+            <button onclick="applyCustomRange()" class="text-xs font-bold bg-gray-100 text-gray-600 px-3 py-2 rounded-xl hover:bg-gray-200">Применить</button>
+        </div>
+    </div>
+
+    <div id="chartSection" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4 mb-6"></div>
+
+    <div id="historyList" class="space-y-4"></div>
+    <div id="historyEmpty" class="hidden text-center text-gray-400 py-16">
+        <p class="text-4xl mb-4">📭</p>
+        <p class="text-lg font-medium">Нет данных для этого упражнения</p>
+        <p class="text-sm mt-2">Запишите подходы в тренировке, чтобы увидеть историю</p>
+    </div>
+</main>
+<script src="/js/api.js"></script>
+<script>
+    if (!isAuth()) window.location.href = '/login.html';
+    if (isAuth()) document.getElementById('logoLink').href = '/dashboard.html';
+
+    const params = new URLSearchParams(window.location.search);
+    const exerciseId = params.get('exerciseId');
+    const exerciseName = params.get('name');
+
+    if (!exerciseId) { window.location.href = '/explore/exercises.html'; }
+
+    let currentRange = 30;
+
+    document.getElementById('exerciseTitle').textContent = exerciseName || 'Упражнение';
+
+    function subDays(n) {
+        const d = new Date();
+        d.setDate(d.getDate() - n);
+        return d.toISOString();
+    }
+
+    function setRange(days, btn) {
+        currentRange = days;
+        document.querySelectorAll('.range-btn').forEach(function(b) {
+            b.className = 'range-btn text-xs font-bold px-4 py-2 rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200';
+        });
+        btn.className = 'range-btn text-xs font-bold px-4 py-2 rounded-xl bg-blue-600 text-white';
+        loadHistory();
+    }
+
+    function formatDateTime(dateStr) {
+        if (!dateStr) return '—';
+        const d = new Date(dateStr);
+        return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
+
+    function formatTime(dateStr) {
+        if (!dateStr) return '—';
+        const d = new Date(dateStr);
+        return d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function formatDuration(start, end) {
+        if (!start || !end) return '';
+        const diffMs = new Date(end) - new Date(start);
+        const mins = Math.round(diffMs / 60000);
+        if (mins < 60) return mins + ' мин';
+        const h = Math.floor(mins / 60);
+        const m = mins % 60;
+        return h + ' ч ' + m + ' мин';
+    }
+
+    let weightChart = null;
+    let volumeChart = null;
+
+    function renderCharts(data) {
+        const sorted = [...data].sort(function(a, b) {
+            return new Date(a.startTime) - new Date(b.startTime);
+        });
+
+        const labels = sorted.map(function(s) {
+            return new Date(s.startTime).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
+        });
+
+        const maxWeights = sorted.map(function(s) {
+            var sets = s.sets || [];
+            return sets.reduce(function(max, set) { return Math.max(max, set.weight || 0); }, 0);
+        });
+
+        const volumes = sorted.map(function(s) {
+            var sets = s.sets || [];
+            return sets.reduce(function(sum, set) { return sum + (set.weight || 0) * (set.reps || 0); }, 0);
+        });
+
+        var section = document.getElementById('chartSection');
+        section.classList.remove('hidden');
+        section.innerHTML =
+            '<div class="dash-card p-4"><canvas id="weightChart"></canvas></div>' +
+            '<div class="dash-card p-4"><canvas id="volumeChart"></canvas></div>';
+
+        if (weightChart) { weightChart.destroy(); }
+        if (volumeChart) { volumeChart.destroy(); }
+
+        weightChart = new Chart(document.getElementById('weightChart'), {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Макс. вес (кг)',
+                    data: maxWeights,
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37,99,235,0.1)',
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    title: { display: true, text: 'Максимальный вес', font: { size: 14, weight: 'bold' } }
+                },
+                scales: {
+                    y: { beginAtZero: true, title: { display: true, text: 'кг' } }
+                }
+            }
+        });
+
+        volumeChart = new Chart(document.getElementById('volumeChart'), {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Объём (кг)',
+                    data: volumes,
+                    borderColor: '#16a34a',
+                    backgroundColor: 'rgba(22,163,74,0.1)',
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    title: { display: true, text: 'Общий объём', font: { size: 14, weight: 'bold' } }
+                },
+                scales: {
+                    y: { beginAtZero: true, title: { display: true, text: 'кг' } }
+                }
+            }
+        });
+    }
+
+    async function loadHistory() {
+        const from = subDays(currentRange);
+        const to = new Date().toISOString();
+        try {
+            const data = await request('/exercise/' + exerciseId + '/history?from=' + encodeURIComponent(from) + '&to=' + encodeURIComponent(to));
+            if (!data || data.length === 0) {
+                document.getElementById('historyList').innerHTML = '';
+                document.getElementById('historyEmpty').classList.remove('hidden');
+                document.getElementById('chartSection').classList.add('hidden');
+                return;
+            }
+            document.getElementById('historyEmpty').classList.add('hidden');
+
+            const sortedByDate = [...data].sort(function(a, b) {
+                return new Date(b.startTime) - new Date(a.startTime);
+            });
+
+            document.getElementById('historyList').innerHTML = sortedByDate.map(function(session) {
+                const startDate = formatDateTime(session.startTime);
+                const duration = formatDuration(session.startTime, session.endTime);
+                const setsHtml = (session.sets || []).map(function(set) {
+                    const timeStr = set.createdAt ? formatTime(set.createdAt) : '—';
+                    return '<div class="flex items-center justify-between py-2 px-3 rounded-xl hover:bg-gray-50 transition">' +
+                        '<span class="font-semibold">' + set.weight + ' кг × ' + set.reps + '</span>' +
+                        '<span class="text-xs text-gray-400">' + timeStr + '</span>' +
+                        '</div>';
+                }).join('');
+                return '<a href="/session-detail.html?id=' + session.sessionId + '" class="block dash-card p-5 hover:shadow-lg transition-shadow">' +
+                    '<div class="flex items-center justify-between mb-3">' +
+                        '<div>' +
+                            '<h3 class="font-bold text-lg">' + escapeHtml(session.workoutName) + '</h3>' +
+                            '<p class="text-sm text-gray-400 mt-1">' + startDate + (duration ? ' · ' + duration : '') + '</p>' +
+                        '</div>' +
+                        '<span class="text-xs text-blue-600 font-semibold">🔍 Открыть</span>' +
+                    '</div>' +
+                    '<div class="border-t border-gray-100 pt-2 space-y-1">' + setsHtml + '</div>' +
+                '</a>';
+            }).join('');
+            renderCharts(data);
+        } catch (e) {
+            document.getElementById('historyError').textContent = 'Ошибка загрузки: ' + e.message;
+            document.getElementById('historyError').classList.remove('hidden');
+        }
+    }
+
+    function applyCustomRange() {
+        const from = document.getElementById('dateFrom').value;
+        const to = document.getElementById('dateTo').value;
+        if (!from || !to) { alert('Выберите обе даты'); return; }
+        document.querySelectorAll('.range-btn').forEach(function(b) {
+            b.className = 'range-btn text-xs font-bold px-4 py-2 rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200';
+        });
+        currentRange = null;
+        loadHistoryCustom(from, to);
+    }
+
+    async function loadHistoryCustom(from, to) {
+        try {
+            const data = await request('/exercise/' + exerciseId + '/history?from=' + encodeURIComponent(from + 'T00:00:00') + '&to=' + encodeURIComponent(to + 'T23:59:59'));
+            if (!data || data.length === 0) {
+                document.getElementById('historyList').innerHTML = '';
+                document.getElementById('historyEmpty').classList.remove('hidden');
+                document.getElementById('chartSection').classList.add('hidden');
+                return;
+            }
+            document.getElementById('historyEmpty').classList.add('hidden');
+
+            const sortedByDate = [...data].sort(function(a, b) {
+                return new Date(b.startTime) - new Date(a.startTime);
+            });
+
+            document.getElementById('historyList').innerHTML = sortedByDate.map(function(session) {
+                const startDate = formatDateTime(session.startTime);
+                const duration = formatDuration(session.startTime, session.endTime);
+                const setsHtml = (session.sets || []).map(function(set) {
+                    const timeStr = set.createdAt ? formatTime(set.createdAt) : '—';
+                    return '<div class="flex items-center justify-between py-2 px-3 rounded-xl hover:bg-gray-50 transition">' +
+                        '<span class="font-semibold">' + set.weight + ' кг × ' + set.reps + '</span>' +
+                        '<span class="text-xs text-gray-400">' + timeStr + '</span>' +
+                        '</div>';
+                }).join('');
+                return '<a href="/session-detail.html?id=' + session.sessionId + '" class="block dash-card p-5 hover:shadow-lg transition-shadow">' +
+                    '<div class="flex items-center justify-between mb-3">' +
+                        '<div>' +
+                            '<h3 class="font-bold text-lg">' + escapeHtml(session.workoutName) + '</h3>' +
+                            '<p class="text-sm text-gray-400 mt-1">' + startDate + (duration ? ' · ' + duration : '') + '</p>' +
+                        '</div>' +
+                        '<span class="text-xs text-blue-600 font-semibold">🔍 Открыть</span>' +
+                    '</div>' +
+                    '<div class="border-t border-gray-100 pt-2 space-y-1">' + setsHtml + '</div>' +
+                '</a>';
+            }).join('');
+            renderCharts(data);
+        } catch (e) {
+            document.getElementById('historyError').textContent = 'Ошибка загрузки: ' + e.message;
+            document.getElementById('historyError').classList.remove('hidden');
+        }
+    }
+
+    renderActiveSessionBanner(); syncActiveSessions(); function logout() { clearToken(); window.location.href = '/index.html'; }
+
+    document.getElementById('dateTo').value = new Date().toISOString().split('T')[0];
+    document.getElementById('dateFrom').value = subDays(30).split('T')[0];
+
+    loadHistory();
+</script>
+</body>
+</html>

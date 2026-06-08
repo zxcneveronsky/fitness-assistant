@@ -167,7 +167,7 @@
         }
         container.innerHTML = exercises.map((ex, idx) => `
             <div class="bg-white rounded-2xl p-5 border border-gray-100">
-                <h3 class="font-bold text-lg">${idx + 1}. ${ex.name}</h3>
+                <a href="/exercise-history.html?exerciseId=${ex.id}&name=${encodeURIComponent(ex.name)}" class="font-bold text-lg hover:text-blue-600">${idx + 1}. ${ex.name}</a>
                 <div class="flex gap-2 mt-3">
                     <input id="weight_${ex.id}" type="number" step="0.5" placeholder="Вес" class="w-20 sm:w-28 px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-200 rounded-lg sm:rounded-xl text-sm">
                     <input id="reps_${ex.id}" type="number" placeholder="Повторы" class="w-16 sm:w-24 px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-200 rounded-lg sm:rounded-xl text-sm">
@@ -199,9 +199,10 @@
             const data = await request(`/workout/session/set?sessionId=${sessionId}&exerciseId=${exerciseId}&size=50`);
             const el = document.getElementById(`sets_${exerciseId}`);
             if (!el) return;
-            el.innerHTML = data.content.length === 0
+            const sets = (data.content || []).sort(function(a, b) { return a.id - b.id; });
+            el.innerHTML = sets.length === 0
                 ? ''
-                : data.content.map((s, i) =>
+                : sets.map((s, i) =>
                     `<div class="text-sm bg-gray-50 rounded-lg px-3 py-2 flex items-center justify-between" id="set_${s.id}">
                         <div class="flex items-center gap-1 flex-1">
                             <span>${i + 1}.</span>

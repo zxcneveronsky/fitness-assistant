@@ -16,7 +16,7 @@ web/mapper/         → Domain ↔ DTO
 ```
 
 ### Правила добавления новой фичи
-1. Миграция Flyway (V14__*.sql, V15__*.sql, ...)
+1. Миграция Flyway (V17__*.sql, V18__*.sql, ...)
 2. JPA Entity в `infrastructure/persistence/entity/`
 3. Spring Data JPA repo в `infrastructure/persistence/jpa/`
 4. Domain model в `core/model/`
@@ -76,70 +76,7 @@ web/mapper/         → Domain ↔ DTO
 
 ## 📋 План
 
-### ⭐ 1. Избранное
-
-**Миграция** `V15__create_favorite_tables.sql`:
-```sql
-CREATE TABLE favorite_exercises (
-    user_id BIGINT REFERENCES users(id) ON DELETE CASCADE,
-    exercise_id BIGINT REFERENCES exercises(id) ON DELETE CASCADE,
-    created_at TIMESTAMP DEFAULT NOW(),
-    PRIMARY KEY (user_id, exercise_id)
-);
-
-CREATE TABLE favorite_foods (
-    user_id BIGINT REFERENCES users(id) ON DELETE CASCADE,
-    food_id BIGINT REFERENCES foods(id) ON DELETE CASCADE,
-    created_at TIMESTAMP DEFAULT NOW(),
-    PRIMARY KEY (user_id, food_id)
-);
-```
-
-**Бэк:**
-- `FavoriteExerciseEntity`, `FavoriteFoodEntity` + jpa repos
-- `FavoriteExercise`, `FavoriteFood` domain models
-- Ports: `FavoriteExerciseRepository`, `FavoriteFoodRepository`
-- Adapters + Mappers
-- Toggle: `POST /favorite/exercise/{id}` / `POST /favorite/food/{id}` (add if not exists, remove if exists)
-- List: `GET /favorite/exercise`, `GET /favorite/food`
-- Эндпоинты без body, только path variable (toggle)
-
-**Фронт:**
-- Heart icon ♡/♥ на карточках в `explore/exercises.html` и `explore/food.html`
-- Фильтр «⭐ Избранное» (галочка/кнопка) — показывает только избранное
-- При загрузке страницы: `GET /favorite/exercise` → маппинг `Set<Long>`, подсветка сердечек
-
----
-
-### ⚖️ 2. История веса
-
-**Миграция** `V16__create_body_weights_table.sql`:
-```sql
-CREATE TABLE body_weights (
-    id BIGSERIAL PRIMARY KEY,
-    user_id BIGINT REFERENCES users(id) ON DELETE CASCADE,
-    weight_kg NUMERIC(5,1) NOT NULL,
-    measured_at TIMESTAMP NOT NULL DEFAULT NOW()
-);
-CREATE INDEX idx_body_weights_user_date ON body_weights(user_id, measured_at DESC);
-```
-
-**Бэк:**
-- `BodyWeightEntity`, `BodyWeight` domain + port + adapter
-- `POST /profile/weight` — `{ weightKg }`, sets measured_at = now
-- `GET /profile/weight?from=&to=` — history sorted DESC
-- `GET /profile/weight/latest` — last entry
-- `DELETE /profile/weight/{id}` — удалить запись
-
-**Фронт:**
-- Dashboard: блок «⚖️ Вес» — последнее значение + trend arrow (вверх/вниз/равно)
-- Маленький график Chart.js line за 30 дней
-- Кнопка «Записать» → input с number keyboard
-- На `profile.html`: полный график, кнопка удаления точки
-
----
-
-### 📈 3. Прогресс в упражнениях
+### 📈 1. Прогресс в упражнениях
 
 **Бэк:**
 - `GET /exercise/{id}/progress?from=&to=` — агрегация по `sets`
@@ -155,7 +92,7 @@ CREATE INDEX idx_body_weights_user_date ON body_weights(user_id, measured_at DES
 
 ---
 
-### 🔥 4. Streak
+### 🔥 2. Streak
 
 **Миграция** `V17__add_streak_to_profiles.sql`:
 ```sql
@@ -178,7 +115,7 @@ ALTER TABLE users_profiles
 
 ---
 
-### 🔗 5. Шаринг тренировок
+### 🔗 3. Шаринг тренировок
 
 **Миграция** `V18__create_workout_shares.sql`:
 ```sql
@@ -221,7 +158,7 @@ ALTER TABLE workouts ADD COLUMN is_public BOOLEAN DEFAULT false;
 
 ---
 
-### 🐳 6. Docker Compose
+### 🐳 4. Docker Compose
 
 **Файлы:**
 - `Dockerfile` — multi-stage build:
@@ -273,7 +210,7 @@ ALTER TABLE workouts ADD COLUMN is_public BOOLEAN DEFAULT false;
 
 ---
 
-### 🧪 7. Тесты
+### 🧪 5. Тесты
 
 **Конфиг:** `src/test/resources/application-test.yml`:
 ```yaml
@@ -318,7 +255,7 @@ class WorkoutFlowTest {
 
 ---
 
-### 🛠 8. Админка
+### 🛠 6. Админка
 
 **Бэк:**
 - Роль ADMIN уже есть в `UserRole.java` (не используется)

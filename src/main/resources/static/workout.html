@@ -122,9 +122,12 @@
 
     async function loadWorkouts() {
         const data = await request('/workout?page=0&size=50');
-        document.getElementById('workoutList').innerHTML = data.content.length === 0
+        const workouts = (data.content || []).sort(function(a, b) {
+            return b.id - a.id;
+        });
+        document.getElementById('workoutList').innerHTML = workouts.length === 0
             ? '<p class="text-gray-400 col-span-3 text-center py-8">Нет тренировок. Создайте первую!</p>'
-            : data.content.map(w => `
+            : workouts.map(w => `
                 <div class="bg-white rounded-2xl p-5 border border-gray-100 hover:shadow-lg transition-shadow">
                     <a href="/workout-detail.html?id=${w.id}" class="block">
                         <h3 class="font-bold text-lg hover:text-blue-600 transition-colors">${w.name}</h3>

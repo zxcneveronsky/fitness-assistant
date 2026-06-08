@@ -5,7 +5,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public interface JpaSetRepository extends JpaRepository<SetEntity, Long> {
@@ -14,4 +18,17 @@ public interface JpaSetRepository extends JpaRepository<SetEntity, Long> {
     void deleteByIdAndSessionId(Long id, Long sessionId);
     boolean existsByIdAndSessionId(Long id, Long sessionId);
     Page<SetEntity> findAllBySessionIdAndExerciseId(Long sessionId, Long exerciseId, Pageable pageable);
+
+    @Query("SELECT s FROM SetEntity s " +
+           "JOIN FETCH s.session sess " +
+           "JOIN FETCH sess.workout w " +
+           "WHERE s.exercise.id = :exerciseId " +
+           "AND sess.user.id = :userId " +
+           "AND sess.startTime BETWEEN :from AND :to " +
+           "ORDER BY sess.startTime DESC, s.id ASC")
+    List<SetEntity> findByExerciseIdAndUserIdAndStartTimeBetween(
+            @Param("exerciseId") Long exerciseId,
+            @Param("userId") Long userId,
+            @Param("from") LocalDateTime from,
+            @Param("to") LocalDateTime to);
 }
