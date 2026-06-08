@@ -20,7 +20,8 @@ public interface JpaMealRepository extends JpaRepository<MealEntity, Long> {
 
     @Query("SELECT h FROM MealEntity h WHERE h.user.id = :userId " +
             "AND (CAST(:startOfDay AS timestamp) IS NULL " +
-            "OR (h.consumedAt >= :startOfDay AND h.consumedAt < :endOfDay))")
+            "OR (h.consumedAt >= :startOfDay AND h.consumedAt < :endOfDay)) " +
+            "ORDER BY h.consumedAt DESC")
     Page<MealEntity> searchMeal(@Param("userId") Long userId,
                             @Param("startOfDay") LocalDateTime startOfDay,
                             @Param("endOfDay") LocalDateTime endOfDay,

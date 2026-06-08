@@ -22,7 +22,8 @@ public interface JpaHydrationRepository extends JpaRepository<HydrationEntity, L
 
     @Query("SELECT h FROM HydrationEntity h WHERE h.user.id = :userId " +
             "AND (CAST(:startOfDay AS timestamp) IS NULL " +
-            "OR (h.consumedAt >= :startOfDay AND h.consumedAt < :endOfDay))")
+            "OR (h.consumedAt >= :startOfDay AND h.consumedAt < :endOfDay)) " +
+            "ORDER BY h.consumedAt DESC")
     Page<HydrationEntity> searchHydration(@Param("userId") Long userId,
                                           @Param("startOfDay") LocalDateTime startOfDay,
                                           @Param("endOfDay") LocalDateTime endOfDay,

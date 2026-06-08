@@ -17,7 +17,8 @@ public interface JpaSetRepository extends JpaRepository<SetEntity, Long> {
     Optional<SetEntity> findByIdAndSessionId(Long id, Long sessionId);
     void deleteByIdAndSessionId(Long id, Long sessionId);
     boolean existsByIdAndSessionId(Long id, Long sessionId);
-    Page<SetEntity> findAllBySessionIdAndExerciseId(Long sessionId, Long exerciseId, Pageable pageable);
+    @Query("SELECT s FROM SetEntity s WHERE s.session.id = :sessionId AND s.exercise.id = :exerciseId ORDER BY s.id ASC")
+    Page<SetEntity> findAllBySessionIdAndExerciseId(@Param("sessionId") Long sessionId, @Param("exerciseId") Long exerciseId, Pageable pageable);
 
     @Query("SELECT s FROM SetEntity s " +
            "JOIN FETCH s.session sess " +

@@ -16,7 +16,8 @@ public interface JpaWorkoutRepository extends JpaRepository<WorkoutEntity, Long>
     boolean existsByIdAndUserId(Long id, Long userId);
     void deleteByIdAndUserId(Long id, Long userId);
 
-    Page<WorkoutEntity> findAllByUserId(Long userId, Pageable pageable);
+    @Query("SELECT w FROM WorkoutEntity w WHERE w.user.id = :userId ORDER BY w.id DESC")
+    Page<WorkoutEntity> findAllByUserId(@Param("userId") Long userId, Pageable pageable);
 
     @Query(
             value = """

@@ -223,11 +223,7 @@
             }
             document.getElementById('historyEmpty').classList.add('hidden');
 
-            const sortedByDate = [...data].sort(function(a, b) {
-                return new Date(b.startTime) - new Date(a.startTime);
-            });
-
-            document.getElementById('historyList').innerHTML = sortedByDate.map(function(session) {
+            document.getElementById('historyList').innerHTML = data.map(function(session) {
                 const startDate = formatDateTime(session.startTime);
                 const duration = formatDuration(session.startTime, session.endTime);
                 const setsHtml = (session.sets || []).map(function(set) {
@@ -277,11 +273,7 @@
             }
             document.getElementById('historyEmpty').classList.add('hidden');
 
-            const sortedByDate = [...data].sort(function(a, b) {
-                return new Date(b.startTime) - new Date(a.startTime);
-            });
-
-            document.getElementById('historyList').innerHTML = sortedByDate.map(function(session) {
+            document.getElementById('historyList').innerHTML = data.map(function(session) {
                 const startDate = formatDateTime(session.startTime);
                 const duration = formatDuration(session.startTime, session.endTime);
                 const setsHtml = (session.sets || []).map(function(set) {

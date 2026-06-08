@@ -99,7 +99,7 @@
             if (!el) return;
             el.innerHTML = data.content.length === 0
                 ? '<p class="text-gray-400 text-sm">Нет подходов</p>'
-                : [...data.content].sort(function(a, b) { return a.id - b.id; }).map((s, i) => `
+                : data.content.map((s, i) => `
                     <div class="bg-gray-50 rounded-lg px-4 py-2 text-sm flex items-center justify-between" id="set_${s.id}">
                         <div class="flex items-center gap-2 flex-1">
                             <span class="font-medium">Подход ${i + 1}</span>

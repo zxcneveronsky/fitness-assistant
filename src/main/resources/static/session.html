@@ -199,7 +199,7 @@
             const data = await request(`/workout/session/set?sessionId=${sessionId}&exerciseId=${exerciseId}&size=50`);
             const el = document.getElementById(`sets_${exerciseId}`);
             if (!el) return;
-            const sets = (data.content || []).sort(function(a, b) { return a.id - b.id; });
+            const sets = data.content || [];
             el.innerHTML = sets.length === 0
                 ? ''
                 : sets.map((s, i) =>

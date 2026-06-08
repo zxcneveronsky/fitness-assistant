@@ -78,10 +78,7 @@
             return;
         }
 
-        const sortedSessions = [...data.content].sort(function(a, b) {
-            return new Date(b.startTime) - new Date(a.startTime);
-        });
-
+        const sortedSessions = data.content || [];
         const names = await Promise.all(sortedSessions.map(s => getWorkoutName(s.workoutId)));
         container.innerHTML = sortedSessions.map((s, i) => {
             const start = new Date(s.startTime);

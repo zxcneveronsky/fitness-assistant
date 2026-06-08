@@ -164,9 +164,7 @@
         async function loadWater() {
             await loadWaterData();
             const waterData = await request(`/hydration/search?localDateTime=${encodeURIComponent(selectedWaterDate())}&size=50`);
-            const waters = (waterData.content || []).sort(function(a, b) {
-                return new Date(b.consumedAt) - new Date(a.consumedAt);
-            });
+            const waters = waterData.content || [];
             document.getElementById('waterList').innerHTML = waters.length === 0
                 ? '<p class="text-gray-400 text-center py-8">Сегодня ещё не пили воду</p>'
                 : waters.map(w => `

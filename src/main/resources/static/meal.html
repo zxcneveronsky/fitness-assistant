@@ -301,9 +301,7 @@
     async function loadMeals() {
         await loadMealData();
         const data = await request(`/meal/search?localDateTime=${encodeURIComponent(selectedDate())}&size=50`);
-        const meals = (data.content || []).sort(function(a, b) {
-            return new Date(b.consumedAt) - new Date(a.consumedAt);
-        });
+        const meals = data.content || [];
         document.getElementById('mealList').innerHTML = meals.length === 0
             ? '<p class="text-gray-400 text-center py-8">Сегодня ещё ничего не съедено</p>'
             : meals.map(m => `
