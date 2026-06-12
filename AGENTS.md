@@ -72,50 +72,62 @@ web/mapper/         → Domain ↔ DTO
 ### Исключения
 - `CreateUserProfileUseCase: Targets targets = new Targets()` — новый объект, не из БД
 
+### ORDER BY в JPA
+- Все списки данных сортируются в JPA репозиториях через `@Query` с `ORDER BY`
+- На фронте `.sort()` не используется (кроме графиков где нужен ASC для оси X)
+- Правила:
+  - Еда/вода: `consumedAt DESC`
+  - Сессии тренировок: `startTime DESC`
+  - Тренировки: `id DESC`
+  - Подходы: `id ASC`
+  - История упражнения: `startTime DESC, id ASC`
+
 ---
 
 ## 📋 План
 
-### 📈 1. Прогресс в упражнениях
+### ✅ Готово
+
+#### 📈 История упражнений (вместо Прогресс)
 
 **Бэк:**
-- `GET /exercise/{id}/progress?from=&to=` — агрегация по `sets`
-- Возвращает: `[{ date, maxWeight, totalReps, totalVolume, sets: [{weight, reps}] }]`
-- Группировка по `session_id`, берётся `startTime` из `workout_sessions`
+- `GET /exercise/{id}/history?from=&to=` — возвращает `ExerciseHistoryPoint[]`
+- Каждая точка: `{ sessionId, workoutName, startTime, endTime, sets: [{weight, reps, createdAt}] }`
+- Батч-загрузка названий тренировок (N+1 нет)
+- Use case: `FindExerciseHistoryUseCase` в пакете `application/service/exercisehistory/`
 
 **Фронт:**
-- В `explore/exercises.html`: кнопка «📊 Прогресс» у каждого упражнения при клике
-- Модалка с двумя графиками:
-  1. Рабочий вес (max weight за сессию) — line chart
-  2. Объём (weight × reps) — line chart
-- Если данных нет — «Нет данных для этого упражнения»
+- `exercise-history.html` — отдельная страница с:
+  - Двумя line chart (Chart.js): макс. вес + объём
+  - Списком сессий с подходами
+  - Фильтрами: неделя/месяц/полгода/год/произвольно
+- Названия упражнений кликабельны в `session-detail.html`, `session.html`, `workout-detail.html`
 
 ---
 
-### 🔥 2. Streak
+#### 🔥 Streak
 
-**Миграция** `V17__add_streak_to_profiles.sql`:
+**Миграция** `V17__create_streaks_table.sql`:
 ```sql
-ALTER TABLE users_profiles
-    ADD COLUMN current_streak INT DEFAULT 0,
-    ADD COLUMN last_workout_date DATE;
+CREATE TABLE streaks (
+    user_id BIGINT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    streak INT DEFAULT 0,
+    last_visit_date DATE
+);
 ```
 
-**Бэк:**
-- В `endSession`: проверить `today` vs `last_workout_date`
-  - `last_workout_date = today` → ничего не менять (уже считали)
-  - `last_workout_date = yesterday` → `streak++`
-  - иначе → `streak = 1`
-  - `last_workout_date = today`
-- `GET /profile/streak` → `{ workoutStreak: N }`
+**Backend:**
+- `StreakEntity`, `Streak` (domain), `StreakRepository` (port), `StreakMapper`, `StreakRepositoryAdapter`
+- `UpdateStreakUseCase` в `application/service/visit/`
+- `POST /profile/streak` — создаёт/обновляет запись, возвращает `{ streak: Integer }`
+- Логика: нет записи → streak=0, last_visit=today → yesterday → streak++, today → без изменений, иначе → streak=0
 
-**Фронт:**
-- Dashboard: 🔥 `N дней` (крупно, рядом с приветствием)
-- Если streak = 0 — не показывать
+**Frontend:**
+- `dashboard.html`: при загрузке `POST /profile/streak`, 🔥 `N дней` если streak > 0
 
 ---
 
-### 🔗 3. Шаринг тренировок
+### 🔗 1. Шаринг тренировок
 
 **Миграция** `V18__create_workout_shares.sql`:
 ```sql
@@ -158,7 +170,7 @@ ALTER TABLE workouts ADD COLUMN is_public BOOLEAN DEFAULT false;
 
 ---
 
-### 🐳 4. Docker Compose
+### 🐳 2. Docker Compose
 
 **Файлы:**
 - `Dockerfile` — multi-stage build:
@@ -210,7 +222,7 @@ ALTER TABLE workouts ADD COLUMN is_public BOOLEAN DEFAULT false;
 
 ---
 
-### 🧪 5. Тесты
+### 🧪 3. Тесты
 
 **Конфиг:** `src/test/resources/application-test.yml`:
 ```yaml
@@ -255,7 +267,7 @@ class WorkoutFlowTest {
 
 ---
 
-### 🛠 6. Админка
+### 🛠 4. Админка
 
 **Бэк:**
 - Роль ADMIN уже есть в `UserRole.java` (не используется)

@@ -23,6 +23,73 @@
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(4px); z-index: 100; display: none; align-items: center; justify-content: center; padding: 1rem; }
         .modal-overlay.open { display: flex; }
         .modal-box { border-radius: 2rem; background: #fff; max-width: 400px; width: 100%; padding: 2rem; box-shadow: 0 40px 80px rgba(0,0,0,0.15); }
+        @keyframes flame-flicker {
+            0%, 100% { transform: scale(1) rotate(0deg) translateY(0); }
+            25% { transform: scale(1.1) rotate(-4deg) translateY(-3px); }
+            50% { transform: scale(1.15) rotate(3deg) translateY(-5px); }
+            75% { transform: scale(1.08) rotate(-2deg) translateY(-2px); }
+        }
+        @keyframes glow-pulse {
+            0%, 100% { box-shadow: 0 8px 32px rgba(255,107,53,0.2), 0 0 0 0 rgba(255,107,53,0.1); }
+            50% { box-shadow: 0 12px 48px rgba(255,107,53,0.35), 0 0 0 8px rgba(255,107,53,0.05); }
+        }
+        @keyframes streak-enter {
+            0% { transform: scale(0) rotate(-10deg); opacity: 0; }
+            60% { transform: scale(1.15) rotate(2deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+        .streak-card {
+            display: inline-flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 24px 12px 18px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #ff6b35 0%, #f7c948 100%);
+            box-shadow: 0 8px 32px rgba(255,107,53,0.25);
+            animation: glow-pulse 2.5s ease-in-out infinite, streak-enter 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+            vertical-align: middle;
+            margin-left: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+        .streak-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 20px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .streak-flame {
+            display: inline-block;
+            font-size: 2rem;
+            line-height: 1;
+            animation: flame-flicker 1.4s ease-in-out infinite;
+            transform-origin: center bottom;
+            filter: drop-shadow(0 2px 6px rgba(255,100,0,0.4));
+        }
+        .streak-content {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            line-height: 1.2;
+            position: relative;
+            z-index: 1;
+        }
+        .streak-number {
+            color: white;
+            font-weight: 900;
+            font-size: 1.75rem;
+            letter-spacing: -0.03em;
+            font-family: 'Manrope', sans-serif;
+        }
+        .streak-label {
+            color: rgba(255,255,255,0.85);
+            font-weight: 600;
+            font-size: 0.7rem;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
     </style>
 </head>
 <body>
@@ -57,6 +124,13 @@
     <div class="animate__animated animate__fadeInDown mb-10 pt-4">
         <h1 class="hero-title text-5xl lg:text-6xl font-extrabold tracking-tighter mb-2">
             Привет, <span id="greeting-name" class="text-blue-600">чемпион</span>
+            <span id="streakBadge" class="hidden streak-card">
+                <span class="streak-flame">🔥</span>
+                <span class="streak-content">
+                    <span class="streak-number"><span id="streakCount">0</span></span>
+                    <span class="streak-label">дней подряд</span>
+                </span>
+            </span>
         </h1>
         <p class="text-gray-400 text-lg font-medium">Вот твой прогресс на сегодня</p>
     </div>
@@ -288,6 +362,7 @@
         initCharts();
         renderActiveSessionBanner(); syncActiveSessions();
         lastLoadTime = Date.now();
+        await loadStreak();
         await loadData();
     });
 
@@ -319,6 +394,55 @@
                 el.classList.add('animate__fadeIn');
             }, 800);
         }, 5000);
+    }
+
+    async function loadStreak() {
+        try {
+            const data = await request('/profile/streak', { method: 'POST' });
+            if (data && data.streak > 0) {
+                document.getElementById('streakCount').textContent = data.streak;
+                applyStreakStyle(data.streak);
+                document.getElementById('streakBadge').classList.remove('hidden');
+            } else {
+                document.getElementById('streakBadge').classList.add('hidden');
+            }
+        } catch (e) { console.warn('streak error:', e); }
+    }
+
+    function applyStreakStyle(streak) {
+        const badge = document.getElementById('streakBadge');
+        const flame = document.querySelector('.streak-flame');
+        let gradient, shadow, emoji;
+
+        if (streak >= 60) {
+            gradient = 'linear-gradient(135deg, #8b5cf6, #ec4899, #f59e0b)';
+            shadow = 'rgba(139,92,246,0.3)';
+            emoji = '👑';
+        } else if (streak >= 30) {
+            gradient = 'linear-gradient(135deg, #7c3aed, #db2777)';
+            shadow = 'rgba(124,58,237,0.3)';
+            emoji = '🔥';
+        } else if (streak >= 14) {
+            gradient = 'linear-gradient(135deg, #dc2626, #ea580c)';
+            shadow = 'rgba(220,38,38,0.3)';
+            emoji = '🔥';
+        } else if (streak >= 7) {
+            gradient = 'linear-gradient(135deg, #ea580c, #facc15)';
+            shadow = 'rgba(234,88,12,0.3)';
+            emoji = '🔥';
+        } else {
+            gradient = 'linear-gradient(135deg, #ff6b35, #f7c948)';
+            shadow = 'rgba(255,107,53,0.25)';
+            emoji = '🔥';
+        }
+
+        badge.style.background = gradient;
+        badge.style.boxShadow = '0 8px 32px ' + shadow + ', 0 0 0 0 rgba(0,0,0,0)';
+        flame.textContent = emoji;
+
+        badge.style.animation = 'none';
+        void badge.offsetWidth;
+        badge.style.animation = '';
     }
 
     async function loadData() {

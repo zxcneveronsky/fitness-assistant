@@ -4,10 +4,13 @@ import com.example.fitness_assistant.application.service.profile.CreateUserProfi
 import com.example.fitness_assistant.application.service.profile.DeleteProfileUseCase;
 import com.example.fitness_assistant.application.service.profile.FindProfileUseCase;
 import com.example.fitness_assistant.application.service.profile.UpdateUserProfileUseCase;
+import com.example.fitness_assistant.application.service.visit.UpdateStreakUseCase;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import com.example.fitness_assistant.web.dto.request.create.CreateUserProfileRequest;
 import com.example.fitness_assistant.web.dto.request.update.UpdateUserProfileRequest;
+import com.example.fitness_assistant.web.dto.response.StreakResponse;
 import com.example.fitness_assistant.web.dto.response.UserProfileResponse;
+import com.example.fitness_assistant.web.mapper.StreakWebMapper;
 import com.example.fitness_assistant.web.mapper.UserProfileWebMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +31,8 @@ public class UserProfileController {
     private final FindProfileUseCase findProfileUseCase;
     private final DeleteProfileUseCase deleteProfileUseCase;
     private final UserProfileWebMapper userProfileWebMapper;
+    private final UpdateStreakUseCase updateStreakUseCase;
+    private final StreakWebMapper streakWebMapper;
 
     @GetMapping
     public UserProfileResponse getProfile(@AuthenticationPrincipal UserDetailsAdapter adapter) {
@@ -48,6 +53,11 @@ public class UserProfileController {
         return userProfileWebMapper.toResponse(
                 updateUserProfileUseCase.updateUserProfile(adapter.getUserId(), userProfileWebMapper.toDomain(request))
         );
+    }
+
+    @PostMapping("/streak")
+    public StreakResponse updateStreak(@AuthenticationPrincipal UserDetailsAdapter adapter) {
+        return streakWebMapper.toResponse(updateStreakUseCase.updateStreak(adapter.getUserId()));
     }
 
     @DeleteMapping
