@@ -60,7 +60,7 @@ public class FavoriteController {
             @AuthenticationPrincipal UserDetailsAdapter adapter,
             @PathVariable Long exerciseId) {
         return favoriteExerciseWebMapper.toResponse(
-                createFavoriteExerciseUseCase.createFavorite(adapter.getUserId(), exerciseId)
+                createFavoriteExerciseUseCase.createFavoriteExercise(adapter.getUserId(), exerciseId)
         );
     }
 
@@ -69,7 +69,7 @@ public class FavoriteController {
     public void removeFavoriteExercise(
             @AuthenticationPrincipal UserDetailsAdapter adapter,
             @PathVariable Long exerciseId) {
-        deleteFavoriteExerciseUseCase.deleteFavorite(adapter.getUserId(), exerciseId);
+        deleteFavoriteExerciseUseCase.deleteFavoriteExercise(adapter.getUserId(), exerciseId);
     }
 
     @GetMapping("/exercise/ids")
@@ -84,7 +84,7 @@ public class FavoriteController {
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Long muscleId,
             @PageableDefault(size = 12) Pageable pageable) {
-        return findFavoriteExerciseUseCase.searchFavorites(adapter.getUserId(), name, muscleId, pageable)
+        return findFavoriteExerciseUseCase.searchFavoriteExercise(adapter.getUserId(), name, muscleId, pageable)
                 .map(exerciseWebMapper::toResponse);
     }
 
@@ -94,7 +94,7 @@ public class FavoriteController {
             @AuthenticationPrincipal UserDetailsAdapter adapter,
             @PathVariable Long foodId) {
         return favoriteFoodWebMapper.toResponse(
-                createFavoriteFoodUseCase.createFavorite(adapter.getUserId(), foodId)
+                createFavoriteFoodUseCase.createFavoriteFood(adapter.getUserId(), foodId)
         );
     }
 
@@ -103,7 +103,7 @@ public class FavoriteController {
     public void removeFavoriteFood(
             @AuthenticationPrincipal UserDetailsAdapter adapter,
             @PathVariable Long foodId) {
-        deleteFavoriteFoodUseCase.deleteFavorite(adapter.getUserId(), foodId);
+        deleteFavoriteFoodUseCase.deleteFavoriteFood(adapter.getUserId(), foodId);
     }
 
     @GetMapping("/food/ids")
@@ -117,7 +117,7 @@ public class FavoriteController {
             @AuthenticationPrincipal UserDetailsAdapter adapter,
             @RequestParam(required = false) String name,
             @PageableDefault(size = 12) Pageable pageable) {
-        return findFavoriteFoodUseCase.searchFavorites(adapter.getUserId(), name, pageable)
+        return findFavoriteFoodUseCase.searchFavoriteFood(adapter.getUserId(), name, pageable)
                 .map(foodWebMapper::toResponse);
     }
 }

@@ -1,8 +1,11 @@
 package com.example.fitness_assistant.application.service.targets;
 
 import com.example.fitness_assistant.core.exception.TargetsNotFoundException;
+import com.example.fitness_assistant.core.exception.UserProfileNotFoundException;
 import com.example.fitness_assistant.core.model.Targets;
+import com.example.fitness_assistant.core.model.UserProfile;
 import com.example.fitness_assistant.core.repository.TargetsRepository;
+import com.example.fitness_assistant.core.repository.UserProfileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -15,6 +18,7 @@ public class UpdateTargetsUseCase {
 
     private final TargetsRepository targetsRepository;
     private final TargetCalculationService targetCalculationService;
+    private final UserProfileRepository userProfileRepository;
 
     @Transactional
     public Targets updateTargets(Long userId, Targets request) {
@@ -27,6 +31,23 @@ public class UpdateTargetsUseCase {
         }
         Targets savedTargets = targetsRepository.save(targets);
         log.info("Цели обновлены | userId={}", savedTargets.getProfileId());
+        return savedTargets;
+    }
+
+    @Transactional
+    public Targets updateAutopilotStatus(Long userId, boolean enabled) {
+        UserProfile profile = userProfileRepository.findById(userId)
+                .orElseThrow(() -> new UserProfileNotFoundException());
+
+        Targets targets = targetsRepository.findById(userId)
+                .orElseThrow(() -> new TargetsNotFoundException());
+        targets.setUseAutopilot(enabled);
+        if (enabled) {
+            targetCalculationService.applyAutoTargets(targets, profile);
+        }
+        Targets savedTargets = targetsRepository.save(targets);
+
+        log.info("Статус автопилота обновлён | userId={} | enabled={}", userId, enabled);
         return savedTargets;
     }
 }

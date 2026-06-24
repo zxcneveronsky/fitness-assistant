@@ -52,21 +52,4 @@ public class UpdateUserProfileUseCase {
         log.info("Профиль обновлён | userId={}", updatedProfile.getId());
         return updatedProfile;
     }
-
-    @Transactional
-    public Targets updateAutopilotStatus(Long userId, boolean enabled) {
-        UserProfile profile = userProfileRepository.findById(userId)
-                .orElseThrow(() -> new UserProfileNotFoundException());
-
-        Targets targets = targetsRepository.findById(userId)
-                .orElseThrow(() -> new TargetsNotFoundException());
-        targets.setUseAutopilot(enabled);
-        if (enabled) {
-            targetCalculationService.applyAutoTargets(targets, profile);
-        }
-        Targets savedTargets = targetsRepository.save(targets);
-
-        log.info("Статус автопилота обновлён | userId={} | enabled={}", userId, enabled);
-        return savedTargets;
-    }
 }

@@ -17,8 +17,8 @@ public class FindMuscleUseCase {
     private final MuscleRepository muscleRepository;
 
     @Transactional(readOnly = true)
-    public List<Muscle> searchMuscles(String name) {
-        List<Muscle> muscles = muscleRepository.searchMuscles(name);
+    public List<Muscle> searchMuscle(String name) {
+        List<Muscle> muscles = muscleRepository.searchMuscle(name);
         log.info("Поиск мышц | name='{}' | найдено={}", name, muscles.size());
         return muscles;
     }

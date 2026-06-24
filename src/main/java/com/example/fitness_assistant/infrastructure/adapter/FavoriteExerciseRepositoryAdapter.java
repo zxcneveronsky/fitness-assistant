@@ -45,7 +45,7 @@ public class FavoriteExerciseRepositoryAdapter implements FavoriteExerciseReposi
     }
 
     @Override
-    public Page<Exercise> searchFavorites(Long userId, String name, Long muscleId, Pageable pageable) {
+    public Page<Exercise> searchFavoriteExercise(Long userId, String name, Long muscleId, Pageable pageable) {
         return jpaFavoriteExerciseRepository.searchFavoriteExercises(userId, name, muscleId, pageable)
                 .map(exerciseMapper::toDomain);
     }

@@ -15,7 +15,7 @@ public interface FavoriteExerciseRepository {
 
     void deleteByUserIdAndExerciseId(Long userId, Long exerciseId);
 
-    Page<Exercise> searchFavorites(Long userId, String name, Long muscleId, Pageable pageable);
+    Page<Exercise> searchFavoriteExercise(Long userId, String name, Long muscleId, Pageable pageable);
 
     List<Long> findIdsByUserId(Long userId);
 }

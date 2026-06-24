@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CalculateFoodUseCase {
     private final FoodRepository foodRepository;
     @Transactional(readOnly = true)
-    public Food calculateNutrition(Long id, Double weight) {
+    public Food calculateFood(Long id, Double weight) {
         if (weight == null) {
             throw new IllegalArgumentException("Вес не может быть null");
         }

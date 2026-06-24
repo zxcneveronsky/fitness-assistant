@@ -51,7 +51,7 @@ public class ExerciseController {
             @PathVariable Long id,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to) {
-        return findExerciseHistoryUseCase.findHistory(id, adapter.getUserId(), from, to)
+        return findExerciseHistoryUseCase.findExerciseHistory(id, adapter.getUserId(), from, to)
                 .stream()
                 .map(exerciseHistoryWebMapper::toResponse)
                 .toList();

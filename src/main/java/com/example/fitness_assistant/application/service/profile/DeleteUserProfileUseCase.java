@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class DeleteProfileUseCase {
+public class DeleteUserProfileUseCase {
 
     private final UserProfileRepository userProfileRepository;
 

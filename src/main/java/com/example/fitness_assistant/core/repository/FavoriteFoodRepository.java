@@ -15,7 +15,7 @@ public interface FavoriteFoodRepository {
 
     void deleteByUserIdAndFoodId(Long userId, Long foodId);
 
-    Page<Food> searchFavorites(Long userId, String name, Pageable pageable);
+    Page<Food> searchFavoriteFood(Long userId, String name, Pageable pageable);
 
     List<Long> findIdsByUserId(Long userId);
 }

@@ -15,7 +15,7 @@ public class DeleteFavoriteFoodUseCase {
     private final FavoriteFoodRepository favoriteFoodRepository;
 
     @Transactional
-    public void deleteFavorite(Long userId, Long foodId) {
+    public void deleteFavoriteFood(Long userId, Long foodId) {
         if (!favoriteFoodRepository.existsByUserIdAndFoodId(userId, foodId)) {
             throw new FavoriteFoodNotFoundException(foodId);
         }

@@ -17,8 +17,8 @@ public class FindFavoriteFoodUseCase {
     private final FavoriteFoodRepository favoriteFoodRepository;
 
     @Transactional(readOnly = true)
-    public Page<Food> searchFavorites(Long userId, String name, Pageable pageable) {
-        Page<Food> foods = favoriteFoodRepository.searchFavorites(userId, name, pageable);
+    public Page<Food> searchFavoriteFood(Long userId, String name, Pageable pageable) {
+        Page<Food> foods = favoriteFoodRepository.searchFavoriteFood(userId, name, pageable);
         log.info("Поиск избранных продуктов завершён | найдено={}", foods.getTotalElements());
         return foods;
     }

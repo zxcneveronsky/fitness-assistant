@@ -2,8 +2,8 @@ package com.example.fitness_assistant.web.controller;
 
 import com.example.fitness_assistant.application.service.user.DeleteUserUseCase;
 import com.example.fitness_assistant.application.service.user.LoginResult;
-import com.example.fitness_assistant.application.service.user.LoginUseCase;
-import com.example.fitness_assistant.application.service.user.RegisterUseCase;
+import com.example.fitness_assistant.application.service.user.LoginUserUseCase;
+import com.example.fitness_assistant.application.service.user.RegisterUserUseCase;
 import com.example.fitness_assistant.core.exception.AccessDeniedException;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import com.example.fitness_assistant.web.dto.response.AuthResponse;
@@ -22,21 +22,21 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Validated
 public class AuthController {
-    private final RegisterUseCase registerUseCase;
-    private final LoginUseCase loginUseCase;
+    private final RegisterUserUseCase registerUseCase;
+    private final LoginUserUseCase loginUseCase;
     private final DeleteUserUseCase deleteUserUseCase;
     private final UserWebMapper userWebMapper;
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public AuthResponse register(@Valid @RequestBody RegisterRequest request) {
-        LoginResult loginResult = registerUseCase.register(userWebMapper.toDomain(request));
+        LoginResult loginResult = registerUseCase.registerUser(userWebMapper.toDomain(request));
         return userWebMapper.toAuthResponse(loginResult);
     }
 
     @PostMapping("/login")
     public AuthResponse login(@Valid @RequestBody LoginRequest request) {
-        LoginResult loginResult = loginUseCase.login(request.email(), request.password());
+        LoginResult loginResult = loginUseCase.loginUser(request.email(), request.password());
         return userWebMapper.toAuthResponse(loginResult);
     }
 

@@ -22,7 +22,7 @@ public class CreateFavoriteFoodUseCase {
     private final FoodRepository foodRepository;
 
     @Transactional
-    public FavoriteFood createFavorite(Long userId, Long foodId) {
+    public FavoriteFood createFavoriteFood(Long userId, Long foodId) {
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException(userId);
         }

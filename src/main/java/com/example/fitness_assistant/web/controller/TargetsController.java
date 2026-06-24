@@ -1,6 +1,5 @@
 package com.example.fitness_assistant.web.controller;
 
-import com.example.fitness_assistant.application.service.profile.UpdateUserProfileUseCase;
 import com.example.fitness_assistant.application.service.targets.FindTargetsUseCase;
 import com.example.fitness_assistant.application.service.targets.UpdateTargetsUseCase;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
@@ -25,7 +24,6 @@ public class TargetsController {
     private final UpdateTargetsUseCase updateTargetsUseCase;
     private final FindTargetsUseCase findTargetsUseCase;
     private final TargetsWebMapper targetsWebMapper;
-    private final UpdateUserProfileUseCase updateUserProfileUseCase;
 
     @PatchMapping("/targets")
     @ResponseStatus(HttpStatus.OK)
@@ -48,7 +46,7 @@ public class TargetsController {
             @AuthenticationPrincipal UserDetailsAdapter adapter,
             @RequestParam boolean enabled) {
         return targetsWebMapper.toTargetStatusResponse(
-                updateUserProfileUseCase.updateAutopilotStatus(adapter.getUserId(), enabled)
+                updateTargetsUseCase.updateAutopilotStatus(adapter.getUserId(), enabled)
         );
     }
 }

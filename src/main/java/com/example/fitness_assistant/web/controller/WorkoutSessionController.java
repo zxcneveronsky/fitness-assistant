@@ -3,7 +3,6 @@ package com.example.fitness_assistant.web.controller;
 import com.example.fitness_assistant.application.service.workoutsession.CreateWorkoutSessionUseCase;
 import com.example.fitness_assistant.application.service.workoutsession.DeleteWorkoutSessionUseCase;
 import com.example.fitness_assistant.application.service.workoutsession.FindWorkoutSessionUseCase;
-import com.example.fitness_assistant.application.service.workoutsession.FindAllWorkoutSessionsUseCase;
 import com.example.fitness_assistant.application.service.workoutsession.UpdateWorkoutSessionUseCase;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import com.example.fitness_assistant.web.dto.request.create.CreateWorkoutSessionRequest;
@@ -28,7 +27,6 @@ public class WorkoutSessionController {
 
     private final CreateWorkoutSessionUseCase createWorkoutSessionUseCase;
     private final FindWorkoutSessionUseCase findWorkoutSessionUseCase;
-    private final FindAllWorkoutSessionsUseCase findAllWorkoutSessionsUseCase;
     private final UpdateWorkoutSessionUseCase updateWorkoutSessionUseCase;
     private final DeleteWorkoutSessionUseCase deleteWorkoutSessionUseCase;
     private final WorkoutSessionWebMapper workoutSessionWebMapper;
@@ -46,7 +44,7 @@ public class WorkoutSessionController {
     public Page<WorkoutSessionResponse> getAllWorkoutSession(
             @AuthenticationPrincipal UserDetailsAdapter adapter,
             @PageableDefault(size = 12) Pageable pageable) {
-        return findAllWorkoutSessionsUseCase.findAll(adapter.getUserId(), pageable)
+        return findWorkoutSessionUseCase.findAll(adapter.getUserId(), pageable)
                 .map(workoutSessionWebMapper::toResponse);
     }
 
@@ -56,7 +54,7 @@ public class WorkoutSessionController {
             @AuthenticationPrincipal UserDetailsAdapter adapter,
             @Valid @RequestBody CreateWorkoutSessionRequest request) {
         return workoutSessionWebMapper.toResponse(
-                createWorkoutSessionUseCase.createSession(request.workoutId(), request.startTime(), adapter.getUserId())
+                createWorkoutSessionUseCase.createWorkoutSession(request.workoutId(), request.startTime(), adapter.getUserId())
         );
     }
 
@@ -66,7 +64,7 @@ public class WorkoutSessionController {
             @AuthenticationPrincipal UserDetailsAdapter adapter,
             @Valid @RequestBody UpdateWorkoutSessionRequest request) {
         return workoutSessionWebMapper.toResponse(
-                updateWorkoutSessionUseCase.updateSession(request.id(), request.endTime(), adapter.getUserId())
+                updateWorkoutSessionUseCase.updateWorkoutSession(request.id(), request.endTime(), adapter.getUserId())
         );
     }
 
@@ -75,6 +73,6 @@ public class WorkoutSessionController {
     public void deleteWorkoutSession(
             @AuthenticationPrincipal UserDetailsAdapter adapter,
             @PathVariable Long id) {
-        deleteWorkoutSessionUseCase.deleteSession(id, adapter.getUserId());
+        deleteWorkoutSessionUseCase.deleteWorkoutSession(id, adapter.getUserId());
     }
 }

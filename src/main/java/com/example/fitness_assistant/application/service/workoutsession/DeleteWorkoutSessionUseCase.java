@@ -15,7 +15,7 @@ public class DeleteWorkoutSessionUseCase {
     private final WorkoutSessionRepository workoutSessionRepository;
 
     @Transactional
-    public void deleteSession(Long id, Long userId) {
+    public void deleteWorkoutSession(Long id, Long userId) {
         if (!workoutSessionRepository.existsById(id, userId)) {
             throw new WorkoutSessionNotFoundException(id);
         }

@@ -28,7 +28,7 @@ public class FindExerciseHistoryUseCase {
     private final WorkoutRepository workoutRepository;
 
     @Transactional(readOnly = true)
-    public List<ExerciseHistoryPoint> findHistory(Long exerciseId, Long userId, LocalDateTime from, LocalDateTime to) {
+    public List<ExerciseHistoryPoint> findExerciseHistory(Long exerciseId, Long userId, LocalDateTime from, LocalDateTime to) {
         List<Set> sets = setRepository.findByExerciseIdAndUserIdAndStartTimeBetween(exerciseId, userId, from, to);
         if (sets.isEmpty()) {
             log.info("История упражнения пуста | exerciseId={} | userId={}", exerciseId, userId);

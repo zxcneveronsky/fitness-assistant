@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -22,6 +21,14 @@ public class FindWorkoutUseCase {
 
     private final WorkoutRepository workoutRepository;
     private final ExerciseRepository exerciseRepository;
+
+    @Transactional(readOnly = true)
+    public Page<Workout> findAll(Long userId, Pageable pageable) {
+        Page<Workout> workouts = workoutRepository.findAllByUserId(userId, pageable);
+        log.info("Поиск тренировок завершён | найдено={} | страница={}/{}",
+                workouts.getTotalElements(), workouts.getNumber() + 1, workouts.getTotalPages());
+        return workouts;
+    }
 
     @Transactional(readOnly = true)
     public Page<Workout> searchWorkout(String name, Long userId, Pageable pageable) {

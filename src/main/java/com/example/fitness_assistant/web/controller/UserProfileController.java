@@ -1,8 +1,8 @@
 package com.example.fitness_assistant.web.controller;
 
 import com.example.fitness_assistant.application.service.profile.CreateUserProfileUseCase;
-import com.example.fitness_assistant.application.service.profile.DeleteProfileUseCase;
-import com.example.fitness_assistant.application.service.profile.FindProfileUseCase;
+import com.example.fitness_assistant.application.service.profile.DeleteUserProfileUseCase;
+import com.example.fitness_assistant.application.service.profile.FindUserProfileUseCase;
 import com.example.fitness_assistant.application.service.profile.UpdateUserProfileUseCase;
 import com.example.fitness_assistant.application.service.visit.UpdateStreakUseCase;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
@@ -28,8 +28,8 @@ public class UserProfileController {
 
     private final CreateUserProfileUseCase createUserProfileUseCase;
     private final UpdateUserProfileUseCase updateUserProfileUseCase;
-    private final FindProfileUseCase findProfileUseCase;
-    private final DeleteProfileUseCase deleteProfileUseCase;
+    private final FindUserProfileUseCase findProfileUseCase;
+    private final DeleteUserProfileUseCase deleteProfileUseCase;
     private final UserProfileWebMapper userProfileWebMapper;
     private final UpdateStreakUseCase updateStreakUseCase;
     private final StreakWebMapper streakWebMapper;

@@ -22,7 +22,7 @@ public class CreateFavoriteExerciseUseCase {
     private final ExerciseRepository exerciseRepository;
 
     @Transactional
-    public FavoriteExercise createFavorite(Long userId, Long exerciseId) {
+    public FavoriteExercise createFavoriteExercise(Long userId, Long exerciseId) {
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException(userId);
         }

@@ -15,7 +15,7 @@ public class DeleteFavoriteExerciseUseCase {
     private final FavoriteExerciseRepository favoriteExerciseRepository;
 
     @Transactional
-    public void deleteFavorite(Long userId, Long exerciseId) {
+    public void deleteFavoriteExercise(Long userId, Long exerciseId) {
         if (!favoriteExerciseRepository.existsByUserIdAndExerciseId(userId, exerciseId)) {
             throw new FavoriteExerciseNotFoundException(exerciseId);
         }

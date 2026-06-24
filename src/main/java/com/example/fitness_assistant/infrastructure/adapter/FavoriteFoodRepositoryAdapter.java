@@ -45,7 +45,7 @@ public class FavoriteFoodRepositoryAdapter implements FavoriteFoodRepository {
     }
 
     @Override
-    public Page<Food> searchFavorites(Long userId, String name, Pageable pageable) {
+    public Page<Food> searchFavoriteFood(Long userId, String name, Pageable pageable) {
         return jpaFavoriteFoodRepository.searchFavoriteFoods(userId, name, pageable)
                 .map(foodMapper::toDomain);
     }

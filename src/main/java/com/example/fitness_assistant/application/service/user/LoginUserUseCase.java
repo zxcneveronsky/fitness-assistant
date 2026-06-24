@@ -14,14 +14,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class LoginUseCase {
+public class LoginUserUseCase {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
     @Transactional(readOnly = true)
-    public LoginResult login(String email, String password) {
+    public LoginResult loginUser(String email, String password) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException(email));
 

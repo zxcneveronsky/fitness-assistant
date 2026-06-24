@@ -47,7 +47,7 @@ public class FoodController {
 
     @GetMapping("/calc/{id}")
     public FoodResponse calculateNutrition(@PathVariable Long id,@RequestParam @Positive Double weight){
-        return foodWebMapper.toResponse(calculateFoodUseCase.calculateNutrition(id, weight));
+        return foodWebMapper.toResponse(calculateFoodUseCase.calculateFood(id, weight));
     }
 
     @PostMapping

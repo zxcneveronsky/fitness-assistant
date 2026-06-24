@@ -23,7 +23,7 @@ public class MuscleController {
 
     @GetMapping("/search")
     public List<MuscleResponse> searchMuscles(@RequestParam(required = false) String name) {
-        return findMuscleUseCase.searchMuscles(name).stream()
+        return findMuscleUseCase.searchMuscle(name).stream()
                 .map(muscleWebMapper::toResponse)
                 .toList();
     }

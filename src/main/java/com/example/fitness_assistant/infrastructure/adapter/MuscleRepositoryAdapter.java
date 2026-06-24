@@ -37,8 +37,8 @@ public class MuscleRepositoryAdapter implements MuscleRepository {
     @Override
     @Transactional(readOnly = true)
     @Cacheable("muscle")
-    public List<Muscle> searchMuscles(String name) {
-        return jpaMuscleRepository.searchMuscles(name).stream()
+    public List<Muscle> searchMuscle(String name) {
+        return jpaMuscleRepository.searchMuscle(name).stream()
                 .map(muscleMapper::toDomain)
                 .toList();
     }

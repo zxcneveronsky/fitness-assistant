@@ -13,14 +13,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class RegisterUseCase {
+public class RegisterUserUseCase {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
     @Transactional
-    public LoginResult register(User user) {
+    public LoginResult registerUser(User user) {
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new UserAlreadyExistsException(user.getEmail());
         }

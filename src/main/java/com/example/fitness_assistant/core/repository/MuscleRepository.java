@@ -7,5 +7,5 @@ import java.util.List;
 public interface MuscleRepository {
     boolean existsById(Long id);
     List<Muscle> findAllById(List<Long> ids);
-    List<Muscle> searchMuscles(String name);
+    List<Muscle> searchMuscle(String name);
 }

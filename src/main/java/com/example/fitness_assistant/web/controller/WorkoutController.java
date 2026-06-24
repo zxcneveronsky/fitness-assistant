@@ -3,7 +3,6 @@ package com.example.fitness_assistant.web.controller;
 import com.example.fitness_assistant.application.service.workout.CreateWorkoutUseCase;
 import com.example.fitness_assistant.application.service.workout.DeleteWorkoutUseCase;
 import com.example.fitness_assistant.application.service.workout.FindWorkoutUseCase;
-import com.example.fitness_assistant.application.service.workout.FindAllWorkoutsUseCase;
 import com.example.fitness_assistant.application.service.workout.UpdateWorkoutUseCase;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import com.example.fitness_assistant.web.dto.request.create.CreateWorkoutRequest;
@@ -30,13 +29,12 @@ public class WorkoutController {
     private final CreateWorkoutUseCase createWorkoutUseCase;
     private final DeleteWorkoutUseCase deleteWorkoutUseCase;
     private final FindWorkoutUseCase findWorkoutUseCase;
-    private final FindAllWorkoutsUseCase findAllWorkoutsUseCase;
     private final UpdateWorkoutUseCase updateWorkoutUseCase;
     private final WorkoutWebMapper workoutWebMapper;
 
     @GetMapping
     public Page<WorkoutResponse> getAllWorkouts(@AuthenticationPrincipal UserDetailsAdapter adapter, @PageableDefault(size = 12) Pageable pageable) {
-        return findAllWorkoutsUseCase.findAll(adapter.getUserId(), pageable)
+        return findWorkoutUseCase.findAll(adapter.getUserId(), pageable)
                 .map(workoutWebMapper::toResponse);
     }
 
