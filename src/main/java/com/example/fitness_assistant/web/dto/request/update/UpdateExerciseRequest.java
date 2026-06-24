@@ -1,6 +1,5 @@
 package com.example.fitness_assistant.web.dto.request.update;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -13,11 +12,5 @@ public record UpdateExerciseRequest(
         String name,
         @Size(max = 1000, message = "Описание слишком длинное")
         String description,
-        @Valid
-        List<UpdateMuscleRequest> muscleIds
-) {
-    public record UpdateMuscleRequest(
-            @NotNull(message = "ID мышцы не может быть пустым")
-            Long id
-    ) {}
-}
+        List<@NotNull Long> muscleIds
+) {}

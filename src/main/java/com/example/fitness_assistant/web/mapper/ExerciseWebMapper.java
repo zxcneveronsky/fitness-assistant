@@ -1,6 +1,7 @@
 package com.example.fitness_assistant.web.mapper;
 
 import com.example.fitness_assistant.core.model.Exercise;
+import com.example.fitness_assistant.core.model.Muscle;
 import com.example.fitness_assistant.web.dto.request.create.CreateExerciseRequest;
 import com.example.fitness_assistant.web.dto.request.update.UpdateExerciseRequest;
 import com.example.fitness_assistant.web.dto.response.ExerciseResponse;
@@ -21,7 +22,7 @@ public class ExerciseWebMapper {
                 null,
                 request.name(),
                 request.description(),
-                request.muscleIds().stream().map(exerciseMuscleWebMapper::toDomain).toList()
+                request.muscleIds().stream().map(id -> new Muscle(id, null)).toList()
         );
     }
 
@@ -30,7 +31,9 @@ public class ExerciseWebMapper {
                 request.id(),
                 request.name(),
                 request.description(),
-                request.muscleIds().stream().map(exerciseMuscleWebMapper::toDomain).toList()
+                request.muscleIds() != null
+                        ? request.muscleIds().stream().map(id -> new Muscle(id, null)).toList()
+                        : null
         );
     }
 

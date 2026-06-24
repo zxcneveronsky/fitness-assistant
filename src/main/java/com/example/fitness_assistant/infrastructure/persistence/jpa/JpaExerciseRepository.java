@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface JpaExerciseRepository extends JpaRepository<ExerciseEntity, Long> {
 
-    @Query("SELECT e FROM ExerciseEntity e LEFT JOIN FETCH e.muscles WHERE e.id IN :ids")
+    @Query("SELECT e FROM ExerciseEntity e LEFT JOIN FETCH e.muscles WHERE e.id IN :ids ORDER BY e.name ASC")
     List<ExerciseEntity> findAllByIdIn(@Param("ids") List<Long> ids);
 
     @Query("SELECT COUNT(e) FROM ExerciseEntity e WHERE e.id IN :ids")
@@ -20,11 +20,12 @@ public interface JpaExerciseRepository extends JpaRepository<ExerciseEntity, Lon
     @Query(
             value = """
             SELECT DISTINCT e FROM ExerciseEntity e
-            LEFT JOIN e.muscles m
+            LEFT JOIN FETCH e.muscles m
             WHERE (cast(:name as text) IS NULL
             OR LOWER(e.name) LIKE LOWER(CONCAT('%', cast(:name as text), '%'))
             OR LOWER(m.name) LIKE LOWER(CONCAT('%', cast(:name as text), '%')))
             AND (:muscleId IS NULL OR m.id = :muscleId)
+            ORDER BY e.name ASC
             """,
             countQuery = """
             SELECT COUNT(DISTINCT e) FROM ExerciseEntity e

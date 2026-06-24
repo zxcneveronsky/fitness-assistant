@@ -9,6 +9,6 @@ import java.util.List;
 @AllArgsConstructor
 public class ExerciseDetail {
     private Long exerciseId;
-    private String exerciseName;
+    private String name;
     private List<SetDetail> sets;
 }

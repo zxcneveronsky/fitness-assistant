@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ExerciseHistory {
     private Long sessionId;
-    private String name;
+    private String workoutName;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private List<Set> sets;

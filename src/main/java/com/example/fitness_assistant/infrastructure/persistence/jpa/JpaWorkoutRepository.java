@@ -25,6 +25,7 @@ public interface JpaWorkoutRepository extends JpaRepository<WorkoutEntity, Long>
             WHERE w.user.id = :userId
             AND (cast(:query as text) IS NULL
                  OR LOWER(w.name) LIKE LOWER(CONCAT('%', cast(:query as text), '%')))
+            ORDER BY w.id DESC
             """,
             countQuery = """
             SELECT COUNT(w) FROM WorkoutEntity w

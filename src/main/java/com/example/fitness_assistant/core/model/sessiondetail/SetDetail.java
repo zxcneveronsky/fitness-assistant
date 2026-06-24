@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 public class SetDetail {
     private Long id;
     private Long exerciseId;
-    private String exerciseName;
+    private String name;
     private Double weight;
     private Integer reps;
     private LocalDateTime createdAt;

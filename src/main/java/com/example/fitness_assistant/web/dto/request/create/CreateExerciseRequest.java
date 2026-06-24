@@ -1,6 +1,5 @@
 package com.example.fitness_assistant.web.dto.request.create;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -19,11 +18,5 @@ public record CreateExerciseRequest(
         String description,
         @NotNull(message = "Список мышц не может быть пустым")
         @NotEmpty(message = "Список мышц не может быть пустым")
-        @Valid
-        List<CreateMuscleRequest> muscleIds
-) {
-    public record CreateMuscleRequest(
-            @NotNull(message = "ID мышцы не может быть пустым")
-            Long id
-    ) {}
-}
+        List<@NotNull Long> muscleIds
+) {}

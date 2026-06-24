@@ -14,7 +14,7 @@ public class ExerciseHistoryWebMapper {
     public ExerciseHistoryResponse toResponse(ExerciseHistory point) {
         return new ExerciseHistoryResponse(
                 point.getSessionId(),
-                point.getName(),
+                point.getWorkoutName(),
                 point.getStartTime(),
                 point.getEndTime(),
                 point.getSets().stream()

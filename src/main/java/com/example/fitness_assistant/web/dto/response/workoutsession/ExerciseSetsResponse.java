@@ -4,6 +4,6 @@ import java.util.List;
 
 public record ExerciseSetsResponse(
     Long exerciseId,
-    String exerciseName,
+    String name,
     List<SetItemResponse> sets
 ) {}

@@ -22,6 +22,7 @@ public interface JpaFavoriteFoodRepository extends JpaRepository<FavoriteFoodEnt
         AND (cast(:name as text) IS NULL
         OR LOWER(f.name) LIKE LOWER(CONCAT('%', cast(:name as text), '%'))
         OR LOWER(f.brands) LIKE LOWER(CONCAT('%', cast(:name as text), '%')))
+        ORDER BY f.name ASC
         """,
             countQuery = """
         SELECT COUNT(f) FROM FoodEntity f
@@ -32,6 +33,6 @@ public interface JpaFavoriteFoodRepository extends JpaRepository<FavoriteFoodEnt
         """)
     Page<FoodEntity> searchFavoriteFoods(@Param("userId") Long userId, @Param("name") String name, Pageable pageable);
 
-    @Query("SELECT ff.food.id FROM FavoriteFoodEntity ff WHERE ff.user.id = :userId")
+    @Query("SELECT ff.food.id FROM FavoriteFoodEntity ff WHERE ff.user.id = :userId ORDER BY ff.food.id ASC")
     List<Long> findIdsByUserId(@Param("userId") Long userId);
 }

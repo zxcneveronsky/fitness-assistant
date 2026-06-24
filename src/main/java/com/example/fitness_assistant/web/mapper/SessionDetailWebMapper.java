@@ -19,7 +19,7 @@ public class SessionDetailWebMapper {
                 detail.getExercises().stream()
                         .map(ex -> new ExerciseSetsResponse(
                                 ex.getExerciseId(),
-                                ex.getExerciseName(),
+                                ex.getName(),
                                 ex.getSets().stream()
                                         .map(s -> new SetItemResponse(
                                                 s.getId(),

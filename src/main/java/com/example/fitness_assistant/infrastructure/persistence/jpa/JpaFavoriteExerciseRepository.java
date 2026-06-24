@@ -18,12 +18,13 @@ public interface JpaFavoriteExerciseRepository extends JpaRepository<FavoriteExe
 
     @Query(value = """
         SELECT DISTINCT e FROM ExerciseEntity e
-        LEFT JOIN e.muscles m
+        LEFT JOIN FETCH e.muscles m
         WHERE e.id IN (SELECT fe.exercise.id FROM FavoriteExerciseEntity fe WHERE fe.user.id = :userId)
         AND (cast(:name as text) IS NULL
         OR LOWER(e.name) LIKE LOWER(CONCAT('%', cast(:name as text), '%'))
         OR LOWER(m.name) LIKE LOWER(CONCAT('%', cast(:name as text), '%')))
         AND (:muscleId IS NULL OR m.id = :muscleId)
+        ORDER BY e.name ASC
         """,
             countQuery = """
         SELECT COUNT(DISTINCT e) FROM ExerciseEntity e
@@ -36,6 +37,6 @@ public interface JpaFavoriteExerciseRepository extends JpaRepository<FavoriteExe
         """)
     Page<ExerciseEntity> searchFavoriteExercises(@Param("userId") Long userId, @Param("name") String name, @Param("muscleId") Long muscleId, Pageable pageable);
 
-    @Query("SELECT fe.exercise.id FROM FavoriteExerciseEntity fe WHERE fe.user.id = :userId")
+    @Query("SELECT fe.exercise.id FROM FavoriteExerciseEntity fe WHERE fe.user.id = :userId ORDER BY fe.exercise.id ASC")
     List<Long> findIdsByUserId(@Param("userId") Long userId);
 }
