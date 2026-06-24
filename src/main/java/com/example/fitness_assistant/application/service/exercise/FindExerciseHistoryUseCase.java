@@ -1,6 +1,6 @@
-package com.example.fitness_assistant.application.service.exercisehistory;
+package com.example.fitness_assistant.application.service.exercise;
 
-import com.example.fitness_assistant.core.model.ExerciseHistory;
+import com.example.fitness_assistant.core.model.exercise.ExerciseHistory;
 import com.example.fitness_assistant.core.model.Set;
 import com.example.fitness_assistant.core.model.WorkoutSession;
 import com.example.fitness_assistant.core.model.workout.Workout;

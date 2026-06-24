@@ -1,6 +1,6 @@
 package com.example.fitness_assistant.web.mapper;
 
-import com.example.fitness_assistant.core.model.ExerciseHistory;
+import com.example.fitness_assistant.core.model.exercise.ExerciseHistory;
 import com.example.fitness_assistant.web.dto.response.ExerciseHistoryResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

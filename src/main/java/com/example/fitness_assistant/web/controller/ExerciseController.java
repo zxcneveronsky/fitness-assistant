@@ -4,7 +4,7 @@ import com.example.fitness_assistant.application.service.exercise.CreateExercise
 import com.example.fitness_assistant.application.service.exercise.DeleteExerciseUseCase;
 import com.example.fitness_assistant.application.service.exercise.FindExerciseUseCase;
 import com.example.fitness_assistant.application.service.exercise.UpdateExerciseUseCase;
-import com.example.fitness_assistant.application.service.exercisehistory.FindExerciseHistoryUseCase;
+import com.example.fitness_assistant.application.service.exercise.FindExerciseHistoryUseCase;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import com.example.fitness_assistant.web.dto.request.create.CreateExerciseRequest;
 import com.example.fitness_assistant.web.dto.request.update.UpdateExerciseRequest;
