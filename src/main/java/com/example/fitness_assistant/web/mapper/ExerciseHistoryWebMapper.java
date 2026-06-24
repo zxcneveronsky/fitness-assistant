@@ -1,6 +1,6 @@
 package com.example.fitness_assistant.web.mapper;
 
-import com.example.fitness_assistant.core.model.ExerciseHistoryPoint;
+import com.example.fitness_assistant.core.model.ExerciseHistory;
 import com.example.fitness_assistant.web.dto.response.ExerciseHistoryResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -11,10 +11,10 @@ public class ExerciseHistoryWebMapper {
 
     private final SetWebMapper setWebMapper;
 
-    public ExerciseHistoryResponse toResponse(ExerciseHistoryPoint point) {
+    public ExerciseHistoryResponse toResponse(ExerciseHistory point) {
         return new ExerciseHistoryResponse(
                 point.getSessionId(),
-                point.getWorkoutName(),
+                point.getName(),
                 point.getStartTime(),
                 point.getEndTime(),
                 point.getSets().stream()

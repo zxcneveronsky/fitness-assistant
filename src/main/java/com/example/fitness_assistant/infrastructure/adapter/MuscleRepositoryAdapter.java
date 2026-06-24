@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -19,14 +18,12 @@ public class MuscleRepositoryAdapter implements MuscleRepository {
     private final MuscleMapper muscleMapper;
 
     @Override
-    @Transactional(readOnly = true)
     @Cacheable("muscle")
     public boolean existsById(Long id){
         return jpaMuscleRepository.existsById(id);
     }
 
     @Override
-    @Transactional(readOnly = true)
     @Cacheable("muscle")
     public List<Muscle> findAllById(List<Long> ids) {
         return jpaMuscleRepository.findAllById(ids).stream()
@@ -35,7 +32,6 @@ public class MuscleRepositoryAdapter implements MuscleRepository {
     }
 
     @Override
-    @Transactional(readOnly = true)
     @Cacheable("muscle")
     public List<Muscle> searchMuscle(String name) {
         return jpaMuscleRepository.searchMuscle(name).stream()

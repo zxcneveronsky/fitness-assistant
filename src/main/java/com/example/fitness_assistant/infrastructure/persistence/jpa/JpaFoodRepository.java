@@ -13,6 +13,7 @@ public interface JpaFoodRepository extends JpaRepository<FoodEntity, Long> {
         WHERE (cast(:name as text) IS NULL
         OR LOWER(f.name) LIKE LOWER(CONCAT('%', cast(:name as text), '%'))
         OR LOWER(f.brands) LIKE LOWER(CONCAT('%', cast(:name as text), '%')))
+        ORDER BY f.name ASC
         """,
             countQuery = """
         SELECT COUNT(f) FROM FoodEntity f

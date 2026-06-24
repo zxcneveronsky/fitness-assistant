@@ -9,7 +9,6 @@ import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaTargetsRe
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -28,7 +27,6 @@ public class TargetsRepositoryAdapter implements TargetsRepository {
     }
 
     @Override
-    @Transactional
     public Targets save(Targets targets) {
         TargetsEntity targetsEntity = targetsMapper.toEntity(targets);
         targetsEntity.setProfile(entityManager.getReference(UserProfileEntity.class, targets.getProfileId()));
@@ -36,8 +34,8 @@ public class TargetsRepositoryAdapter implements TargetsRepository {
             entityManager.persist(targetsEntity);
             return targetsMapper.toDomain(targetsEntity);
         } else {
-            TargetsEntity merged = entityManager.merge(targetsEntity);
-            return targetsMapper.toDomain(merged);
+            TargetsEntity mergedTargetsEntity = entityManager.merge(targetsEntity);
+            return targetsMapper.toDomain(mergedTargetsEntity);
         }
     }
 

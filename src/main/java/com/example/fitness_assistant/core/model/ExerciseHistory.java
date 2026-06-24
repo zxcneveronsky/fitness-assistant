@@ -10,9 +10,9 @@ import java.util.List;
 @Getter
 @Setter
 @AllArgsConstructor
-public class ExerciseHistoryPoint {
+public class ExerciseHistory {
     private Long sessionId;
-    private String workoutName;
+    private String name;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private List<Set> sets;

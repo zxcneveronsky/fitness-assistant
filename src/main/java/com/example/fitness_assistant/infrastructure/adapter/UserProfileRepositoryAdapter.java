@@ -9,7 +9,6 @@ import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaUserRepos
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -29,7 +28,6 @@ public class UserProfileRepositoryAdapter implements UserProfileRepository {
     }
 
     @Override
-    @Transactional
     public UserProfile save(UserProfile userProfile) {
         UserProfileEntity userProfileEntity = userProfileMapper.toEntity(userProfile);
         userProfileEntity.setUser(jpaUserRepository.getReferenceById(userProfile.getId()));
@@ -37,8 +35,8 @@ public class UserProfileRepositoryAdapter implements UserProfileRepository {
             entityManager.persist(userProfileEntity);
             return userProfileMapper.toDomain(userProfileEntity);
         } else {
-            UserProfileEntity merged = entityManager.merge(userProfileEntity);
-            return userProfileMapper.toDomain(merged);
+            UserProfileEntity mergedProfileEntity = entityManager.merge(userProfileEntity);
+            return userProfileMapper.toDomain(mergedProfileEntity);
         }
     }
 

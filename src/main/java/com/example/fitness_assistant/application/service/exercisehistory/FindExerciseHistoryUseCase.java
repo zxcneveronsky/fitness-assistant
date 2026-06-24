@@ -1,6 +1,6 @@
 package com.example.fitness_assistant.application.service.exercisehistory;
 
-import com.example.fitness_assistant.core.model.ExerciseHistoryPoint;
+import com.example.fitness_assistant.core.model.ExerciseHistory;
 import com.example.fitness_assistant.core.model.Set;
 import com.example.fitness_assistant.core.model.WorkoutSession;
 import com.example.fitness_assistant.core.model.workout.Workout;
@@ -28,7 +28,7 @@ public class FindExerciseHistoryUseCase {
     private final WorkoutRepository workoutRepository;
 
     @Transactional(readOnly = true)
-    public List<ExerciseHistoryPoint> findExerciseHistory(Long exerciseId, Long userId, LocalDateTime from, LocalDateTime to) {
+    public List<ExerciseHistory> findExerciseHistory(Long exerciseId, Long userId, LocalDateTime from, LocalDateTime to) {
         List<Set> sets = setRepository.findByExerciseIdAndUserIdAndStartTimeBetween(exerciseId, userId, from, to);
         if (sets.isEmpty()) {
             log.info("История упражнения пуста | exerciseId={} | userId={}", exerciseId, userId);
@@ -50,12 +50,12 @@ public class FindExerciseHistoryUseCase {
         Map<Long, String> workoutNameMap = workoutRepository.findAllById(workoutIds).stream()
                 .collect(Collectors.toMap(Workout::getId, Workout::getName));
 
-        List<ExerciseHistoryPoint> historyPoints = sessionIds.stream()
+        List<ExerciseHistory> history = sessionIds.stream()
                 .map(sessionId -> {
                     WorkoutSession session = sessionMap.get(sessionId);
                     if (session == null) return null;
                     String workoutName = workoutNameMap.getOrDefault(session.getWorkoutId(), "Тренировка");
-                    return new ExerciseHistoryPoint(
+                    return new ExerciseHistory(
                             sessionId,
                             workoutName,
                             session.getStartTime(),
@@ -64,10 +64,10 @@ public class FindExerciseHistoryUseCase {
                     );
                 })
                 .filter(java.util.Objects::nonNull)
-                .sorted(Comparator.comparing(ExerciseHistoryPoint::getStartTime, Comparator.nullsLast(Comparator.reverseOrder())))
+                .sorted(Comparator.comparing(ExerciseHistory::getStartTime, Comparator.nullsLast(Comparator.reverseOrder())))
                 .toList();
 
-        log.info("История упражнения загружена | exerciseId={} | userId={} | точек={}", exerciseId, userId, historyPoints.size());
-        return historyPoints;
+        log.info("История упражнения загружена | exerciseId={} | userId={} | точек={}", exerciseId, userId, history.size());
+        return history;
     }
 }

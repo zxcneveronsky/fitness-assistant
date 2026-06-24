@@ -5,7 +5,7 @@ import java.util.List;
 
 public record ExerciseHistoryResponse(
         Long sessionId,
-        String workoutName,
+        String name,
         LocalDateTime startTime,
         LocalDateTime endTime,
         List<SetResponse> sets
