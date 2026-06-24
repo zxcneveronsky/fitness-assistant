@@ -3,11 +3,14 @@ package com.example.fitness_assistant.web.controller;
 import com.example.fitness_assistant.application.service.workoutsession.CreateWorkoutSessionUseCase;
 import com.example.fitness_assistant.application.service.workoutsession.DeleteWorkoutSessionUseCase;
 import com.example.fitness_assistant.application.service.workoutsession.FindWorkoutSessionUseCase;
+import com.example.fitness_assistant.application.service.workoutsession.GetSessionDetailUseCase;
 import com.example.fitness_assistant.application.service.workoutsession.UpdateWorkoutSessionUseCase;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import com.example.fitness_assistant.web.dto.request.create.CreateWorkoutSessionRequest;
 import com.example.fitness_assistant.web.dto.request.update.UpdateWorkoutSessionRequest;
 import com.example.fitness_assistant.web.dto.response.WorkoutSessionResponse;
+import com.example.fitness_assistant.web.dto.response.workoutsession.SessionDetailResponse;
+import com.example.fitness_assistant.web.mapper.SessionDetailWebMapper;
 import com.example.fitness_assistant.web.mapper.WorkoutSessionWebMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,9 +30,20 @@ public class WorkoutSessionController {
 
     private final CreateWorkoutSessionUseCase createWorkoutSessionUseCase;
     private final FindWorkoutSessionUseCase findWorkoutSessionUseCase;
+    private final GetSessionDetailUseCase getSessionDetailUseCase;
     private final UpdateWorkoutSessionUseCase updateWorkoutSessionUseCase;
     private final DeleteWorkoutSessionUseCase deleteWorkoutSessionUseCase;
     private final WorkoutSessionWebMapper workoutSessionWebMapper;
+    private final SessionDetailWebMapper sessionDetailWebMapper;
+
+    @GetMapping("/{id}/detail")
+    public SessionDetailResponse getSessionDetail(
+            @AuthenticationPrincipal UserDetailsAdapter adapter,
+            @PathVariable Long id) {
+        return sessionDetailWebMapper.toResponse(
+                getSessionDetailUseCase.getSessionDetail(id, adapter.getUserId())
+        );
+    }
 
     @GetMapping("/{id}")
     public WorkoutSessionResponse getWorkoutSessionById(

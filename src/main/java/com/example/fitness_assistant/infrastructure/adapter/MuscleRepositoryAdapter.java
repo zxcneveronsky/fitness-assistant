@@ -5,7 +5,6 @@ import com.example.fitness_assistant.core.repository.MuscleRepository;
 import com.example.fitness_assistant.infrastructure.mapper.MuscleMapper;
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaMuscleRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 

@@ -21,6 +21,12 @@ public interface JpaSetRepository extends JpaRepository<SetEntity, Long> {
     Page<SetEntity> findAllBySessionIdAndExerciseId(@Param("sessionId") Long sessionId, @Param("exerciseId") Long exerciseId, Pageable pageable);
 
     @Query("SELECT s FROM SetEntity s " +
+           "JOIN FETCH s.exercise e " +
+           "WHERE s.session.id = :sessionId " +
+           "ORDER BY e.id ASC, s.id ASC")
+    List<SetEntity> findAllWithExerciseBySessionId(@Param("sessionId") Long sessionId);
+
+    @Query("SELECT s FROM SetEntity s " +
            "JOIN FETCH s.session sess " +
            "JOIN FETCH sess.workout w " +
            "WHERE s.exercise.id = :exerciseId " +

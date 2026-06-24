@@ -1,6 +1,7 @@
 package com.example.fitness_assistant.infrastructure.adapter;
 
 import com.example.fitness_assistant.core.model.Set;
+import com.example.fitness_assistant.core.model.sessiondetail.SetDetail;
 import com.example.fitness_assistant.core.repository.SetRepository;
 import com.example.fitness_assistant.infrastructure.mapper.SetMapper;
 import com.example.fitness_assistant.infrastructure.persistence.entity.SetEntity;
@@ -37,6 +38,21 @@ public class SetRepositoryAdapter implements SetRepository {
     public Page<Set> findAllBySessionIdAndExerciseId(Long sessionId, Long exerciseId, Pageable pageable) {
         return jpaSetRepository.findAllBySessionIdAndExerciseId(sessionId, exerciseId, pageable)
                 .map(setMapper::toDomain);
+    }
+
+    @Override
+    public List<SetDetail> findAllSetDetailBySessionId(Long sessionId) {
+        return jpaSetRepository.findAllWithExerciseBySessionId(sessionId)
+                .stream()
+                .map(e -> new SetDetail(
+                        e.getId(),
+                        e.getExercise().getId(),
+                        e.getExercise().getName(),
+                        e.getWeight(),
+                        e.getReps(),
+                        e.getCreatedAt()
+                ))
+                .toList();
     }
 
     @Override
