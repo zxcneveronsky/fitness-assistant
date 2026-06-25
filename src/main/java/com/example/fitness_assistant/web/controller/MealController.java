@@ -77,7 +77,7 @@ public class MealController {
             @AuthenticationPrincipal UserDetailsAdapter adapter,
             @Valid @RequestBody CreateMealAutoRequest request) {
         return mealWebMapper.toResponse(
-                createMealUseCase.createMealAuto(adapter.getUserId(), request.id(), request.weight(), mealWebMapper.toDomain(request))
+                createMealUseCase.createMealAuto(adapter.getUserId(), request.id(), request.weight(), request.consumedAt())
         );
     }
 

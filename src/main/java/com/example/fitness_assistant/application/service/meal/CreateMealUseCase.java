@@ -4,6 +4,7 @@ import com.example.fitness_assistant.core.exception.FoodNotFoundException;
 import com.example.fitness_assistant.core.exception.UserNotFoundException;
 import com.example.fitness_assistant.core.model.meal.Meal;
 import com.example.fitness_assistant.core.repository.FoodRepository;
+import java.time.LocalDateTime;
 import com.example.fitness_assistant.core.repository.MealRepository;
 import com.example.fitness_assistant.core.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,8 +33,7 @@ public class CreateMealUseCase {
     }
 
     @Transactional
-    public Meal createMealAuto(Long userId, Long id, Double weight, Meal meal) {
-        meal.setId(null);
+    public Meal createMealAuto(Long userId, Long foodId, Double weight, LocalDateTime consumedAt) {
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException(userId);
         }
@@ -41,21 +41,24 @@ public class CreateMealUseCase {
             throw new IllegalArgumentException("Вес не может быть null");
         }
         Double k = weight / 100.0;
-        Meal savedMeal =  foodRepository.findById(id).map(
-                food ->{
-                    meal.setUserId(userId);
-                    meal.setName(food.getName());
-                    meal.setBrands(food.getBrands());
-                    meal.setKcal(food.getKcal()*k);
-                    meal.setProteins(food.getProteins()*k);
-                    meal.setFats(food.getFats()*k);
-                    meal.setCarbs(food.getCarbs()*k);
-                    return mealRepository.save(meal);
+        Meal savedMeal = foodRepository.findById(foodId).map(
+                food -> {
+                    Meal newMeal = new Meal(
+                            null,
+                            userId,
+                            food.getName(),
+                            food.getBrands(),
+                            food.getKcal() * k,
+                            food.getProteins() * k,
+                            food.getFats() * k,
+                            food.getCarbs() * k,
+                            consumedAt
+                    );
+                    return mealRepository.save(newMeal);
                 }
-        ).orElseThrow(()->new FoodNotFoundException(id));
+        ).orElseThrow(() -> new FoodNotFoundException(foodId));
         log.info("Приём пищи создан | id={} | название='{}'", savedMeal.getId(), savedMeal.getName());
         return savedMeal;
-
     }
 
 }

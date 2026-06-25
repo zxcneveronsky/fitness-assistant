@@ -68,7 +68,7 @@ public class WorkoutSessionController {
             @AuthenticationPrincipal UserDetailsAdapter adapter,
             @Valid @RequestBody CreateWorkoutSessionRequest request) {
         return workoutSessionWebMapper.toResponse(
-                createWorkoutSessionUseCase.createWorkoutSession(request.workoutId(), request.startTime(), adapter.getUserId())
+                createWorkoutSessionUseCase.createWorkoutSession(adapter.getUserId(), request.workoutId(), request.startTime())
         );
     }
 
@@ -78,7 +78,7 @@ public class WorkoutSessionController {
             @AuthenticationPrincipal UserDetailsAdapter adapter,
             @Valid @RequestBody UpdateWorkoutSessionRequest request) {
         return workoutSessionWebMapper.toResponse(
-                updateWorkoutSessionUseCase.updateWorkoutSession(request.id(), request.endTime(), adapter.getUserId())
+                updateWorkoutSessionUseCase.updateWorkoutSession(adapter.getUserId(), request.id(), request.endTime())
         );
     }
 

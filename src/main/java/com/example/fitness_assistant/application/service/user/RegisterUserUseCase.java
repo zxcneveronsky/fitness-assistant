@@ -24,6 +24,7 @@ public class RegisterUserUseCase {
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new UserAlreadyExistsException(user.getEmail());
         }
+        user.setId(null);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         User savedUser = userRepository.save(user);
         String token = jwtService.generateToken(savedUser);

@@ -23,7 +23,7 @@ public class CreateWorkoutSessionUseCase {
     private final UserRepository userRepository;
 
     @Transactional
-    public WorkoutSession createWorkoutSession(Long workoutId, LocalDateTime startTime, Long userId) {
+    public WorkoutSession createWorkoutSession(Long userId, Long workoutId, LocalDateTime startTime) {
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException(userId);
         }

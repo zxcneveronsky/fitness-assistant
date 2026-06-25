@@ -17,7 +17,7 @@ public class UpdateWorkoutSessionUseCase {
     private final WorkoutSessionRepository workoutSessionRepository;
 
     @Transactional
-    public WorkoutSession updateWorkoutSession(Long id, LocalDateTime endTime, Long userId) {
+    public WorkoutSession updateWorkoutSession(Long userId, Long id, LocalDateTime endTime) {
         WorkoutSession updatedSession = workoutSessionRepository.findById(id, userId)
                 .map(session -> {
                     if (endTime != null && session.getStartTime() != null && endTime.isBefore(session.getStartTime())) {

@@ -1,7 +1,6 @@
 package com.example.fitness_assistant.web.mapper;
 
 import com.example.fitness_assistant.core.model.meal.Meal;
-import com.example.fitness_assistant.web.dto.request.create.CreateMealAutoRequest;
 import com.example.fitness_assistant.web.dto.request.create.CreateMealManualRequest;
 import com.example.fitness_assistant.web.dto.request.update.UpdateMealRequest;
 import com.example.fitness_assistant.web.dto.response.meal.MealResponse;
@@ -20,20 +19,6 @@ public class MealWebMapper {
                 request.proteins(),
                 request.fats(),
                 request.carbs(),
-                request.consumedAt()
-        );
-    }
-
-    public Meal toDomain(CreateMealAutoRequest request) {
-        return new Meal(
-                null, // Этого поля нет в запросе, поэтому проставляем null
-                null, // Этого поля нет в запросе, поэтому проставляем null
-                null, // Этого поля нет в запросе, поэтому проставляем null
-                null, // Этого поля нет в запросе, поэтому проставляем null
-                null, // Этого поля нет в запросе, поэтому проставляем null
-                null, // Этого поля нет в запросе, поэтому проставляем null
-                null, // Этого поля нет в запросе, поэтому проставляем null
-                null, // Этого поля нет в запросе, поэтому проставляем null
                 request.consumedAt()
         );
     }
