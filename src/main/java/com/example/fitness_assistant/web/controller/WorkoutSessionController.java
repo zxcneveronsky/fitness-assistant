@@ -39,23 +39,23 @@ public class WorkoutSessionController {
     @GetMapping("/{id}/detail")
     public SessionDetailResponse getSessionDetail(
             @AuthenticationPrincipal UserDetailsAdapter adapter,
-            @PathVariable Long id) {
+            @PathVariable("id") Long sessionId) {
         return sessionDetailWebMapper.toResponse(
-                getSessionDetailUseCase.getSessionDetail(adapter.getUserId(), id)
+                getSessionDetailUseCase.getSessionDetail(adapter.getUserId(), sessionId)
         );
     }
 
     @GetMapping("/{id}")
     public WorkoutSessionResponse getWorkoutSessionById(
             @AuthenticationPrincipal UserDetailsAdapter adapter,
-            @PathVariable Long id) {
+            @PathVariable("id") Long sessionId) {
         return workoutSessionWebMapper.toResponse(
-                findWorkoutSessionUseCase.findById(adapter.getUserId(), id)
+                findWorkoutSessionUseCase.findById(adapter.getUserId(), sessionId)
         );
     }
 
     @GetMapping("/history")
-    public Page<WorkoutSessionResponse> getAllWorkoutSession(
+    public Page<WorkoutSessionResponse> getAllWorkoutSessions(
             @AuthenticationPrincipal UserDetailsAdapter adapter,
             @PageableDefault(size = 12) Pageable pageable) {
         return findWorkoutSessionUseCase.findAllByUserId(adapter.getUserId(), pageable)
@@ -86,7 +86,7 @@ public class WorkoutSessionController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteWorkoutSession(
             @AuthenticationPrincipal UserDetailsAdapter adapter,
-            @PathVariable Long id) {
-        deleteWorkoutSessionUseCase.deleteWorkoutSession(adapter.getUserId(), id);
+            @PathVariable("id") Long sessionId) {
+        deleteWorkoutSessionUseCase.deleteWorkoutSession(adapter.getUserId(), sessionId);
     }
 }

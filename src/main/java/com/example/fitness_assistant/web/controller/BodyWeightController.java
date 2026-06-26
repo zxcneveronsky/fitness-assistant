@@ -36,9 +36,9 @@ public class BodyWeightController {
     @GetMapping("/{id}")
     public BodyWeightResponse getBodyWeightById(
             @AuthenticationPrincipal UserDetailsAdapter adapter,
-            @PathVariable Long id) {
+            @PathVariable("id") Long bodyWeightId) {
         return bodyWeightWebMapper.toResponse(
-                findBodyWeightUseCase.findById(adapter.getUserId(), id)
+                findBodyWeightUseCase.findById(adapter.getUserId(), bodyWeightId)
         );
     }
 
@@ -53,7 +53,7 @@ public class BodyWeightController {
     }
 
     @GetMapping
-    public List<BodyWeightResponse> findBodyWeightByDateRange(
+    public List<BodyWeightResponse> getBodyWeightByDateRange(
             @AuthenticationPrincipal UserDetailsAdapter adapter,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
@@ -64,7 +64,7 @@ public class BodyWeightController {
     }
 
     @GetMapping("/latest")
-    public BodyWeightResponse findLatestBodyWeight(@AuthenticationPrincipal UserDetailsAdapter adapter) {
+    public BodyWeightResponse getLatestBodyWeight(@AuthenticationPrincipal UserDetailsAdapter adapter) {
         return findBodyWeightUseCase.findLatest(adapter.getUserId())
                 .map(bodyWeightWebMapper::toResponse)
                 .orElseThrow(() -> new BodyWeightNotFoundException(adapter.getUserId()));
@@ -84,7 +84,7 @@ public class BodyWeightController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteBodyWeight(
             @AuthenticationPrincipal UserDetailsAdapter adapter,
-            @PathVariable Long id) {
-        deleteBodyWeightUseCase.deleteBodyWeight(adapter.getUserId(), id);
+            @PathVariable("id") Long bodyWeightId) {
+        deleteBodyWeightUseCase.deleteBodyWeight(adapter.getUserId(), bodyWeightId);
     }
 }

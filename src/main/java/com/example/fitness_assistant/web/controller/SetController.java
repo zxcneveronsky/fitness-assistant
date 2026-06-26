@@ -43,10 +43,10 @@ public class SetController {
     @GetMapping("/{id}")
     public SetResponse getSetById(
             @AuthenticationPrincipal UserDetailsAdapter adapter,
-            @PathVariable Long id,
+            @PathVariable("id") Long setId,
             @RequestParam Long sessionId) {
         return setWebMapper.toResponse(
-                findSetUseCase.findById(adapter.getUserId(), sessionId, id)
+                findSetUseCase.findById(adapter.getUserId(), sessionId, setId)
         );
     }
 
@@ -74,9 +74,9 @@ public class SetController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteSet(
             @AuthenticationPrincipal UserDetailsAdapter adapter,
-            @PathVariable Long id,
+            @PathVariable("id") Long setId,
             @RequestParam Long sessionId) {
-        deleteSetUseCase.deleteSet(adapter.getUserId(), sessionId, id);
+        deleteSetUseCase.deleteSet(adapter.getUserId(), sessionId, setId);
     }
 
 }

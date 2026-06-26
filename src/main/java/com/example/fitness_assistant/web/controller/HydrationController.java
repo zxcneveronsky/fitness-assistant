@@ -40,8 +40,8 @@ public class HydrationController {
     private final DailyHydrationWebMapper dailyHydrationWebMapper;
 
     @GetMapping("/{id}")
-    public HydrationResponse getHydrationById(@AuthenticationPrincipal UserDetailsAdapter adapter, @PathVariable Long id){
-        return hydrationWebMapper.toResponse(findHydrationUseCase.findById(adapter.getUserId(), id));
+    public HydrationResponse getHydrationById(@AuthenticationPrincipal UserDetailsAdapter adapter, @PathVariable("id") Long hydrationId){
+        return hydrationWebMapper.toResponse(findHydrationUseCase.findById(adapter.getUserId(), hydrationId));
     }
 
     @GetMapping("/search")
@@ -84,7 +84,7 @@ public class HydrationController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteHydration(
             @AuthenticationPrincipal UserDetailsAdapter adapter,
-            @PathVariable Long id) {
-        deleteHydrationUseCase.deleteHydration(adapter.getUserId(), id);
+            @PathVariable("id") Long hydrationId) {
+        deleteHydrationUseCase.deleteHydration(adapter.getUserId(), hydrationId);
     }
 }

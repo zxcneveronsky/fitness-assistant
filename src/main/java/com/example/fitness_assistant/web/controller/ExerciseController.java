@@ -40,18 +40,18 @@ public class ExerciseController {
     private final ExerciseHistoryWebMapper exerciseHistoryWebMapper;
 
     @GetMapping("/{id}")
-    public ExerciseResponse getExerciseById(@PathVariable Long id) {
-        return exerciseWebMapper.toResponse(findExerciseUseCase.findById(id));
+    public ExerciseResponse getExerciseById(@PathVariable("id") Long exerciseId) {
+        return exerciseWebMapper.toResponse(findExerciseUseCase.findById(exerciseId));
     }
 
     @GetMapping("/{id}/history")
     public Page<ExerciseHistoryResponse> getExerciseHistory(
             @AuthenticationPrincipal UserDetailsAdapter adapter,
-            @PathVariable Long id,
+            @PathVariable("id") Long exerciseId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
             @PageableDefault(size = 12) Pageable pageable) {
-        return findExerciseHistoryUseCase.findExerciseHistory(adapter.getUserId(), id, from, to, pageable)
+        return findExerciseHistoryUseCase.findExerciseHistory(adapter.getUserId(), exerciseId, from, to, pageable)
                 .map(exerciseHistoryWebMapper::toResponse);
     }
 
@@ -82,7 +82,7 @@ public class ExerciseController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteExercise(@PathVariable Long id) {
-        deleteExerciseUseCase.deleteExercise(id);
+    public void deleteExercise(@PathVariable("id") Long exerciseId) {
+        deleteExerciseUseCase.deleteExercise(exerciseId);
     }
 }

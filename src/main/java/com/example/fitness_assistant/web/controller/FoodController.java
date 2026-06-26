@@ -33,8 +33,8 @@ public class FoodController {
     private final FoodWebMapper foodWebMapper;
 
     @GetMapping("/{id}")
-    public FoodResponse getFoodById(@PathVariable Long id){
-        return foodWebMapper.toResponse(findFoodUseCase.findById(id));
+    public FoodResponse getFoodById(@PathVariable("id") Long foodId){
+        return foodWebMapper.toResponse(findFoodUseCase.findById(foodId));
     }
 
     @GetMapping("/search")
@@ -45,9 +45,9 @@ public class FoodController {
                 .map(foodWebMapper::toResponse);
     }
 
-    @GetMapping("/calc/{id}")
-    public FoodResponse calculateNutrition(@PathVariable Long id,@RequestParam @Positive Double weight){
-        return foodWebMapper.toResponse(calculateFoodUseCase.calculateFood(id, weight));
+    @GetMapping("/{id}/calculate")
+    public FoodResponse calculateNutrition(@PathVariable("id") Long foodId, @RequestParam @Positive Double weight){
+        return foodWebMapper.toResponse(calculateFoodUseCase.calculateFood(foodId, weight));
     }
 
     @PostMapping
@@ -68,7 +68,7 @@ public class FoodController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteFood(@PathVariable Long id) {
-        deleteFoodUseCase.deleteFood(id);
+    public void deleteFood(@PathVariable("id") Long foodId) {
+        deleteFoodUseCase.deleteFood(foodId);
     }
 }

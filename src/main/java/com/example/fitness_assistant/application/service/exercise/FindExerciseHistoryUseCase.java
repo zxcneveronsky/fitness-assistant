@@ -44,7 +44,7 @@ public class FindExerciseHistoryUseCase {
         List<Long> sessionIds = setsBySession.keySet().stream().toList();
         List<WorkoutSession> sessions = workoutSessionRepository.findAllByIdIn(sessionIds);
         Map<Long, WorkoutSession> sessionMap = sessions.stream()
-                .collect(Collectors.toMap(WorkoutSession::getId, s -> s));
+                .collect(Collectors.toMap(WorkoutSession::getId, session -> session));
 
         List<Long> workoutIds = sessions.stream()
                 .map(WorkoutSession::getWorkoutId)

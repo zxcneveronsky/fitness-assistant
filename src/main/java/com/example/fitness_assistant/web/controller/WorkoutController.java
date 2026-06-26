@@ -39,8 +39,8 @@ public class WorkoutController {
     }
 
     @GetMapping("/{id}")
-    public WorkoutWithExerciseResponse getWorkoutById(@AuthenticationPrincipal UserDetailsAdapter adapter, @PathVariable Long id){
-        return workoutWebMapper.toResponse(findWorkoutUseCase.findById(adapter.getUserId(), id));
+    public WorkoutWithExerciseResponse getWorkoutById(@AuthenticationPrincipal UserDetailsAdapter adapter, @PathVariable("id") Long workoutId){
+        return workoutWebMapper.toResponse(findWorkoutUseCase.findById(adapter.getUserId(), workoutId));
     }
 
     @GetMapping("/search")
@@ -65,7 +65,7 @@ public class WorkoutController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteWorkout(@AuthenticationPrincipal UserDetailsAdapter adapter, @PathVariable Long id) {
-        deleteWorkoutUseCase.deleteWorkout(adapter.getUserId(), id);
+    public void deleteWorkout(@AuthenticationPrincipal UserDetailsAdapter adapter, @PathVariable("id") Long workoutId) {
+        deleteWorkoutUseCase.deleteWorkout(adapter.getUserId(), workoutId);
     }
 }

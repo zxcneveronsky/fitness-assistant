@@ -41,8 +41,8 @@ public class MealController {
     private final DailyNutritionWebMapper dailyNutritionWebMapper;
 
     @GetMapping("/{id}")
-    public MealResponse getMealById(@AuthenticationPrincipal UserDetailsAdapter adapter, @PathVariable Long id){
-        return mealWebMapper.toResponse(findMealUseCase.findById(adapter.getUserId(), id));
+    public MealResponse getMealById(@AuthenticationPrincipal UserDetailsAdapter adapter, @PathVariable("id") Long mealId){
+        return mealWebMapper.toResponse(findMealUseCase.findById(adapter.getUserId(), mealId));
     }
 
     @GetMapping("/search")
@@ -95,7 +95,7 @@ public class MealController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteMeal(
             @AuthenticationPrincipal UserDetailsAdapter adapter,
-            @PathVariable Long id) {
-        deleteMealUseCase.deleteMeal(adapter.getUserId(), id);
+            @PathVariable("id") Long mealId) {
+        deleteMealUseCase.deleteMeal(adapter.getUserId(), mealId);
     }
 }

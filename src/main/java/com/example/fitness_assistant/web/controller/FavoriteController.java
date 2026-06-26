@@ -78,7 +78,7 @@ public class FavoriteController {
         return getFavoriteExerciseIdsUseCase.getIds(adapter.getUserId());
     }
 
-    @GetMapping("/exercise")
+    @GetMapping("/exercise/search")
     public Page<ExerciseResponse> searchFavoriteExercises(
             @AuthenticationPrincipal UserDetailsAdapter adapter,
             @RequestParam(required = false) String name,
@@ -112,7 +112,7 @@ public class FavoriteController {
         return getFavoriteFoodIdsUseCase.getIds(adapter.getUserId());
     }
 
-    @GetMapping("/food")
+    @GetMapping("/food/search")
     public Page<FoodResponse> searchFavoriteFoods(
             @AuthenticationPrincipal UserDetailsAdapter adapter,
             @RequestParam(required = false) String name,
