@@ -14,11 +14,11 @@ public class DeleteExerciseUseCase {
 
     private final ExerciseRepository exerciseRepository;
     @Transactional
-    public void deleteExercise(Long id) {
-        if (!exerciseRepository.existsById(id)) {
-            throw new ExerciseNotFoundException(id);
+    public void deleteExercise(Long exerciseId) {
+        if (!exerciseRepository.existsById(exerciseId)) {
+            throw new ExerciseNotFoundException(exerciseId);
         }
-        exerciseRepository.deleteById(id);
-        log.info("Упражнение удалено | id={}", id);
+        exerciseRepository.deleteById(exerciseId);
+        log.info("Упражнение удалено | id={}", exerciseId);
     }
 }

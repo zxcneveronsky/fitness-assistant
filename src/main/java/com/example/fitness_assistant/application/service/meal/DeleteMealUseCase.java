@@ -14,11 +14,11 @@ public class DeleteMealUseCase {
     private final MealRepository mealRepository;
 
     @Transactional
-    public void deleteMeal(Long id, Long userId) {
-        if (!mealRepository.existsById(id, userId)) {
-            throw new MealNotFoundException(id);
+    public void deleteMeal(Long mealId, Long userId) {
+        if (!mealRepository.existsById(mealId, userId)) {
+            throw new MealNotFoundException(mealId);
         }
-        mealRepository.deleteById(id, userId);
-        log.info("Приём пищи удалён | id={}", id);
+        mealRepository.deleteById(mealId, userId);
+        log.info("Приём пищи удалён | id={}", mealId);
     }
 }

@@ -28,9 +28,9 @@ public class FindFoodUseCase {
         return foods;
     }
     @Transactional(readOnly = true)
-    public Food findById(Long id) {
-        Food food = foodRepository.findById(id).orElseThrow(()->new FoodNotFoundException(id));
-        log.info("Продукт найден | id={}", id);
+    public Food findById(Long foodId) {
+        Food food = foodRepository.findById(foodId).orElseThrow(()->new FoodNotFoundException(foodId));
+        log.info("Продукт найден | id={}", foodId);
         return food;
     }
 }

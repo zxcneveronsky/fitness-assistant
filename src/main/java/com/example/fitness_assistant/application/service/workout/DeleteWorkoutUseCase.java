@@ -15,11 +15,11 @@ public class DeleteWorkoutUseCase {
     private final WorkoutRepository workoutRepository;
 
     @Transactional
-    public void deleteWorkout(Long id, Long userId) {
-        if (!workoutRepository.existsById(id, userId)) {
-            throw new WorkoutNotFoundException(id);
+    public void deleteWorkout(Long workoutId, Long userId) {
+        if (!workoutRepository.existsById(workoutId, userId)) {
+            throw new WorkoutNotFoundException(workoutId);
         }
-        workoutRepository.deleteById(id, userId);
-        log.info("Тренировка удалена | id={}", id);
+        workoutRepository.deleteById(workoutId, userId);
+        log.info("Тренировка удалена | id={}", workoutId);
     }
 }

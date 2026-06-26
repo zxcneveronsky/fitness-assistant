@@ -15,11 +15,11 @@ public class DeleteBodyWeightUseCase {
     private final BodyWeightRepository bodyWeightRepository;
 
     @Transactional
-    public void deleteBodyWeight(Long id, Long userId) {
-        if (!bodyWeightRepository.existsById(id, userId)) {
-            throw new BodyWeightNotFoundException(id);
+    public void deleteBodyWeight(Long bodyWeightId, Long userId) {
+        if (!bodyWeightRepository.existsById(bodyWeightId, userId)) {
+            throw new BodyWeightNotFoundException(bodyWeightId);
         }
-        bodyWeightRepository.deleteById(id, userId);
-        log.info("Запись веса удалена | id={}", id);
+        bodyWeightRepository.deleteById(bodyWeightId, userId);
+        log.info("Запись веса удалена | id={}", bodyWeightId);
     }
 }

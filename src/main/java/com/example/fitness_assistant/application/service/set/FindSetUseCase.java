@@ -39,13 +39,13 @@ public class FindSetUseCase {
     }
 
     @Transactional(readOnly = true)
-    public Set findById(Long id, Long sessionId, Long userId) {
+    public Set findById(Long setId, Long sessionId, Long userId) {
         if (!workoutSessionRepository.existsById(sessionId, userId)) {
             throw new WorkoutSessionNotFoundException(sessionId);
         }
-        Set set = setRepository.findById(id, sessionId)
-                .orElseThrow(() -> new SetNotFoundException(id));
-        log.info("Подход найден | id={}", id);
+        Set set = setRepository.findById(setId, sessionId)
+                .orElseThrow(() -> new SetNotFoundException(setId));
+        log.info("Подход найден | id={}", setId);
         return set;
     }
 

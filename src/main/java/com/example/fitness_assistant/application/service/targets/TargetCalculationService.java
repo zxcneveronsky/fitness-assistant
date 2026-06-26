@@ -32,12 +32,12 @@ public class TargetCalculationService {
     }
 
     public void balanceCaloriesByMacros(Targets targets) {
-        Double p = targets.getTargetProteins();
-        Double f = targets.getTargetFats();
-        Double c = targets.getTargetCarbs();
+        Double proteins = targets.getTargetProteins();
+        Double fats = targets.getTargetFats();
+        Double carbs = targets.getTargetCarbs();
 
-        if (p == null || f == null || c == null) return;
-        Double totalKcal = (p * KCAL_PER_G_PROTEIN) + (c * KCAL_PER_G_CARBS) + (f * KCAL_PER_G_FAT);
+        if (proteins == null || fats == null || carbs == null) return;
+        Double totalKcal = (proteins * KCAL_PER_G_PROTEIN) + (carbs * KCAL_PER_G_CARBS) + (fats * KCAL_PER_G_FAT);
 
         targets.setTargetKcal(totalKcal);
     }
@@ -89,8 +89,8 @@ public class TargetCalculationService {
         balanceMacrosByCalories(targets);
     }
 
-    public boolean hasMacros(Targets r) {
-        return r.getTargetProteins() != null || r.getTargetFats() != null || r.getTargetCarbs() != null;
+    public boolean hasMacros(Targets targets) {
+        return targets.getTargetProteins() != null || targets.getTargetFats() != null || targets.getTargetCarbs() != null;
     }
 
     private Integer getAge(UserProfile profile) {

@@ -23,8 +23,8 @@ public class UpdateExerciseUseCase {
 
     @Transactional
     public Exercise updateExercise(Exercise exerciseUpdate) {
-        Long id = exerciseUpdate.getId();
-        Exercise exercise = exerciseRepository.findById(id)
+        Long exerciseId = exerciseUpdate.getId();
+        Exercise updatedExercise = exerciseRepository.findById(exerciseId)
                 .map(existingExercise -> {
                     existingExercise.setName(exerciseUpdate.getName() != null ? exerciseUpdate.getName() : existingExercise.getName());
                     existingExercise.setDescription(exerciseUpdate.getDescription() != null ? exerciseUpdate.getDescription() : existingExercise.getDescription());
@@ -40,9 +40,9 @@ public class UpdateExerciseUseCase {
                     }
                     return exerciseRepository.save(existingExercise);
                 })
-                .orElseThrow(() -> new ExerciseNotFoundException(id));
-        log.info("Упражнение обновлено | id={}", id);
-        return exercise;
+                .orElseThrow(() -> new ExerciseNotFoundException(exerciseId));
+        log.info("Упражнение обновлено | id={}", exerciseId);
+        return updatedExercise;
     }
 }
 

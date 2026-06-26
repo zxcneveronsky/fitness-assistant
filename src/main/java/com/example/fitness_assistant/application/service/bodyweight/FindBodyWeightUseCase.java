@@ -20,9 +20,9 @@ public class FindBodyWeightUseCase {
     private final BodyWeightRepository bodyWeightRepository;
 
     @Transactional(readOnly = true)
-    public BodyWeight findById(Long id, Long userId) {
-        return bodyWeightRepository.findById(id, userId)
-                .orElseThrow(() -> new BodyWeightNotFoundException(id));
+    public BodyWeight findById(Long bodyWeightId, Long userId) {
+        return bodyWeightRepository.findById(bodyWeightId, userId)
+                .orElseThrow(() -> new BodyWeightNotFoundException(bodyWeightId));
     }
 
     @Transactional(readOnly = true)

@@ -39,9 +39,9 @@ public class FindWorkoutUseCase {
     }
 
     @Transactional(readOnly = true)
-    public WorkoutWithExercise findById(Long id, Long userId){
-        Workout workout = workoutRepository.findById(id, userId)
-                .orElseThrow(() -> new WorkoutNotFoundException(id));
+    public WorkoutWithExercise findById(Long workoutId, Long userId){
+        Workout workout = workoutRepository.findById(workoutId, userId)
+                .orElseThrow(() -> new WorkoutNotFoundException(workoutId));
         List<Long> ids = workout.getExerciseIds();
         WorkoutWithExercise workoutWithExercise = new WorkoutWithExercise(
                 workout.getId(),
@@ -49,7 +49,7 @@ public class FindWorkoutUseCase {
                 workout.getName(),
                 ids != null ? exerciseRepository.findAllByIdIn(ids) : List.of()
         );
-        log.info("Тренировка найдена | id={}", id);
+        log.info("Тренировка найдена | id={}", workoutId);
         return workoutWithExercise;
     }
 }

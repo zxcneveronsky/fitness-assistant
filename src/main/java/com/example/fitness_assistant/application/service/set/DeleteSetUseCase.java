@@ -18,15 +18,15 @@ public class DeleteSetUseCase {
     private final WorkoutSessionRepository workoutSessionRepository;
 
     @Transactional
-    public void deleteSet(Long id, Long sessionId, Long userId) {
+    public void deleteSet(Long setId, Long sessionId, Long userId) {
         if (!workoutSessionRepository.existsById(sessionId, userId)) {
             throw new WorkoutSessionNotFoundException(sessionId);
         }
-        if (!setRepository.existsById(id, sessionId)) {
-            throw new SetNotFoundException(id);
+        if (!setRepository.existsById(setId, sessionId)) {
+            throw new SetNotFoundException(setId);
         }
-        setRepository.deleteById(id, sessionId);
-        log.info("Подход удален | id={}", id);
+        setRepository.deleteById(setId, sessionId);
+        log.info("Подход удален | id={}", setId);
     }
 
 }

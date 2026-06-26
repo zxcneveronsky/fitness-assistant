@@ -14,11 +14,11 @@ public class DeleteUserUseCase {
 
     private final UserRepository userRepository;
     @Transactional
-    public void deleteUser(Long id) {
-        if (!userRepository.existsById(id)) {
-            throw new UserNotFoundException(id);
+    public void deleteUser(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new UserNotFoundException(userId);
         }
-        userRepository.deleteById(id);
-        log.info("Пользователь удалён | id={}", id);
+        userRepository.deleteById(userId);
+        log.info("Пользователь удалён | id={}", userId);
     }
 }

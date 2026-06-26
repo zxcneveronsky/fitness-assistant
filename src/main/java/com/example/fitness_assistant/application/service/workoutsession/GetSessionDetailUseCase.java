@@ -35,15 +35,15 @@ public class GetSessionDetailUseCase {
 
         List<ExerciseDetail> exercises = sets.stream()
                 .collect(groupingBy(
-                        s -> new ExerciseDetailKey(s.getExerciseId(), s.getName()),
+                        set -> new ExerciseDetailKey(set.getExerciseId(), set.getName()),
                         LinkedHashMap::new,
                         Collectors.toList()
                 ))
                 .entrySet().stream()
-                .map(e -> new ExerciseDetail(
-                        e.getKey().exerciseId(),
-                        e.getKey().name(),
-                        e.getValue()
+                .map(entry -> new ExerciseDetail(
+                        entry.getKey().exerciseId(),
+                        entry.getKey().name(),
+                        entry.getValue()
                 ))
                 .toList();
 

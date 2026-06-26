@@ -17,15 +17,15 @@ public class UpdateBodyWeightUseCase {
 
     @Transactional
     public BodyWeight updateBodyWeight(Long userId, BodyWeight bodyWeightUpdate) {
-        Long id = bodyWeightUpdate.getId();
-        BodyWeight updatedBodyWeight = bodyWeightRepository.findById(id, userId)
+        Long bodyWeightId = bodyWeightUpdate.getId();
+        BodyWeight updatedBodyWeight = bodyWeightRepository.findById(bodyWeightId, userId)
                 .map(existingBodyWeight -> {
                     existingBodyWeight.setWeightKg(bodyWeightUpdate.getWeightKg() != null ? bodyWeightUpdate.getWeightKg() : existingBodyWeight.getWeightKg());
                     existingBodyWeight.setMeasuredAt(bodyWeightUpdate.getMeasuredAt() != null ? bodyWeightUpdate.getMeasuredAt() : existingBodyWeight.getMeasuredAt());
                     return bodyWeightRepository.save(existingBodyWeight);
                 })
-                .orElseThrow(() -> new BodyWeightNotFoundException(id));
-        log.info("Запись веса обновлена | id={}", id);
+                .orElseThrow(() -> new BodyWeightNotFoundException(bodyWeightId));
+        log.info("Запись веса обновлена | id={}", bodyWeightId);
         return updatedBodyWeight;
     }
 }

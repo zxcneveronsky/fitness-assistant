@@ -15,11 +15,11 @@ public class DeleteHydrationUseCase {
     private final HydrationRepository hydrationRepository;
 
     @Transactional
-    public void deleteHydration(Long id, Long userId) {
-        if (!hydrationRepository.existsById(id, userId)) {
-            throw new HydrationNotFoundException(id);
+    public void deleteHydration(Long hydrationId, Long userId) {
+        if (!hydrationRepository.existsById(hydrationId, userId)) {
+            throw new HydrationNotFoundException(hydrationId);
         }
-        hydrationRepository.deleteById(id, userId);
-        log.info("Запись гидратации удалена | id={}", id);
+        hydrationRepository.deleteById(hydrationId, userId);
+        log.info("Запись гидратации удалена | id={}", hydrationId);
     }
 }

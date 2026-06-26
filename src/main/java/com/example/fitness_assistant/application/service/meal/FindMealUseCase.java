@@ -19,17 +19,17 @@ public class FindMealUseCase {
     private final MealRepository mealRepository;
 
     @Transactional(readOnly = true)
-    public Page<Meal> searchMeal(LocalDateTime localDateTime, Long userId, Pageable pageable){
-        Page<Meal> meals = mealRepository.searchMeal(localDateTime,userId,pageable);
+    public Page<Meal> searchMeal(LocalDateTime consumedAt, Long userId, Pageable pageable){
+        Page<Meal> meals = mealRepository.searchMeal(consumedAt,userId,pageable);
         log.info("Поиск приёмов пищи завершён | userId={} | найдено={} | страница={}/{}",
                 userId, meals.getTotalElements(), meals.getNumber() + 1, meals.getTotalPages());
         return meals;
     }
 
     @Transactional(readOnly = true)
-    public Meal findById(Long id, Long userId){
-        Meal meal = mealRepository.findById(id,userId).orElseThrow(()->new MealNotFoundException(id));
-        log.info("Приём пищи найден | id={}", id);
+    public Meal findById(Long mealId, Long userId){
+        Meal meal = mealRepository.findById(mealId,userId).orElseThrow(()->new MealNotFoundException(mealId));
+        log.info("Приём пищи найден | id={}", mealId);
         return meal;
     }
 }

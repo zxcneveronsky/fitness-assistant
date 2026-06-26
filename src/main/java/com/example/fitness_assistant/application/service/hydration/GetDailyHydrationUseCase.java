@@ -16,8 +16,8 @@ public class GetDailyHydrationUseCase {
     private final HydrationRepository hydrationRepository;
 
     @Transactional(readOnly = true)
-    public DailyHydration getDailyHydration(LocalDateTime localDateTime, Long userId){
-        DailyHydration dailyHydration = hydrationRepository.getDailyHydration(localDateTime,userId);
+    public DailyHydration getDailyHydration(LocalDateTime consumedAt, Long userId){
+        DailyHydration dailyHydration = hydrationRepository.getDailyHydration(consumedAt,userId);
         log.info("Дневная гидратация получена | userId={}", userId);
         return dailyHydration;
     }

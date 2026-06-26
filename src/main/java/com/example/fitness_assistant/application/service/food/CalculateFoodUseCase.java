@@ -14,22 +14,22 @@ import org.springframework.transaction.annotation.Transactional;
 public class CalculateFoodUseCase {
     private final FoodRepository foodRepository;
     @Transactional(readOnly = true)
-    public Food calculateFood(Long id, Double weight) {
+    public Food calculateFood(Long foodId, Double weight) {
         if (weight == null) {
             throw new IllegalArgumentException("Вес не может быть null");
         }
-        Food food = foodRepository.findById(id).orElseThrow(()->new FoodNotFoundException(id));
-        Double k = weight / 100.0;
+        Food food = foodRepository.findById(foodId).orElseThrow(()->new FoodNotFoundException(foodId));
+        Double weightFactor = weight / 100.0;
         Food calculated = new Food(
                 food.getId(),
                 food.getName(),
                 food.getBrands(),
-                food.getKcal() * k,
-                food.getProteins() * k,
-                food.getFats() * k,
-                food.getCarbs() * k
+                food.getKcal() * weightFactor,
+                food.getProteins() * weightFactor,
+                food.getFats() * weightFactor,
+                food.getCarbs() * weightFactor
         );
-        log.info("Пищевая ценность рассчитана | id={} | вес={}", id, weight);
+        log.info("Пищевая ценность рассчитана | id={} | вес={}", foodId, weight);
         return calculated;
     }
 

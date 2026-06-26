@@ -30,9 +30,9 @@ public class FindExerciseUseCase {
     }
 
     @Transactional(readOnly = true)
-    public Exercise findById(Long id){
-        Exercise exercise = exerciseRepository.findById(id).orElseThrow(()->new ExerciseNotFoundException(id));
-        log.info("Упражнение найдено | id={}", id);
+    public Exercise findById(Long exerciseId){
+        Exercise exercise = exerciseRepository.findById(exerciseId).orElseThrow(()->new ExerciseNotFoundException(exerciseId));
+        log.info("Упражнение найдено | id={}", exerciseId);
         return exercise;
 
     }

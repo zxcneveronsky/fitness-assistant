@@ -4,7 +4,7 @@ import com.example.fitness_assistant.application.service.profile.CreateUserProfi
 import com.example.fitness_assistant.application.service.profile.DeleteUserProfileUseCase;
 import com.example.fitness_assistant.application.service.profile.FindUserProfileUseCase;
 import com.example.fitness_assistant.application.service.profile.UpdateUserProfileUseCase;
-import com.example.fitness_assistant.application.service.visit.UpdateStreakUseCase;
+import com.example.fitness_assistant.application.service.streak.UpdateStreakUseCase;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import com.example.fitness_assistant.web.dto.request.create.CreateUserProfileRequest;
 import com.example.fitness_assistant.web.dto.request.update.UpdateUserProfileRequest;

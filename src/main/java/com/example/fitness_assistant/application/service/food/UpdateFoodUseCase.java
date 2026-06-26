@@ -17,8 +17,8 @@ public class UpdateFoodUseCase {
 
     @Transactional
     public Food updateFood(Food foodUpdate) {
-        Long id = foodUpdate.getId();
-        Food updatedFood = foodRepository.findById(id)
+        Long foodId = foodUpdate.getId();
+        Food updatedFood = foodRepository.findById(foodId)
                 .map(existingFood -> {
                     existingFood.setName(foodUpdate.getName() != null ? foodUpdate.getName() : existingFood.getName());
                     existingFood.setBrands(foodUpdate.getBrands() != null ? foodUpdate.getBrands() : existingFood.getBrands());
@@ -28,8 +28,8 @@ public class UpdateFoodUseCase {
                     existingFood.setCarbs(foodUpdate.getCarbs() != null ? foodUpdate.getCarbs() : existingFood.getCarbs());
                     return foodRepository.save(existingFood);
                 })
-                .orElseThrow(() -> new FoodNotFoundException(id));
-        log.info("Продукт обновлен | id={}", id);
+                .orElseThrow(() -> new FoodNotFoundException(foodId));
+        log.info("Продукт обновлен | id={}", foodId);
         return updatedFood;
     }
 }

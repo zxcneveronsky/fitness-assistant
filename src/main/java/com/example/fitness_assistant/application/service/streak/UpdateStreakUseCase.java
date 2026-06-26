@@ -1,4 +1,4 @@
-package com.example.fitness_assistant.application.service.visit;
+package com.example.fitness_assistant.application.service.streak;
 
 import com.example.fitness_assistant.core.model.Streak;
 import com.example.fitness_assistant.core.repository.StreakRepository;

@@ -15,8 +15,8 @@ import java.time.LocalDateTime;
 public class GetDailyNutritionUseCase {
     private final MealRepository mealRepository;
     @Transactional(readOnly = true)
-    public DailyNutrition getDailyNutrition(LocalDateTime localDateTime, Long userId){
-        DailyNutrition dailyNutrition = mealRepository.getDailyNutrition(localDateTime,userId);
+    public DailyNutrition getDailyNutrition(LocalDateTime consumedAt, Long userId){
+        DailyNutrition dailyNutrition = mealRepository.getDailyNutrition(consumedAt,userId);
         log.info("Дневная норма питания получена | userId={}", userId);
         return dailyNutrition;
     }

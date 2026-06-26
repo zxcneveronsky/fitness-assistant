@@ -19,19 +19,19 @@ public class UpdateSetUseCase {
 
     @Transactional
     public Set updateSet(Long userId, Set set) {
-        Long id = set.getId();
+        Long setId = set.getId();
         Long sessionId = set.getSessionId();
 
         if (!workoutSessionRepository.existsById(sessionId, userId)) {
             throw new WorkoutSessionNotFoundException(sessionId);
         }
 
-        Set updatedSet = setRepository.findById(id, sessionId).map(existingSet -> {
+        Set updatedSet = setRepository.findById(setId, sessionId).map(existingSet -> {
             existingSet.setReps(set.getReps() != null ? set.getReps() : existingSet.getReps());
             existingSet.setWeight(set.getWeight() != null ? set.getWeight() : existingSet.getWeight());
             return setRepository.save(existingSet);
-        }).orElseThrow(()->new SetNotFoundException(id));
-        log.info("Подход обновлен | id={}", id);
+        }).orElseThrow(()->new SetNotFoundException(setId));
+        log.info("Подход обновлен | id={}", setId);
         return updatedSet;
     }
 

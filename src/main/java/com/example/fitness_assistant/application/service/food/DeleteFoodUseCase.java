@@ -15,11 +15,11 @@ public class DeleteFoodUseCase {
     private final FoodRepository foodRepository;
 
     @Transactional
-    public void deleteFood(Long id) {
-        if (!foodRepository.existsById(id)) {
-            throw new FoodNotFoundException(id);
+    public void deleteFood(Long foodId) {
+        if (!foodRepository.existsById(foodId)) {
+            throw new FoodNotFoundException(foodId);
         }
-        foodRepository.deleteById(id);
-        log.info("Продукт удален | id={}", id);
+        foodRepository.deleteById(foodId);
+        log.info("Продукт удален | id={}", foodId);
     }
 }

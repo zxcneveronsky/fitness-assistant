@@ -20,17 +20,17 @@ public class FindHydrationUseCase {
     private final HydrationRepository hydrationRepository;
 
     @Transactional(readOnly = true)
-    public Page<Hydration> searchHydration(LocalDateTime localDateTime, Long userId, Pageable pageable) {
-        Page<Hydration> hydrations = hydrationRepository.searchHydration(localDateTime, userId, pageable);
+    public Page<Hydration> searchHydration(LocalDateTime consumedAt, Long userId, Pageable pageable) {
+        Page<Hydration> hydrations = hydrationRepository.searchHydration(consumedAt, userId, pageable);
         log.info("Поиск гидратации завершён | userId={} | найдено={} | страница={}/{}",
                 userId, hydrations.getTotalElements(), hydrations.getNumber() + 1, hydrations.getTotalPages());
         return hydrations;
     }
 
     @Transactional(readOnly = true)
-    public Hydration findById(Long id, Long userId){
-        Hydration hydration = hydrationRepository.findById(id,userId).orElseThrow(()->new HydrationNotFoundException(id));
-        log.info("Запись гидратации найдена | id={}", id);
+    public Hydration findById(Long hydrationId, Long userId){
+        Hydration hydration = hydrationRepository.findById(hydrationId,userId).orElseThrow(()->new HydrationNotFoundException(hydrationId));
+        log.info("Запись гидратации найдена | id={}", hydrationId);
         return hydration;
     }
 }

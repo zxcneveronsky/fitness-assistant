@@ -15,11 +15,11 @@ public class DeleteWorkoutSessionUseCase {
     private final WorkoutSessionRepository workoutSessionRepository;
 
     @Transactional
-    public void deleteWorkoutSession(Long id, Long userId) {
-        if (!workoutSessionRepository.existsById(id, userId)) {
-            throw new WorkoutSessionNotFoundException(id);
+    public void deleteWorkoutSession(Long sessionId, Long userId) {
+        if (!workoutSessionRepository.existsById(sessionId, userId)) {
+            throw new WorkoutSessionNotFoundException(sessionId);
         }
-        workoutSessionRepository.deleteById(id, userId);
-        log.info("Сессия тренировки удалена | id={}", id);
+        workoutSessionRepository.deleteById(sessionId, userId);
+        log.info("Сессия тренировки удалена | id={}", sessionId);
     }
 }

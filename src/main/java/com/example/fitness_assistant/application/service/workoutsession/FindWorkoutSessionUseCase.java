@@ -26,10 +26,10 @@ public class FindWorkoutSessionUseCase {
     }
 
     @Transactional(readOnly = true)
-    public WorkoutSession findById(Long id, Long userId) {
-        WorkoutSession session = workoutSessionRepository.findById(id, userId)
-                .orElseThrow(() -> new WorkoutSessionNotFoundException(id));
-        log.info("Сессия тренировки найдена | id={}", id);
+    public WorkoutSession findById(Long sessionId, Long userId) {
+        WorkoutSession session = workoutSessionRepository.findById(sessionId, userId)
+                .orElseThrow(() -> new WorkoutSessionNotFoundException(sessionId));
+        log.info("Сессия тренировки найдена | id={}", sessionId);
         return session;
     }
 }
