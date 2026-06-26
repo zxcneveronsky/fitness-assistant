@@ -4,9 +4,8 @@ import com.example.fitness_assistant.core.model.Streak;
 import com.example.fitness_assistant.core.repository.StreakRepository;
 import com.example.fitness_assistant.infrastructure.mapper.StreakMapper;
 import com.example.fitness_assistant.infrastructure.persistence.entity.StreakEntity;
-import com.example.fitness_assistant.infrastructure.persistence.entity.UserEntity;
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaStreakRepository;
-import jakarta.persistence.EntityManager;
+import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -17,8 +16,8 @@ import java.util.Optional;
 public class StreakRepositoryAdapter implements StreakRepository {
 
     private final JpaStreakRepository jpaStreakRepository;
+    private final JpaUserRepository jpaUserRepository;
     private final StreakMapper streakMapper;
-    private final EntityManager entityManager;
 
     @Override
     public Optional<Streak> findById(Long userId) {
@@ -29,13 +28,8 @@ public class StreakRepositoryAdapter implements StreakRepository {
     @Override
     public Streak save(Streak streak) {
         StreakEntity streakEntity = streakMapper.toEntity(streak);
-        streakEntity.setUser(entityManager.getReference(UserEntity.class, streak.getUserId()));
-        if (!jpaStreakRepository.existsById(streak.getUserId())) {
-            entityManager.persist(streakEntity);
-            return streakMapper.toDomain(streakEntity);
-        } else {
-            StreakEntity mergedStreakEntity = entityManager.merge(streakEntity);
-            return streakMapper.toDomain(mergedStreakEntity);
-        }
+        streakEntity.setUser(jpaUserRepository.getReferenceById(streak.getUserId()));
+        StreakEntity saved = jpaStreakRepository.save(streakEntity);
+        return streakMapper.toDomain(saved);
     }
 }

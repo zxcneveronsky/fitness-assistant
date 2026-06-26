@@ -34,7 +34,7 @@ public class CreateWorkoutUseCase {
         }
         workout.setUserId(userId);
         Workout savedWorkout = workoutRepository.save(workout);
-        log.info("Тренировка создана | id={}", savedWorkout.getId());
+        log.info("Тренировка создана | id={} | название='{}'", savedWorkout.getId(), savedWorkout.getName());
         return savedWorkout;
     }
 }

@@ -20,7 +20,7 @@ public class CalculateFoodUseCase {
         }
         Food food = foodRepository.findById(foodId).orElseThrow(()->new FoodNotFoundException(foodId));
         Double weightFactor = weight / 100.0;
-        Food calculated = new Food(
+        Food calculatedFood = new Food(
                 food.getId(),
                 food.getName(),
                 food.getBrands(),
@@ -30,7 +30,7 @@ public class CalculateFoodUseCase {
                 food.getCarbs() * weightFactor
         );
         log.info("Пищевая ценность рассчитана | id={} | вес={}", foodId, weight);
-        return calculated;
+        return calculatedFood;
     }
 
 }

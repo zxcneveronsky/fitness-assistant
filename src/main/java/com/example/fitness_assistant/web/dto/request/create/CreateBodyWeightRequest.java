@@ -11,7 +11,7 @@ public record CreateBodyWeightRequest(
         @NotNull(message = "Вес не может быть пустым")
         @Min(value = 5, message = "Вес должен быть не менее 5 кг")
         @Max(value = 500, message = "Вес должен быть не более 500 кг")
-        Double weightKg,
+        Double weight,
 
         @PastOrPresent(message = "Дата не может быть в будущем")
         LocalDate measuredAt

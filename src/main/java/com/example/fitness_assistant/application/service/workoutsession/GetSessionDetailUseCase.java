@@ -27,7 +27,7 @@ public class GetSessionDetailUseCase {
     private final SetRepository setRepository;
 
     @Transactional(readOnly = true)
-    public SessionDetail getSessionDetail(Long sessionId, Long userId) {
+    public SessionDetail getSessionDetail(Long userId, Long sessionId) {
         WorkoutSession session = workoutSessionRepository.findById(sessionId, userId)
                 .orElseThrow(() -> new WorkoutSessionNotFoundException(sessionId));
 
@@ -47,7 +47,7 @@ public class GetSessionDetailUseCase {
                 ))
                 .toList();
 
-        log.info("Детали сессии загружены | id={}| упражнений={}", sessionId, exercises.size());
+        log.info("Детали сессии загружены | id={} | упражнений={}", sessionId, exercises.size());
         return new SessionDetail(session.getId(), session.getStartTime(), session.getEndTime(), exercises);
     }
 

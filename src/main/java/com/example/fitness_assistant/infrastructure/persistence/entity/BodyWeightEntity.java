@@ -26,8 +26,8 @@ public class BodyWeightEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
-    @Column(name = "weight_kg", nullable = false)
-    private Double weightKg;
+    @Column(name = "weight", nullable = false)
+    private Double weight;
 
     @Column(name = "measured_at", nullable = false)
     private LocalDate measuredAt;

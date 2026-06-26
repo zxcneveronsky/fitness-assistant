@@ -35,8 +35,8 @@ public class SetRepositoryAdapter implements SetRepository {
     }
 
     @Override
-    public Page<Set> findAllBySessionIdAndExerciseId(Long sessionId, Long exerciseId, Pageable pageable) {
-        return jpaSetRepository.findAllBySessionIdAndExerciseId(sessionId, exerciseId, pageable)
+    public Page<Set> findBySessionIdAndExerciseId(Long sessionId, Long exerciseId, Pageable pageable) {
+        return jpaSetRepository.findBySessionIdAndExerciseId(sessionId, exerciseId, pageable)
                 .map(setMapper::toDomain);
     }
 
@@ -56,11 +56,9 @@ public class SetRepositoryAdapter implements SetRepository {
     }
 
     @Override
-    public List<Set> findByExerciseIdAndUserIdAndStartTimeBetween(Long exerciseId, Long userId, LocalDateTime from, LocalDateTime to) {
-        return jpaSetRepository.findByExerciseIdAndUserIdAndStartTimeBetween(exerciseId, userId, from, to)
-                .stream()
-                .map(setMapper::toDomain)
-                .toList();
+    public Page<Set> findByExerciseIdAndUserIdAndStartTimeBetween(Long exerciseId, Long userId, LocalDateTime from, LocalDateTime to, Pageable pageable) {
+        return jpaSetRepository.findByExerciseIdAndUserIdAndStartTimeBetween(exerciseId, userId, from, to, pageable)
+                .map(setMapper::toDomain);
     }
 
     @Override

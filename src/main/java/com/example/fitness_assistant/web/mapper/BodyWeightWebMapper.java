@@ -13,7 +13,7 @@ public class BodyWeightWebMapper {
         return new BodyWeight(
                 null,
                 null,
-                request.weightKg(),
+                request.weight(),
                 request.measuredAt()
         );
     }
@@ -22,7 +22,7 @@ public class BodyWeightWebMapper {
         return new BodyWeight(
                 request.id(),
                 null,
-                request.weightKg(),
+                request.weight(),
                 request.measuredAt()
         );
     }
@@ -30,7 +30,7 @@ public class BodyWeightWebMapper {
     public BodyWeightResponse toResponse(BodyWeight bodyWeight) {
         return new BodyWeightResponse(
                 bodyWeight.getId(),
-                bodyWeight.getWeightKg(),
+                bodyWeight.getWeight(),
                 bodyWeight.getMeasuredAt()
         );
     }

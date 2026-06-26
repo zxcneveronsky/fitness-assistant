@@ -42,7 +42,7 @@ public class MealController {
 
     @GetMapping("/{id}")
     public MealResponse getMealById(@AuthenticationPrincipal UserDetailsAdapter adapter, @PathVariable Long id){
-        return mealWebMapper.toResponse(findMealUseCase.findById(id, adapter.getUserId()));
+        return mealWebMapper.toResponse(findMealUseCase.findById(adapter.getUserId(), id));
     }
 
     @GetMapping("/search")
@@ -50,7 +50,7 @@ public class MealController {
             @AuthenticationPrincipal UserDetailsAdapter adapter,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime localDateTime,
             @PageableDefault(size = 12) Pageable pageable) {
-        return findMealUseCase.searchMeal(localDateTime, adapter.getUserId(), pageable)
+        return findMealUseCase.searchMeal(adapter.getUserId(), localDateTime, pageable)
                 .map(mealWebMapper::toResponse);
     }
 
@@ -58,7 +58,7 @@ public class MealController {
     public DailyNutritionResponse getDailyMeal(
             @AuthenticationPrincipal UserDetailsAdapter adapter,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime localDateTime) {
-        return dailyNutritionWebMapper.toResponse(getDailyNutritionUseCase.getDailyNutrition(localDateTime, adapter.getUserId()));
+        return dailyNutritionWebMapper.toResponse(getDailyNutritionUseCase.getDailyNutrition(adapter.getUserId(), localDateTime));
     }
 
     @PostMapping("/manual")
@@ -96,6 +96,6 @@ public class MealController {
     public void deleteMeal(
             @AuthenticationPrincipal UserDetailsAdapter adapter,
             @PathVariable Long id) {
-        deleteMealUseCase.deleteMeal(id, adapter.getUserId());
+        deleteMealUseCase.deleteMeal(adapter.getUserId(), id);
     }
 }

@@ -24,7 +24,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/exercise")
@@ -46,15 +45,14 @@ public class ExerciseController {
     }
 
     @GetMapping("/{id}/history")
-    public List<ExerciseHistoryResponse> getExerciseHistory(
+    public Page<ExerciseHistoryResponse> getExerciseHistory(
             @AuthenticationPrincipal UserDetailsAdapter adapter,
             @PathVariable Long id,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to) {
-        return findExerciseHistoryUseCase.findExerciseHistory(id, adapter.getUserId(), from, to)
-                .stream()
-                .map(exerciseHistoryWebMapper::toResponse)
-                .toList();
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
+            @PageableDefault(size = 12) Pageable pageable) {
+        return findExerciseHistoryUseCase.findExerciseHistory(adapter.getUserId(), id, from, to, pageable)
+                .map(exerciseHistoryWebMapper::toResponse);
     }
 
     @GetMapping("/search")

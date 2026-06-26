@@ -20,7 +20,7 @@ public class UpdateBodyWeightUseCase {
         Long bodyWeightId = bodyWeightUpdate.getId();
         BodyWeight updatedBodyWeight = bodyWeightRepository.findById(bodyWeightId, userId)
                 .map(existingBodyWeight -> {
-                    existingBodyWeight.setWeightKg(bodyWeightUpdate.getWeightKg() != null ? bodyWeightUpdate.getWeightKg() : existingBodyWeight.getWeightKg());
+                    existingBodyWeight.setWeight(bodyWeightUpdate.getWeight() != null ? bodyWeightUpdate.getWeight() : existingBodyWeight.getWeight());
                     existingBodyWeight.setMeasuredAt(bodyWeightUpdate.getMeasuredAt() != null ? bodyWeightUpdate.getMeasuredAt() : existingBodyWeight.getMeasuredAt());
                     return bodyWeightRepository.save(existingBodyWeight);
                 })

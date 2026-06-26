@@ -20,9 +20,11 @@ public class FindBodyWeightUseCase {
     private final BodyWeightRepository bodyWeightRepository;
 
     @Transactional(readOnly = true)
-    public BodyWeight findById(Long bodyWeightId, Long userId) {
-        return bodyWeightRepository.findById(bodyWeightId, userId)
+    public BodyWeight findById(Long userId, Long bodyWeightId) {
+        BodyWeight bodyWeight = bodyWeightRepository.findById(bodyWeightId, userId)
                 .orElseThrow(() -> new BodyWeightNotFoundException(bodyWeightId));
+        log.info("Запись веса найдена | id={}", bodyWeightId);
+        return bodyWeight;
     }
 
     @Transactional(readOnly = true)
@@ -34,6 +36,8 @@ public class FindBodyWeightUseCase {
 
     @Transactional(readOnly = true)
     public Optional<BodyWeight> findLatest(Long userId) {
-        return bodyWeightRepository.findLatestByUserId(userId);
+        Optional<BodyWeight> bodyWeight = bodyWeightRepository.findLatestByUserId(userId);
+        log.info("Последняя запись веса | userId={} | найдена={}", userId, bodyWeight.isPresent());
+        return bodyWeight;
     }
 }

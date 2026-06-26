@@ -18,17 +18,17 @@ public class UpdateSetUseCase {
     private final WorkoutSessionRepository workoutSessionRepository;
 
     @Transactional
-    public Set updateSet(Long userId, Set set) {
-        Long setId = set.getId();
-        Long sessionId = set.getSessionId();
+    public Set updateSet(Long userId, Set setUpdate) {
+        Long setId = setUpdate.getId();
+        Long sessionId = setUpdate.getSessionId();
 
         if (!workoutSessionRepository.existsById(sessionId, userId)) {
             throw new WorkoutSessionNotFoundException(sessionId);
         }
 
         Set updatedSet = setRepository.findById(setId, sessionId).map(existingSet -> {
-            existingSet.setReps(set.getReps() != null ? set.getReps() : existingSet.getReps());
-            existingSet.setWeight(set.getWeight() != null ? set.getWeight() : existingSet.getWeight());
+            existingSet.setReps(setUpdate.getReps() != null ? setUpdate.getReps() : existingSet.getReps());
+            existingSet.setWeight(setUpdate.getWeight() != null ? setUpdate.getWeight() : existingSet.getWeight());
             return setRepository.save(existingSet);
         }).orElseThrow(()->new SetNotFoundException(setId));
         log.info("Подход обновлен | id={}", setId);

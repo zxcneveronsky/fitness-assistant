@@ -18,7 +18,7 @@ public interface JpaSetRepository extends JpaRepository<SetEntity, Long> {
     void deleteByIdAndSessionId(Long id, Long sessionId);
     boolean existsByIdAndSessionId(Long id, Long sessionId);
     @Query("SELECT s FROM SetEntity s WHERE s.session.id = :sessionId AND s.exercise.id = :exerciseId ORDER BY s.id ASC")
-    Page<SetEntity> findAllBySessionIdAndExerciseId(@Param("sessionId") Long sessionId, @Param("exerciseId") Long exerciseId, Pageable pageable);
+    Page<SetEntity> findBySessionIdAndExerciseId(@Param("sessionId") Long sessionId, @Param("exerciseId") Long exerciseId, Pageable pageable);
 
     @Query("SELECT s FROM SetEntity s " +
            "JOIN FETCH s.exercise e " +
@@ -26,16 +26,22 @@ public interface JpaSetRepository extends JpaRepository<SetEntity, Long> {
            "ORDER BY e.id ASC, s.id ASC")
     List<SetEntity> findAllWithExerciseBySessionId(@Param("sessionId") Long sessionId);
 
-    @Query("SELECT s FROM SetEntity s " +
+    @Query(value = "SELECT s FROM SetEntity s " +
            "JOIN FETCH s.session sess " +
            "JOIN FETCH sess.workout w " +
            "WHERE s.exercise.id = :exerciseId " +
            "AND sess.user.id = :userId " +
            "AND sess.startTime BETWEEN :from AND :to " +
-           "ORDER BY sess.startTime DESC, s.id ASC")
-    List<SetEntity> findByExerciseIdAndUserIdAndStartTimeBetween(
+           "ORDER BY sess.startTime DESC, s.id ASC",
+           countQuery = "SELECT COUNT(s) FROM SetEntity s " +
+           "JOIN s.session sess " +
+           "WHERE s.exercise.id = :exerciseId " +
+           "AND sess.user.id = :userId " +
+           "AND sess.startTime BETWEEN :from AND :to")
+    Page<SetEntity> findByExerciseIdAndUserIdAndStartTimeBetween(
             @Param("exerciseId") Long exerciseId,
             @Param("userId") Long userId,
             @Param("from") LocalDateTime from,
-            @Param("to") LocalDateTime to);
+            @Param("to") LocalDateTime to,
+            Pageable pageable);
 }

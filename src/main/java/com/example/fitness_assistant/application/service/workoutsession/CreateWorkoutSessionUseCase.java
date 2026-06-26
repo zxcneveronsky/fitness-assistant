@@ -39,7 +39,7 @@ public class CreateWorkoutSessionUseCase {
                     null
                 )
         );
-        log.info("Сессия тренировки создана | id={}", savedSession.getId());
+        log.info("Сессия тренировки создана | id={} | userId={} | workoutId={}", savedSession.getId(), userId, workoutId);
         return savedSession;
     }
 }

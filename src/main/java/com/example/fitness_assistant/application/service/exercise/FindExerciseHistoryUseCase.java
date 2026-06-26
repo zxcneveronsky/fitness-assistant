@@ -9,6 +9,9 @@ import com.example.fitness_assistant.core.repository.WorkoutRepository;
 import com.example.fitness_assistant.core.repository.WorkoutSessionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,14 +31,14 @@ public class FindExerciseHistoryUseCase {
     private final WorkoutRepository workoutRepository;
 
     @Transactional(readOnly = true)
-    public List<ExerciseHistory> findExerciseHistory(Long exerciseId, Long userId, LocalDateTime from, LocalDateTime to) {
-        List<Set> sets = setRepository.findByExerciseIdAndUserIdAndStartTimeBetween(exerciseId, userId, from, to);
-        if (sets.isEmpty()) {
+    public Page<ExerciseHistory> findExerciseHistory(Long userId, Long exerciseId, LocalDateTime from, LocalDateTime to, Pageable pageable) {
+        Page<Set> setsPage = setRepository.findByExerciseIdAndUserIdAndStartTimeBetween(exerciseId, userId, from, to, pageable);
+        if (setsPage.isEmpty()) {
             log.info("История упражнения пуста | exerciseId={} | userId={}", exerciseId, userId);
-            return List.of();
+            return Page.empty();
         }
 
-        Map<Long, List<Set>> setsBySession = sets.stream()
+        Map<Long, List<Set>> setsBySession = setsPage.getContent().stream()
                 .collect(Collectors.groupingBy(Set::getSessionId));
 
         List<Long> sessionIds = setsBySession.keySet().stream().toList();
@@ -68,6 +71,6 @@ public class FindExerciseHistoryUseCase {
                 .toList();
 
         log.info("История упражнения загружена | exerciseId={} | userId={} | точек={}", exerciseId, userId, history.size());
-        return history;
+        return new PageImpl<>(history, pageable, setsPage.getTotalElements());
     }
 }

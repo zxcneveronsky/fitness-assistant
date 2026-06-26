@@ -18,14 +18,6 @@ public class UserWebMapper {
         );
     }
 
-    public AuthResponse toAuthResponse(String token, User user) {
-        return new AuthResponse(
-                token,
-                user.getEmail(),
-                user.getRole().name()
-        );
-    }
-
     public AuthResponse toAuthResponse(LoginResult result) {
         return new AuthResponse(
                 result.token(),

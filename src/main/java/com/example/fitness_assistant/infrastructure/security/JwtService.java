@@ -1,6 +1,7 @@
 package com.example.fitness_assistant.infrastructure.security;
 
 import com.example.fitness_assistant.core.model.User;
+import com.example.fitness_assistant.core.security.TokenProvider;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -16,7 +17,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
-public class JwtService {
+public class JwtService implements TokenProvider {
 
     @Value("${jwt.secret}")
     private String secretKey;

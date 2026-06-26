@@ -42,8 +42,8 @@ public class AuthController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUser(@PathVariable Long id,
-                           @AuthenticationPrincipal UserDetailsAdapter adapter) {
+    public void deleteUser(@AuthenticationPrincipal UserDetailsAdapter adapter,
+                           @PathVariable Long id) {
         if (!adapter.getUserId().equals(id)) {
             throw new AccessDeniedException();
         }

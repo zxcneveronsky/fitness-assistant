@@ -4,6 +4,6 @@ import java.time.LocalDate;
 
 public record BodyWeightResponse(
         Long id,
-        Double weightKg,
+        Double weight,
         LocalDate measuredAt
 ) {}

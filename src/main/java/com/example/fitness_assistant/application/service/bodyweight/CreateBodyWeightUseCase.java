@@ -21,11 +21,11 @@ public class CreateBodyWeightUseCase {
         BodyWeight toSave = new BodyWeight(
                 null,
                 userId,
-                bodyWeight.getWeightKg(),
+                bodyWeight.getWeight(),
                 bodyWeight.getMeasuredAt() != null ? bodyWeight.getMeasuredAt() : LocalDate.now()
         );
         BodyWeight savedBodyWeight = bodyWeightRepository.save(toSave);
-        log.info("Запись веса создана | id={} | weightKg={}", savedBodyWeight.getId(), savedBodyWeight.getWeightKg());
+        log.info("Запись веса создана | id={} | weight={}", savedBodyWeight.getId(), savedBodyWeight.getWeight());
         return savedBodyWeight;
     }
 }

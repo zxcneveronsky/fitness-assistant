@@ -14,7 +14,7 @@ public class BodyWeightMapper {
         return new BodyWeight(
                 entity.getId(),
                 entity.getUser().getId(),
-                entity.getWeightKg(),
+                entity.getWeight(),
                 entity.getMeasuredAt()
         );
     }
@@ -26,7 +26,7 @@ public class BodyWeightMapper {
         return new BodyWeightEntity(
                 domain.getId(),
                 null,
-                domain.getWeightKg(),
+                domain.getWeight(),
                 domain.getMeasuredAt()
         );
     }

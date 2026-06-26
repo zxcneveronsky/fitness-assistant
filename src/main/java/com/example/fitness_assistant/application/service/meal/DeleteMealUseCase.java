@@ -14,7 +14,7 @@ public class DeleteMealUseCase {
     private final MealRepository mealRepository;
 
     @Transactional
-    public void deleteMeal(Long mealId, Long userId) {
+    public void deleteMeal(Long userId, Long mealId) {
         if (!mealRepository.existsById(mealId, userId)) {
             throw new MealNotFoundException(mealId);
         }

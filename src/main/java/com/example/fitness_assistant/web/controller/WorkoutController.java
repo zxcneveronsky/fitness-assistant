@@ -34,20 +34,20 @@ public class WorkoutController {
 
     @GetMapping
     public Page<WorkoutResponse> getAllWorkouts(@AuthenticationPrincipal UserDetailsAdapter adapter, @PageableDefault(size = 12) Pageable pageable) {
-        return findWorkoutUseCase.findAll(adapter.getUserId(), pageable)
+        return findWorkoutUseCase.findAllByUserId(adapter.getUserId(), pageable)
                 .map(workoutWebMapper::toResponse);
     }
 
     @GetMapping("/{id}")
     public WorkoutWithExerciseResponse getWorkoutById(@AuthenticationPrincipal UserDetailsAdapter adapter, @PathVariable Long id){
-        return workoutWebMapper.toResponse(findWorkoutUseCase.findById(id, adapter.getUserId()));
+        return workoutWebMapper.toResponse(findWorkoutUseCase.findById(adapter.getUserId(), id));
     }
 
     @GetMapping("/search")
     public Page<WorkoutResponse> searchWorkout(@AuthenticationPrincipal UserDetailsAdapter adapter,
                                                 @RequestParam(required = false) String name,
                                                 @PageableDefault(size = 12) Pageable pageable) {
-        return findWorkoutUseCase.searchWorkout(name, adapter.getUserId(), pageable)
+        return findWorkoutUseCase.searchWorkout(adapter.getUserId(), name, pageable)
                 .map(workoutWebMapper::toResponse);
     }
 
@@ -66,6 +66,6 @@ public class WorkoutController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteWorkout(@AuthenticationPrincipal UserDetailsAdapter adapter, @PathVariable Long id) {
-        deleteWorkoutUseCase.deleteWorkout(id, adapter.getUserId());
+        deleteWorkoutUseCase.deleteWorkout(adapter.getUserId(), id);
     }
 }

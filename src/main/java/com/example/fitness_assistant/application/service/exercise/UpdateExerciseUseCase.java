@@ -41,7 +41,7 @@ public class UpdateExerciseUseCase {
                     return exerciseRepository.save(existingExercise);
                 })
                 .orElseThrow(() -> new ExerciseNotFoundException(exerciseId));
-        log.info("Упражнение обновлено | id={}", exerciseId);
+        log.info("Упражнение обновлено | id={}", updatedExercise.getId());
         return updatedExercise;
     }
 }

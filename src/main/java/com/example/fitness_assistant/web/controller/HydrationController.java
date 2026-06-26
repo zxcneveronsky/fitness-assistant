@@ -41,7 +41,7 @@ public class HydrationController {
 
     @GetMapping("/{id}")
     public HydrationResponse getHydrationById(@AuthenticationPrincipal UserDetailsAdapter adapter, @PathVariable Long id){
-        return hydrationWebMapper.toResponse(findHydrationUseCase.findById(id, adapter.getUserId()));
+        return hydrationWebMapper.toResponse(findHydrationUseCase.findById(adapter.getUserId(), id));
     }
 
     @GetMapping("/search")
@@ -49,7 +49,7 @@ public class HydrationController {
             @AuthenticationPrincipal UserDetailsAdapter adapter,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime localDateTime,
             @PageableDefault(size = 12) Pageable pageable) {
-        return findHydrationUseCase.searchHydration(localDateTime, adapter.getUserId(), pageable)
+        return findHydrationUseCase.searchHydration(adapter.getUserId(), localDateTime, pageable)
                 .map(hydrationWebMapper::toResponse);
     }
 
@@ -57,7 +57,7 @@ public class HydrationController {
     public DailyHydrationResponse getDailyHydration(
             @AuthenticationPrincipal UserDetailsAdapter adapter,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime localDateTime) {
-        return dailyHydrationWebMapper.toResponse(getDailyHydrationUseCase.getDailyHydration(localDateTime, adapter.getUserId()));
+        return dailyHydrationWebMapper.toResponse(getDailyHydrationUseCase.getDailyHydration(adapter.getUserId(), localDateTime));
     }
 
     @PostMapping
@@ -85,6 +85,6 @@ public class HydrationController {
     public void deleteHydration(
             @AuthenticationPrincipal UserDetailsAdapter adapter,
             @PathVariable Long id) {
-        deleteHydrationUseCase.deleteHydration(id, adapter.getUserId());
+        deleteHydrationUseCase.deleteHydration(adapter.getUserId(), id);
     }
 }

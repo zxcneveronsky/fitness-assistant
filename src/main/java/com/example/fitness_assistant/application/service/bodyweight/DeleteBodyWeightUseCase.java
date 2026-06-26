@@ -15,7 +15,7 @@ public class DeleteBodyWeightUseCase {
     private final BodyWeightRepository bodyWeightRepository;
 
     @Transactional
-    public void deleteBodyWeight(Long bodyWeightId, Long userId) {
+    public void deleteBodyWeight(Long userId, Long bodyWeightId) {
         if (!bodyWeightRepository.existsById(bodyWeightId, userId)) {
             throw new BodyWeightNotFoundException(bodyWeightId);
         }

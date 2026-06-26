@@ -4,9 +4,8 @@ import com.example.fitness_assistant.core.model.Targets;
 import com.example.fitness_assistant.core.repository.TargetsRepository;
 import com.example.fitness_assistant.infrastructure.mapper.TargetsMapper;
 import com.example.fitness_assistant.infrastructure.persistence.entity.TargetsEntity;
-import com.example.fitness_assistant.infrastructure.persistence.entity.UserProfileEntity;
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaTargetsRepository;
-import jakarta.persistence.EntityManager;
+import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaUserProfileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -17,8 +16,8 @@ import java.util.Optional;
 public class TargetsRepositoryAdapter implements TargetsRepository {
 
     private final JpaTargetsRepository jpaTargetsRepository;
+    private final JpaUserProfileRepository jpaUserProfileRepository;
     private final TargetsMapper targetsMapper;
-    private final EntityManager entityManager;
 
     @Override
     public Optional<Targets> findById(Long profileId) {
@@ -29,14 +28,9 @@ public class TargetsRepositoryAdapter implements TargetsRepository {
     @Override
     public Targets save(Targets targets) {
         TargetsEntity targetsEntity = targetsMapper.toEntity(targets);
-        targetsEntity.setProfile(entityManager.getReference(UserProfileEntity.class, targets.getProfileId()));
-        if (!jpaTargetsRepository.existsById(targets.getProfileId())) {
-            entityManager.persist(targetsEntity);
-            return targetsMapper.toDomain(targetsEntity);
-        } else {
-            TargetsEntity mergedTargetsEntity = entityManager.merge(targetsEntity);
-            return targetsMapper.toDomain(mergedTargetsEntity);
-        }
+        targetsEntity.setProfile(jpaUserProfileRepository.getReferenceById(targets.getProfileId()));
+        TargetsEntity saved = jpaTargetsRepository.save(targetsEntity);
+        return targetsMapper.toDomain(saved);
     }
 
     @Override

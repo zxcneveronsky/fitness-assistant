@@ -36,7 +36,7 @@ public class SetController {
             @RequestParam Long sessionId,
             @RequestParam Long exerciseId,
             @PageableDefault(size = 12) Pageable pageable) {
-        return findSetUseCase.findAll(sessionId, exerciseId, adapter.getUserId(), pageable)
+        return findSetUseCase.findBySessionIdAndExerciseId(adapter.getUserId(), sessionId, exerciseId, pageable)
                 .map(setWebMapper::toResponse);
     }
 
@@ -46,7 +46,7 @@ public class SetController {
             @PathVariable Long id,
             @RequestParam Long sessionId) {
         return setWebMapper.toResponse(
-                findSetUseCase.findById(id, sessionId, adapter.getUserId())
+                findSetUseCase.findById(adapter.getUserId(), sessionId, id)
         );
     }
 
@@ -76,7 +76,7 @@ public class SetController {
             @AuthenticationPrincipal UserDetailsAdapter adapter,
             @PathVariable Long id,
             @RequestParam Long sessionId) {
-        deleteSetUseCase.deleteSet(id, sessionId, adapter.getUserId());
+        deleteSetUseCase.deleteSet(adapter.getUserId(), sessionId, id);
     }
 
 }

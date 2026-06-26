@@ -3,10 +3,10 @@ package com.example.fitness_assistant.application.service.user;
 import com.example.fitness_assistant.core.exception.UserAlreadyExistsException;
 import com.example.fitness_assistant.core.model.User;
 import com.example.fitness_assistant.core.repository.UserRepository;
-import com.example.fitness_assistant.infrastructure.security.JwtService;
+import com.example.fitness_assistant.core.security.PasswordEncoder;
+import com.example.fitness_assistant.core.security.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +17,7 @@ public class RegisterUserUseCase {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
+    private final TokenProvider tokenProvider;
 
     @Transactional
     public LoginResult registerUser(User user) {
@@ -27,7 +27,7 @@ public class RegisterUserUseCase {
         user.setId(null);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         User savedUser = userRepository.save(user);
-        String token = jwtService.generateToken(savedUser);
+        String token = tokenProvider.generateToken(savedUser);
         log.info("Пользователь зарегистрирован | id={} | email='{}'", savedUser.getId(), savedUser.getEmail());
         return new LoginResult(token, savedUser.getEmail(), savedUser.getRole().name());
     }

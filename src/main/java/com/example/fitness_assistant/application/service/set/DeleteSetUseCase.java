@@ -18,7 +18,7 @@ public class DeleteSetUseCase {
     private final WorkoutSessionRepository workoutSessionRepository;
 
     @Transactional
-    public void deleteSet(Long setId, Long sessionId, Long userId) {
+    public void deleteSet(Long userId, Long sessionId, Long setId) {
         if (!workoutSessionRepository.existsById(sessionId, userId)) {
             throw new WorkoutSessionNotFoundException(sessionId);
         }

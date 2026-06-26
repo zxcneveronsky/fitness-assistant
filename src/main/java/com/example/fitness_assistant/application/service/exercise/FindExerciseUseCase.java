@@ -31,7 +31,7 @@ public class FindExerciseUseCase {
 
     @Transactional(readOnly = true)
     public Exercise findById(Long exerciseId){
-        Exercise exercise = exerciseRepository.findById(exerciseId).orElseThrow(()->new ExerciseNotFoundException(exerciseId));
+        Exercise exercise = exerciseRepository.findById(exerciseId).orElseThrow(() -> new ExerciseNotFoundException(exerciseId));
         log.info("Упражнение найдено | id={}", exerciseId);
         return exercise;
 

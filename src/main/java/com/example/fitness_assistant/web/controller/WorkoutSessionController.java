@@ -41,7 +41,7 @@ public class WorkoutSessionController {
             @AuthenticationPrincipal UserDetailsAdapter adapter,
             @PathVariable Long id) {
         return sessionDetailWebMapper.toResponse(
-                getSessionDetailUseCase.getSessionDetail(id, adapter.getUserId())
+                getSessionDetailUseCase.getSessionDetail(adapter.getUserId(), id)
         );
     }
 
@@ -50,7 +50,7 @@ public class WorkoutSessionController {
             @AuthenticationPrincipal UserDetailsAdapter adapter,
             @PathVariable Long id) {
         return workoutSessionWebMapper.toResponse(
-                findWorkoutSessionUseCase.findById(id, adapter.getUserId())
+                findWorkoutSessionUseCase.findById(adapter.getUserId(), id)
         );
     }
 
@@ -58,7 +58,7 @@ public class WorkoutSessionController {
     public Page<WorkoutSessionResponse> getAllWorkoutSession(
             @AuthenticationPrincipal UserDetailsAdapter adapter,
             @PageableDefault(size = 12) Pageable pageable) {
-        return findWorkoutSessionUseCase.findAll(adapter.getUserId(), pageable)
+        return findWorkoutSessionUseCase.findAllByUserId(adapter.getUserId(), pageable)
                 .map(workoutSessionWebMapper::toResponse);
     }
 
@@ -87,6 +87,6 @@ public class WorkoutSessionController {
     public void deleteWorkoutSession(
             @AuthenticationPrincipal UserDetailsAdapter adapter,
             @PathVariable Long id) {
-        deleteWorkoutSessionUseCase.deleteWorkoutSession(id, adapter.getUserId());
+        deleteWorkoutSessionUseCase.deleteWorkoutSession(adapter.getUserId(), id);
     }
 }

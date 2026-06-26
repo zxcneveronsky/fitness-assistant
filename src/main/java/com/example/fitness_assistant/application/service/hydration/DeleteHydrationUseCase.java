@@ -15,7 +15,7 @@ public class DeleteHydrationUseCase {
     private final HydrationRepository hydrationRepository;
 
     @Transactional
-    public void deleteHydration(Long hydrationId, Long userId) {
+    public void deleteHydration(Long userId, Long hydrationId) {
         if (!hydrationRepository.existsById(hydrationId, userId)) {
             throw new HydrationNotFoundException(hydrationId);
         }

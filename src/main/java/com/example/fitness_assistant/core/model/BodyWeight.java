@@ -14,6 +14,6 @@ import java.time.LocalDate;
 public class BodyWeight {
     private Long id;
     private Long userId;
-    private Double weightKg;
+    private Double weight;
     private LocalDate measuredAt;
 }

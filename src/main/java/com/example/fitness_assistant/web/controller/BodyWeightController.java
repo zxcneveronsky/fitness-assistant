@@ -4,6 +4,7 @@ import com.example.fitness_assistant.application.service.bodyweight.CreateBodyWe
 import com.example.fitness_assistant.application.service.bodyweight.DeleteBodyWeightUseCase;
 import com.example.fitness_assistant.application.service.bodyweight.FindBodyWeightUseCase;
 import com.example.fitness_assistant.application.service.bodyweight.UpdateBodyWeightUseCase;
+import com.example.fitness_assistant.core.exception.BodyWeightNotFoundException;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import com.example.fitness_assistant.web.dto.request.create.CreateBodyWeightRequest;
 import com.example.fitness_assistant.web.dto.request.update.UpdateBodyWeightRequest;
@@ -37,7 +38,7 @@ public class BodyWeightController {
             @AuthenticationPrincipal UserDetailsAdapter adapter,
             @PathVariable Long id) {
         return bodyWeightWebMapper.toResponse(
-                findBodyWeightUseCase.findById(id, adapter.getUserId())
+                findBodyWeightUseCase.findById(adapter.getUserId(), id)
         );
     }
 
@@ -66,7 +67,7 @@ public class BodyWeightController {
     public BodyWeightResponse findLatestBodyWeight(@AuthenticationPrincipal UserDetailsAdapter adapter) {
         return findBodyWeightUseCase.findLatest(adapter.getUserId())
                 .map(bodyWeightWebMapper::toResponse)
-                .orElse(null);
+                .orElseThrow(() -> new BodyWeightNotFoundException(adapter.getUserId()));
     }
 
     @PatchMapping
@@ -84,6 +85,6 @@ public class BodyWeightController {
     public void deleteBodyWeight(
             @AuthenticationPrincipal UserDetailsAdapter adapter,
             @PathVariable Long id) {
-        deleteBodyWeightUseCase.deleteBodyWeight(id, adapter.getUserId());
+        deleteBodyWeightUseCase.deleteBodyWeight(adapter.getUserId(), id);
     }
 }

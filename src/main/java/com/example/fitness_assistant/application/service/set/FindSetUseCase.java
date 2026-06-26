@@ -23,15 +23,16 @@ public class FindSetUseCase {
     private final ExerciseRepository exerciseRepository;
 
     @Transactional(readOnly = true)
-    public Page<Set> findAll(Long sessionId, Long exerciseId, Long userId, Pageable pageable) {
+    public Page<Set> findBySessionIdAndExerciseId(Long userId, Long sessionId, Long exerciseId, Pageable pageable) {
         if (!workoutSessionRepository.existsById(sessionId, userId)) {
             throw new WorkoutSessionNotFoundException(sessionId);
         }
         if (!exerciseRepository.existsById(exerciseId)){
             throw new ExerciseNotFoundException(exerciseId);
         }
-        Page<Set> sets = setRepository.findAllBySessionIdAndExerciseId(sessionId, exerciseId, pageable);
-        log.info("Поиск подходов завершён | найдено={} | страница={}/{}",
+        Page<Set> sets = setRepository.findBySessionIdAndExerciseId(sessionId, exerciseId, pageable);
+        log.info("Поиск подходов завершён | userId={} | sessionId={} | exerciseId={} | найдено={} | страница={}/{}",
+                userId, sessionId, exerciseId,
                 sets.getTotalElements(),
                 sets.getNumber() + 1,
                 sets.getTotalPages());
@@ -39,13 +40,13 @@ public class FindSetUseCase {
     }
 
     @Transactional(readOnly = true)
-    public Set findById(Long setId, Long sessionId, Long userId) {
+    public Set findById(Long userId, Long sessionId, Long setId) {
         if (!workoutSessionRepository.existsById(sessionId, userId)) {
             throw new WorkoutSessionNotFoundException(sessionId);
         }
         Set set = setRepository.findById(setId, sessionId)
                 .orElseThrow(() -> new SetNotFoundException(setId));
-        log.info("Подход найден | id={}", setId);
+        log.info("Подход найден | userId={} | sessionId={} | id={}", userId, sessionId, setId);
         return set;
     }
 

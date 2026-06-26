@@ -11,8 +11,8 @@ import java.util.Optional;
 
 public interface SetRepository {
     Optional<Set> findById(Long id, Long sessionId);
-    Page<Set> findAllBySessionIdAndExerciseId(Long sessionId, Long exerciseId, Pageable pageable);
-    List<Set> findByExerciseIdAndUserIdAndStartTimeBetween(Long exerciseId, Long userId, LocalDateTime from, LocalDateTime to);
+    Page<Set> findBySessionIdAndExerciseId(Long sessionId, Long exerciseId, Pageable pageable);
+    Page<Set> findByExerciseIdAndUserIdAndStartTimeBetween(Long exerciseId, Long userId, LocalDateTime from, LocalDateTime to, Pageable pageable);
     List<SetDetail> findAllSetDetailBySessionId(Long sessionId);
     Set save(Set set);
     void deleteById(Long id,Long sessionId);
