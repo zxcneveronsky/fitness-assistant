@@ -9,6 +9,7 @@ import java.util.Optional;
 
 public interface WorkoutRepository {
     Optional<Workout> findById(Long id, Long userId);
+    Optional<Workout> findByIdAccessible(Long id);
     Page<Workout> findAllByUserId(Long userId, Pageable pageable);
     Page<Workout> searchWorkout(Long userId, String name, Pageable pageable);
     List<Workout> findAllById(List<Long> ids);

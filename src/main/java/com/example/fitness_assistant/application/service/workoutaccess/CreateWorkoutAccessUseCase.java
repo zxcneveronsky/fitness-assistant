@@ -38,7 +38,7 @@ public class CreateWorkoutAccessUseCase {
             throw new WorkoutAccessAlreadyExistsException(workoutId);
         }
         WorkoutAccess savedWorkoutAccess = workoutAccessRepository.save(
-                new WorkoutAccess(null, userId, sharedWithUserId, workoutId, null, accessLevel)
+                new WorkoutAccess(null, userId, sharedWithUserId, email, workoutId, null, accessLevel)
         );
         log.info("Доступ к тренировке создан | id={} | workoutId={} | sharedWithUserId={} | accessLevel={}",
                 savedWorkoutAccess.getId(), workoutId, sharedWithUserId, accessLevel);

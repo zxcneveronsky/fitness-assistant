@@ -13,6 +13,7 @@ public class WorkoutAccess {
     private Long id;
     private Long ownerId;
     private Long sharedWithUserId;
+    private String sharedWithUserEmail;
     private Long workoutId;
     private String workoutName;
     private AccessLevel accessLevel;

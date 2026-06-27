@@ -215,7 +215,8 @@
         const to = new Date().toISOString();
         try {
             const data = await request('/exercise/' + exerciseId + '/history?from=' + encodeURIComponent(from) + '&to=' + encodeURIComponent(to));
-            if (!data || data.length === 0) {
+            const items = data.content || data;
+            if (!items || items.length === 0) {
                 document.getElementById('historyList').innerHTML = '';
                 document.getElementById('historyEmpty').classList.remove('hidden');
                 document.getElementById('chartSection').classList.add('hidden');
@@ -223,7 +224,7 @@
             }
             document.getElementById('historyEmpty').classList.add('hidden');
 
-            document.getElementById('historyList').innerHTML = data.map(function(session) {
+            document.getElementById('historyList').innerHTML = items.map(function(session) {
                 const startDate = formatDateTime(session.startTime);
                 const duration = formatDuration(session.startTime, session.endTime);
                 const setsHtml = (session.sets || []).map(function(set) {
@@ -265,7 +266,8 @@
     async function loadHistoryCustom(from, to) {
         try {
             const data = await request('/exercise/' + exerciseId + '/history?from=' + encodeURIComponent(from + 'T00:00:00') + '&to=' + encodeURIComponent(to + 'T23:59:59'));
-            if (!data || data.length === 0) {
+            const items = data.content || data;
+            if (!items || items.length === 0) {
                 document.getElementById('historyList').innerHTML = '';
                 document.getElementById('historyEmpty').classList.remove('hidden');
                 document.getElementById('chartSection').classList.add('hidden');
@@ -273,7 +275,7 @@
             }
             document.getElementById('historyEmpty').classList.add('hidden');
 
-            document.getElementById('historyList').innerHTML = data.map(function(session) {
+            document.getElementById('historyList').innerHTML = items.map(function(session) {
                 const startDate = formatDateTime(session.startTime);
                 const duration = formatDuration(session.startTime, session.endTime);
                 const setsHtml = (session.sets || []).map(function(set) {
@@ -294,7 +296,7 @@
                     '<div class="border-t border-gray-100 pt-2 space-y-1">' + setsHtml + '</div>' +
                 '</a>';
             }).join('');
-            renderCharts(data);
+            renderCharts(items);
         } catch (e) {
             document.getElementById('historyError').textContent = 'Ошибка загрузки: ' + e.message;
             document.getElementById('historyError').classList.remove('hidden');

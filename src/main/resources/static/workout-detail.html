@@ -18,7 +18,7 @@
         <a href="/history.html" class="text-gray-600 hover:text-black">История</a>
         <a href="/profile.html" class="text-gray-600 hover:text-black">Профиль</a>
         <button onclick="logout()" class="text-red-500 hover:text-red-700 ml-4">Выйти</button>
-                <button onclick="deleteAccount()" class="text-gray-400 hover:text-red-600 ml-2 text-sm" title="Удалить аккаунт">🗑️</button>
+        <button onclick="deleteAccount()" class="text-gray-400 hover:text-red-600 ml-2 text-sm" title="Удалить аккаунт">🗑️</button>
     </div>
     <button onclick="document.getElementById('mobileMenu').classList.toggle('hidden')" class="md:hidden text-gray-600 text-2xl px-2">☰</button>
 </nav>
@@ -41,21 +41,65 @@
     <div class="flex items-center justify-between mb-6">
         <div>
             <a href="/workout.html" class="text-sm text-blue-600 hover:underline">&larr; К тренировкам</a>
-            <h1 id="workoutName" class="text-3xl font-bold mt-1">Загрузка...</h1>
+            <div class="flex items-center gap-3 mt-1">
+                <h1 id="workoutName" class="text-3xl font-bold">Загрузка...</h1>
+                <button onclick="toggleEditName()" id="editNameBtn" class="text-blue-500 hover:text-blue-700 text-sm font-bold hidden">✏️</button>
+            </div>
+            <div id="editNameRow" class="hidden mt-2 flex items-center gap-2">
+                <input id="nameInput" type="text" class="px-3 py-2 border border-gray-200 rounded-xl text-lg font-bold focus:outline-none focus:border-blue-500">
+                <button onclick="saveName()" class="bg-green-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-green-700">💾</button>
+                <button onclick="cancelEditName()" class="text-gray-400 hover:text-gray-600 text-sm px-2">Отмена</button>
+            </div>
         </div>
-        <button onclick="startSession()" class="bg-green-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-green-700">Старт</button>
+        <div class="flex gap-2">
+            <button onclick="openShareModal()" id="shareBtn" class="bg-purple-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-purple-700 hidden">🔗 Поделиться</button>
+            <button onclick="copyWorkout()" id="copyBtn" class="bg-gray-600 text-white px-4 py-3 rounded-xl font-bold hover:bg-gray-700 hidden">📋 Копировать</button>
+            <button onclick="startSession()" class="bg-green-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-green-700">Старт</button>
+        </div>
     </div>
 
-    <div class="bg-white rounded-2xl p-6 border border-gray-100 mb-6">
-        <h2 class="font-bold text-lg mb-4">Добавить упражнение</h2>
+    <div id="exerciseSection" class="bg-white rounded-2xl p-6 border border-gray-100 mb-6 hidden">
+        <h2 class="font-bold text-lg mb-4">Управление упражнениями</h2>
         <div class="flex gap-3 mb-4">
             <input id="searchInput" placeholder="Поиск упражнений..." class="flex-1 px-3 sm:px-4 py-1.5 sm:py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-sm">
             <button onclick="searchExercises()" class="bg-gray-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl hover:bg-gray-700 text-sm">Найти</button>
         </div>
         <div id="searchResults" class="space-y-2 max-h-48 overflow-y-auto mb-4"></div>
+    </div>
+
+    <div class="bg-white rounded-2xl p-6 border border-gray-100 mb-6">
+        <h2 class="font-bold text-lg mb-4">Упражнения</h2>
         <div id="addedExercises" class="space-y-2"></div>
     </div>
+
+    <div id="accessSection" class="bg-white rounded-2xl p-6 border border-gray-100 mb-6 hidden">
+        <h2 class="font-bold text-lg mb-4">🔗 Доступ к тренировке</h2>
+        <div id="accessList" class="space-y-2"></div>
+    </div>
 </main>
+
+<div id="shareModal" class="hidden fixed inset-0 bg-black/30 z-50 flex items-center justify-center" onclick="if(event.target===this)closeShareModal()">
+    <div class="bg-white rounded-2xl p-6 w-96 shadow-xl mx-4" onclick="event.stopPropagation()">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="font-bold text-lg">🔗 Поделиться тренировкой</h3>
+            <button onclick="closeShareModal()" class="text-gray-400 hover:text-gray-600 text-2xl font-bold">&times;</button>
+        </div>
+        <div class="mb-4">
+            <label class="text-sm text-gray-500 font-medium">Email пользователя</label>
+            <input id="shareEmail" type="email" placeholder="user@example.com" class="w-full mt-1 px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-purple-500 text-sm">
+        </div>
+        <div class="mb-4">
+            <label class="text-sm text-gray-500 font-medium">Уровень доступа</label>
+            <select id="shareAccess" class="w-full mt-1 px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-purple-500 text-sm bg-white">
+                <option value="READ">👁️ Только просмотр</option>
+                <option value="COPY">🔄 Копирование</option>
+            </select>
+        </div>
+        <p id="shareError" class="text-red-500 text-sm mb-3 hidden"></p>
+        <button onclick="shareWorkout()" class="bg-purple-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-purple-700 w-full">Поделиться</button>
+    </div>
+</div>
+
 <script src="/js/api.js"></script>
 <script>
     if (!isAuth()) window.location.href = '/login.html';
@@ -64,18 +108,57 @@
     const params = new URLSearchParams(window.location.search);
     const workoutId = params.get('id');
     let workoutExercises = [];
+    let workoutData = null;
+    let originalName = '';
+
+    const accessLevel = params.get('access');
+    const isOwner = !accessLevel;
 
     async function loadWorkout() {
         const w = await request(`/workout/${workoutId}`);
+        workoutData = w;
+        originalName = w.name;
         document.getElementById('workoutName').textContent = w.name;
         workoutExercises = w.exercises || [];
         renderExercises();
+        if (isOwner) {
+            document.getElementById('editNameBtn').classList.remove('hidden');
+            document.getElementById('shareBtn').classList.remove('hidden');
+            document.getElementById('copyBtn').classList.remove('hidden');
+            document.getElementById('exerciseSection').classList.remove('hidden');
+            loadAccessList();
+        }
+    }
+
+    function toggleEditName() {
+        document.getElementById('editNameRow').classList.remove('hidden');
+        document.getElementById('nameInput').value = originalName;
+        document.getElementById('nameInput').focus();
+        document.getElementById('editNameBtn').classList.add('hidden');
+        document.getElementById('workoutName').classList.add('hidden');
+    }
+
+    function cancelEditName() {
+        document.getElementById('editNameRow').classList.add('hidden');
+        document.getElementById('editNameBtn').classList.remove('hidden');
+        document.getElementById('workoutName').classList.remove('hidden');
+    }
+
+    async function saveName() {
+        const name = document.getElementById('nameInput').value.trim();
+        if (!name) return;
+        try {
+            await request('/workout', { method: 'PATCH', body: JSON.stringify({ id: parseInt(workoutId), name }) });
+            originalName = name;
+            document.getElementById('workoutName').textContent = name;
+            cancelEditName();
+        } catch (e) { alert(e.message); }
     }
 
     function renderExercises() {
         const container = document.getElementById('addedExercises');
         if (workoutExercises.length === 0) {
-            container.innerHTML = '<p class="text-gray-400 text-center py-8">Нет упражнений. Добавьте через поиск.</p>';
+            container.innerHTML = '<p class="text-gray-400 text-center py-8">Нет упражнений</p>';
             return;
         }
         container.innerHTML = workoutExercises.map(ex => `
@@ -84,7 +167,7 @@
                     <a href="/exercise-history.html?exerciseId=${ex.id}&name=${encodeURIComponent(ex.name)}" class="font-semibold hover:text-blue-600">${ex.name}</a>
                     <span class="text-gray-400 text-sm ml-2">${(ex.muscles || []).map(m => m.name).join(', ')}</span>
                 </div>
-                <button onclick="removeExercise(${ex.id})" class="text-red-400 hover:text-red-600 text-sm font-bold">Убрать</button>
+                ${isOwner ? `<button onclick="removeExercise(${ex.id})" class="text-red-400 hover:text-red-600 text-sm font-bold">Убрать</button>` : ''}
             </div>
         `).join('');
     }
@@ -123,6 +206,82 @@
     function startSession() {
         if (workoutExercises.length === 0) { alert('Добавьте хотя бы одно упражнение'); return; }
         window.location.href = `/session.html?workoutId=${workoutId}`;
+    }
+
+    function openShareModal() { document.getElementById('shareModal').classList.remove('hidden'); }
+    function closeShareModal() { document.getElementById('shareModal').classList.add('hidden'); document.getElementById('shareError').classList.add('hidden'); }
+
+    async function shareWorkout() {
+        const email = document.getElementById('shareEmail').value.trim();
+        const accessLevel = document.getElementById('shareAccess').value;
+        if (!email) { showShareError('Введите email'); return; }
+        try {
+            await request('/workout/access', {
+                method: 'POST',
+                body: JSON.stringify({ workoutId: parseInt(workoutId), email, accessLevel })
+            });
+            document.getElementById('shareEmail').value = '';
+            closeShareModal();
+            loadAccessList();
+        } catch (e) { showShareError(e.message); }
+    }
+
+    function showShareError(msg) {
+        const el = document.getElementById('shareError');
+        el.textContent = msg;
+        el.classList.remove('hidden');
+        setTimeout(() => el.classList.add('hidden'), 4000);
+    }
+
+    async function loadAccessList() {
+        try {
+            const data = await request(`/workout/${workoutId}/access`);
+            const section = document.getElementById('accessSection');
+            const list = document.getElementById('accessList');
+            if (!data || data.length === 0) {
+                section.classList.add('hidden');
+                return;
+            }
+            section.classList.remove('hidden');
+            list.innerHTML = data.map(a => `
+                <div class="flex items-center justify-between bg-gray-50 rounded-xl px-4 py-3">
+                    <div class="flex items-center gap-3">
+                        <span class="text-sm text-gray-400">✉️</span>
+                        <span class="text-sm font-medium">${a.sharedWithUserEmail}</span>
+                        <span class="inline-block px-2 py-0.5 rounded-full text-xs font-bold ${a.accessLevel === 'COPY' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}">${a.accessLevel === 'COPY' ? '🔄' : '👁️'} ${a.accessLevel}</span>
+                    </div>
+                    <div class="flex gap-1">
+                        <button onclick="changeAccess(${a.id}, '${a.accessLevel === 'COPY' ? 'READ' : 'COPY'}')" class="text-blue-400 hover:text-blue-600 text-xs px-2" title="Сменить уровень">⇆</button>
+                        <button onclick="deleteAccess(${a.id})" class="text-red-400 hover:text-red-600 text-sm px-1">✕</button>
+                    </div>
+                </div>
+            `).join('');
+        } catch (e) { console.error('loadAccessList error:', e); }
+    }
+
+    async function changeAccess(accessId, newLevel) {
+        try {
+            await request('/workout/access', {
+                method: 'PATCH',
+                body: JSON.stringify({ id: accessId, accessLevel: newLevel })
+            });
+            loadAccessList();
+        } catch (e) { alert(e.message); }
+    }
+
+    async function deleteAccess(accessId) {
+        if (!confirm('Удалить доступ?')) return;
+        try {
+            await request(`/workout/access/${accessId}`, { method: 'DELETE' });
+            loadAccessList();
+        } catch (e) { alert(e.message); }
+    }
+
+    async function copyWorkout() {
+        try {
+            const w = await request(`/workout/${workoutId}/copy`, { method: 'POST' });
+            window.location.href = `/workout-detail.html?id=${w.id}`;
+        } catch (e) { alert(e.message); }
     }
 
     renderActiveSessionBanner(); syncActiveSessions(); function logout() { clearToken(); window.location.href = '/index.html'; }

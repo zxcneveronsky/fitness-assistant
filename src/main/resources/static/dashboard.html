@@ -597,11 +597,11 @@
                     return b.id - a.id;
                 });
                 const latest = sortedDesc[0];
-                document.getElementById('profile-weight').textContent = Math.round(latest.weightKg);
+                document.getElementById('profile-weight').textContent = Math.round(latest.weight);
                 const deltaEl = document.getElementById('weight-delta');
                 if (sortedDesc.length > 1) {
                     const prev = sortedDesc[1];
-                    const diff = latest.weightKg - prev.weightKg;
+                    const diff = latest.weight - prev.weight;
                     if (diff > 0) { deltaEl.textContent = '+' + diff.toFixed(1) + ' ▲'; deltaEl.className = 'text-sm font-bold text-red-500'; }
                     else if (diff < 0) { deltaEl.textContent = diff.toFixed(1) + ' ▼'; deltaEl.className = 'text-sm font-bold text-green-500'; }
                     else { deltaEl.textContent = '—'; deltaEl.className = 'text-sm font-bold text-gray-400'; }
@@ -632,7 +632,7 @@
             const d = new Date(w.measuredAt + 'T00:00:00');
             return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
         });
-        const values = sorted.map(function(w) { return w.weightKg; });
+        const values = sorted.map(function(w) { return w.weight; });
         weightChartObj = new Chart(ctx, {
             type: 'line',
             data: {
@@ -682,7 +682,7 @@
         const val = parseFloat(document.getElementById('addWeightInput').value);
         if (!val || val < 5 || val > 500) { alert('Введите вес от 5 до 500 кг'); return; }
         try {
-            await request('/profile/weight', { method: 'POST', body: JSON.stringify({ weightKg: val }) });
+            await request('/profile/weight', { method: 'POST', body: JSON.stringify({ weight: val, measuredAt: new Date().toISOString().split('T')[0] }) });
             closeAddWeightModal();
             document.getElementById('addWeightInput').value = '';
             await loadWeightData();

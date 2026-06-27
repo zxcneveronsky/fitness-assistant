@@ -4,8 +4,7 @@ import com.example.fitness_assistant.core.model.workoutaccess.AccessLevel;
 
 public record WorkoutAccessResponse(
         Long id,
-        Long ownerId,
-        Long sharedWithUserId,
+        String sharedWithUserEmail,
         Long workoutId,
         String workoutName,
         AccessLevel accessLevel

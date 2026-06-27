@@ -6,6 +6,7 @@ import com.example.fitness_assistant.infrastructure.mapper.UserProfileMapper;
 import com.example.fitness_assistant.infrastructure.persistence.entity.UserProfileEntity;
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaUserProfileRepository;
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaUserRepository;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +16,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserProfileRepositoryAdapter implements UserProfileRepository {
 
+    private final EntityManager entityManager;
     private final JpaUserProfileRepository jpaUserProfileRepository;
     private final JpaUserRepository jpaUserRepository;
     private final UserProfileMapper userProfileMapper;
@@ -27,10 +29,14 @@ public class UserProfileRepositoryAdapter implements UserProfileRepository {
 
     @Override
     public UserProfile save(UserProfile userProfile) {
-        UserProfileEntity userProfileEntity = userProfileMapper.toEntity(userProfile);
-        userProfileEntity.setUser(jpaUserRepository.getReferenceById(userProfile.getUserId()));
-        UserProfileEntity saved = jpaUserProfileRepository.save(userProfileEntity);
-        return userProfileMapper.toDomain(saved);
+        UserProfileEntity entity = userProfileMapper.toEntity(userProfile);
+        entity.setUser(jpaUserRepository.getReferenceById(userProfile.getUserId()));
+        if (entity.getId() != null && jpaUserProfileRepository.existsById(entity.getId())) {
+            UserProfileEntity merged = entityManager.merge(entity);
+            return userProfileMapper.toDomain(merged);
+        }
+        entityManager.persist(entity);
+        return userProfileMapper.toDomain(entity);
     }
 
     @Override

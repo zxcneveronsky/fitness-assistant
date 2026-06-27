@@ -207,7 +207,7 @@
     async function calculate(id) {
         const weight = safeFloat(document.getElementById(`calcWeight_${id}`).value);
         if (!weight || weight <= 0) return;
-        const data = await request(`/food/calc/${id}?weight=${weight}`);
+        const data = await request(`/food/${id}/calculate?weight=${weight}`);
         document.getElementById(`calcKcal_${id}`).textContent = data.kcal.toFixed(2);
         document.getElementById(`calcProteins_${id}`).textContent = data.proteins.toFixed(2);
         document.getElementById(`calcFats_${id}`).textContent = data.fats.toFixed(2);

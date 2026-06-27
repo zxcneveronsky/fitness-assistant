@@ -1,9 +1,11 @@
 package com.example.fitness_assistant.application.service.workoutsession;
 
+import com.example.fitness_assistant.core.exception.AccessDeniedException;
 import com.example.fitness_assistant.core.exception.UserNotFoundException;
 import com.example.fitness_assistant.core.exception.WorkoutNotFoundException;
 import com.example.fitness_assistant.core.model.WorkoutSession;
 import com.example.fitness_assistant.core.repository.UserRepository;
+import com.example.fitness_assistant.core.repository.WorkoutAccessRepository;
 import com.example.fitness_assistant.core.repository.WorkoutRepository;
 import com.example.fitness_assistant.core.repository.WorkoutSessionRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ public class CreateWorkoutSessionUseCase {
 
     private final WorkoutSessionRepository workoutSessionRepository;
     private final WorkoutRepository workoutRepository;
+    private final WorkoutAccessRepository workoutAccessRepository;
     private final UserRepository userRepository;
 
     @Transactional
@@ -27,8 +30,10 @@ public class CreateWorkoutSessionUseCase {
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException(userId);
         }
-        if (!workoutRepository.existsById(workoutId, userId)) {
-            throw new WorkoutNotFoundException(workoutId);
+        boolean isOwner = workoutRepository.existsById(workoutId, userId);
+        boolean hasAccess = workoutAccessRepository.existsBySharedWithUserIdAndWorkoutId(userId, workoutId);
+        if (!isOwner && !hasAccess) {
+            throw new AccessDeniedException();
         }
         WorkoutSession savedSession = workoutSessionRepository.save(
                 new WorkoutSession(

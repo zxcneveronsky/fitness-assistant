@@ -15,6 +15,7 @@ public class WorkoutAccessMapper {
                 entity.getId(),
                 entity.getOwner().getId(),
                 entity.getSharedWithUser().getId(),
+                entity.getSharedWithUser().getEmail(),
                 entity.getWorkout().getId(),
                 entity.getWorkout().getName(),
                 entity.getAccessLevel()

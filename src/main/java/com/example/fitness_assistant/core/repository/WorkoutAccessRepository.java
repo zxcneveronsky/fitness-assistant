@@ -22,4 +22,6 @@ public interface WorkoutAccessRepository {
     boolean existsByOwnerIdAndSharedWithUserIdAndWorkoutId(Long ownerId, Long sharedWithUserId, Long workoutId);
 
     boolean existsBySharedWithUserIdAndWorkoutIdAndAccessLevel(Long userId, Long workoutId, AccessLevel accessLevel);
+
+    boolean existsBySharedWithUserIdAndWorkoutId(Long userId, Long workoutId);
 }

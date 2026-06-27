@@ -397,7 +397,7 @@
             const d = new Date(w.measuredAt + 'T00:00:00');
             return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
         });
-        const values = sorted.map(function(w) { return w.weightKg; });
+        const values = sorted.map(function(w) { return w.weight; });
         weightHistoryChart = new Chart(ctx, {
             type: 'line',
             data: {
@@ -456,9 +456,9 @@
         tbody.innerHTML = weightHistoryData.map(function(w) {
             return '<tr class="border-b border-gray-50 hover:bg-gray-50/50 transition">' +
                 '<td class="py-3 font-medium">' + escapeHtml(formatShortDate(w.measuredAt)) + '</td>' +
-                '<td class="py-3 text-right font-bold">' + w.weightKg.toFixed(1) + '</td>' +
-                '<td class="py-3 text-right whitespace-nowrap">' +
-                    '<button onclick="editWeightRecord(' + w.id + ', ' + w.weightKg + ', \'' + w.measuredAt + '\')" class="text-blue-400 hover:text-blue-600 text-sm font-bold px-2" title="Редактировать">✏️</button>' +
+                '<td class="py-3 text-right font-bold">' + w.weight.toFixed(1) + '</td>' +
+                    '<td class="py-3 text-right whitespace-nowrap">' +
+                        '<button onclick="editWeightRecord(' + w.id + ', ' + w.weight + ', \'' + w.measuredAt + '\')" class="text-blue-400 hover:text-blue-600 text-sm font-bold px-2" title="Редактировать">✏️</button>' +
                     '<button onclick="deleteWeightRecord(' + w.id + ', this)" class="text-red-400 hover:text-red-600 text-sm font-bold px-2 py-1 rounded-lg hover:bg-red-50 transition" title="Удалить запись">🗑️</button>' +
                 '</td>' +
                 '</tr>';
@@ -561,9 +561,9 @@
         btn.textContent = '⏳ Сохраняю...';
         try {
             if (editingWeightId) {
-                await request('/profile/weight', { method: 'PATCH', body: JSON.stringify({ id: editingWeightId, weightKg: val, measuredAt: date }) });
+                await request('/profile/weight', { method: 'PATCH', body: JSON.stringify({ id: editingWeightId, weight: val, measuredAt: date }) });
             } else {
-                await request('/profile/weight', { method: 'POST', body: JSON.stringify({ weightKg: val, measuredAt: date }) });
+                await request('/profile/weight', { method: 'POST', body: JSON.stringify({ weight: val, measuredAt: date }) });
             }
             btn.textContent = '✅ ' + (editingWeightId ? 'Обновлено' : 'Записано');
             btn.className = 'bg-green-100 text-green-700 font-bold py-4 w-full rounded-xl text-base transition';
