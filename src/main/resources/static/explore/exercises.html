@@ -159,7 +159,7 @@
     async function search(page = 0) {
         currentPage = page;
         const q = document.getElementById('searchInput').value;
-        let endpoint = favoritesOnly ? `/favorite/exercise?page=${page}&size=9` : `/exercise/search?page=${page}&size=9`;
+        let endpoint = favoritesOnly ? `/favorite/exercise/search?page=${page}&size=9` : `/exercise/search?page=${page}&size=9`;
         if (q) endpoint += `&name=${encodeURIComponent(q)}`;
         if (selectedMuscleId) endpoint += `&muscleId=${selectedMuscleId}`;
         const data = await request(endpoint);

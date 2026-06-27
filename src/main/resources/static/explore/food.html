@@ -145,7 +145,7 @@
     async function search(page = 0) {
         currentPage = page;
         const q = document.getElementById('searchInput').value;
-        let endpoint = favoritesOnly ? `/favorite/food?page=${page}&size=9` : `/food/search?page=${page}&size=9`;
+        let endpoint = favoritesOnly ? `/favorite/food/search?page=${page}&size=9` : `/food/search?page=${page}&size=9`;
         if (q) endpoint += `&name=${encodeURIComponent(q)}`;
         const data = await request(endpoint);
         totalPages = data.totalPages;

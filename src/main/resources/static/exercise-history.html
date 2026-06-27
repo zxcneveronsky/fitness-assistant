@@ -128,6 +128,7 @@
     let volumeChart = null;
 
     function renderCharts(data) {
+        if (!Array.isArray(data) || data.length === 0) return;
         const sorted = [...data].sort(function(a, b) {
             return new Date(a.startTime) - new Date(b.startTime);
         });
@@ -215,8 +216,8 @@
         const to = new Date().toISOString();
         try {
             const data = await request('/exercise/' + exerciseId + '/history?from=' + encodeURIComponent(from) + '&to=' + encodeURIComponent(to));
-            const items = data.content || data;
-            if (!items || items.length === 0) {
+            const items = data.content || [];
+            if (items.length === 0) {
                 document.getElementById('historyList').innerHTML = '';
                 document.getElementById('historyEmpty').classList.remove('hidden');
                 document.getElementById('chartSection').classList.add('hidden');
@@ -266,8 +267,8 @@
     async function loadHistoryCustom(from, to) {
         try {
             const data = await request('/exercise/' + exerciseId + '/history?from=' + encodeURIComponent(from + 'T00:00:00') + '&to=' + encodeURIComponent(to + 'T23:59:59'));
-            const items = data.content || data;
-            if (!items || items.length === 0) {
+            const items = data.content || [];
+            if (items.length === 0) {
                 document.getElementById('historyList').innerHTML = '';
                 document.getElementById('historyEmpty').classList.remove('hidden');
                 document.getElementById('chartSection').classList.add('hidden');
