@@ -175,7 +175,8 @@
                     </p>
                     <div class="flex gap-2 mt-4">
                         ${a.accessLevel === 'COPY'
-                            ? `<button onclick="copySharedWorkout(${a.workoutId})" class="flex-1 bg-green-600 text-white text-center py-2 rounded-xl text-sm font-semibold hover:bg-green-700">➕ Копировать</button>`
+                            ? `<a href="/workout-detail.html?id=${a.workoutId}&access=READ" class="flex-1 bg-blue-600 text-white text-center py-2 rounded-xl text-sm font-semibold hover:bg-blue-700">👁️ Открыть</a>
+                               <button onclick="copySharedWorkout(${a.workoutId})" class="flex-1 bg-green-600 text-white text-center py-2 rounded-xl text-sm font-semibold hover:bg-green-700">➕ Копировать</button>`
                             : `<a href="/workout-detail.html?id=${a.workoutId}&access=READ" class="flex-1 bg-blue-600 text-white text-center py-2 rounded-xl text-sm font-semibold hover:bg-blue-700">👁️ Открыть</a>`
                         }
                     </div>
