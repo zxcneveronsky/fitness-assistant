@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface WorkoutAccessRepository {
     WorkoutAccess save(WorkoutAccess workoutAccess);
 
-    List<WorkoutAccess> findByWorkoutIdAndOwnerId(Long workoutId, Long ownerId);
+    List<WorkoutAccess> findByOwnerIdAndWorkoutId(Long ownerId, Long workoutId);
 
     List<WorkoutAccess> findAllSharedWithUserId(Long userId);
 

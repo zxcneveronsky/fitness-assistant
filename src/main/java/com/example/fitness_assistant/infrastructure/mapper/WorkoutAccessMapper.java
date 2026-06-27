@@ -28,9 +28,9 @@ public class WorkoutAccessMapper {
         }
         return new WorkoutAccessEntity(
                 domain.getId(),
-                null,
-                null,
-                null,
+                null, // Это поле проставляется в адаптере через getReferenceById
+                null, // Это поле проставляется в адаптере через getReferenceById
+                null, // Это поле проставляется в адаптере через getReferenceById
                 domain.getAccessLevel()
         );
     }

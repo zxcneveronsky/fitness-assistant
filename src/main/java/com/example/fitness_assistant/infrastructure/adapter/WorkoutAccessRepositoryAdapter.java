@@ -33,8 +33,8 @@ public class WorkoutAccessRepositoryAdapter implements WorkoutAccessRepository {
     }
 
     @Override
-    public List<WorkoutAccess> findByWorkoutIdAndOwnerId(Long workoutId, Long ownerId) {
-        return jpaWorkoutAccessRepository.findByWorkoutIdAndOwnerId(workoutId, ownerId)
+    public List<WorkoutAccess> findByOwnerIdAndWorkoutId(Long ownerId, Long workoutId) {
+        return jpaWorkoutAccessRepository.findByOwnerIdAndWorkoutId(ownerId, workoutId)
                 .stream()
                 .map(workoutAccessMapper::toDomain)
                 .toList();

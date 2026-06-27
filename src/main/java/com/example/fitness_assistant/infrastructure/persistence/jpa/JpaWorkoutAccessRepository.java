@@ -11,8 +11,8 @@ import java.util.Optional;
 
 public interface JpaWorkoutAccessRepository extends JpaRepository<WorkoutAccessEntity, Long> {
 
-    @Query("SELECT wa FROM WorkoutAccessEntity wa JOIN FETCH wa.workout JOIN FETCH wa.owner JOIN FETCH wa.sharedWithUser WHERE wa.workout.id = :workoutId AND wa.owner.id = :ownerId")
-    List<WorkoutAccessEntity> findByWorkoutIdAndOwnerId(@Param("workoutId") Long workoutId, @Param("ownerId") Long ownerId);
+    @Query("SELECT wa FROM WorkoutAccessEntity wa JOIN FETCH wa.workout JOIN FETCH wa.owner JOIN FETCH wa.sharedWithUser WHERE wa.owner.id = :ownerId AND wa.workout.id = :workoutId")
+    List<WorkoutAccessEntity> findByOwnerIdAndWorkoutId(@Param("ownerId") Long ownerId, @Param("workoutId") Long workoutId);
 
     @Query("SELECT wa FROM WorkoutAccessEntity wa JOIN FETCH wa.workout JOIN FETCH wa.owner JOIN FETCH wa.sharedWithUser WHERE wa.sharedWithUser.id = :userId")
     List<WorkoutAccessEntity> findAllBySharedWithUserId(@Param("userId") Long userId);

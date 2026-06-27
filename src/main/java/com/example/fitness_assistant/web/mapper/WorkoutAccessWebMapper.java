@@ -21,11 +21,11 @@ public class WorkoutAccessWebMapper {
     public WorkoutAccess toDomain(UpdateWorkoutAccessRequest request) {
         return new WorkoutAccess(
                 request.id(),
-                null,
-                null,
-                null,
-                null,
-                null,
+                null, // Этого поля нет в запросе, поэтому проставляем null
+                null, // Этого поля нет в запросе, поэтому проставляем null
+                null, // Этого поля нет в запросе, поэтому проставляем null
+                null, // Этого поля нет в запросе, поэтому проставляем null
+                null, // Этого поля нет в запросе, поэтому проставляем null
                 request.accessLevel()
         );
     }

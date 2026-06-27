@@ -24,8 +24,8 @@ public class WorkoutRepositoryAdapter implements WorkoutRepository {
     private final WorkoutMapper workoutMapper;
 
     @Override
-    public Optional<Workout> findById(Long id,Long userId) {
-        return jpaWorkoutRepository.findByIdAndUserId(id,userId)
+    public Optional<Workout> findById(Long id, Long userId) {
+        return jpaWorkoutRepository.findByIdAndUserId(id, userId)
                 .map(workoutMapper::toDomain);
     }
 
@@ -36,8 +36,8 @@ public class WorkoutRepositoryAdapter implements WorkoutRepository {
     }
 
     @Override
-    public Page<Workout> findAllByUserId(Long userId,Pageable pageable) {
-        return jpaWorkoutRepository.findAllByUserId(userId,pageable)
+    public Page<Workout> findAllByUserId(Long userId, Pageable pageable) {
+        return jpaWorkoutRepository.findAllByUserId(userId, pageable)
                 .map(workoutMapper::toDomain);
     }
 
@@ -63,12 +63,12 @@ public class WorkoutRepositoryAdapter implements WorkoutRepository {
     }
 
     @Override
-    public void deleteById(Long id,Long userId) {
-        jpaWorkoutRepository.deleteByIdAndUserId(id,userId);
+    public void deleteById(Long id, Long userId) {
+        jpaWorkoutRepository.deleteByIdAndUserId(id, userId);
     }
 
     @Override
-    public boolean existsById(Long id,Long userId) {
-        return jpaWorkoutRepository.existsByIdAndUserId(id,userId);
+    public boolean existsById(Long id, Long userId) {
+        return jpaWorkoutRepository.existsByIdAndUserId(id, userId);
     }
 }

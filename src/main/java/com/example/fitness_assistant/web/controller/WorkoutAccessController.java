@@ -53,7 +53,7 @@ public class WorkoutAccessController {
     public List<WorkoutAccessResponse> getWorkoutAccess(
             @AuthenticationPrincipal UserDetailsAdapter adapter,
             @PathVariable("id") Long workoutId) {
-        return findWorkoutAccessUseCase.findByWorkoutIdAndOwnerId(adapter.getUserId(), workoutId)
+        return findWorkoutAccessUseCase.findByOwnerIdAndWorkoutId(adapter.getUserId(), workoutId)
                 .stream()
                 .map(workoutAccessWebMapper::toResponse)
                 .toList();
