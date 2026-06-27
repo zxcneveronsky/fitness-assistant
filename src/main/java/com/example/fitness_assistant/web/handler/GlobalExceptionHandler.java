@@ -35,6 +35,7 @@ public class GlobalExceptionHandler {
             FavoriteExerciseNotFoundException.class,
             FavoriteFoodNotFoundException.class,
             BodyWeightNotFoundException.class,
+            WorkoutAccessNotFoundException.class,
             EntityNotFoundException.class
     })
     public ResponseEntity<Object> handleNotFoundExceptions(RuntimeException ex) {
@@ -44,7 +45,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             UserAlreadyExistsException.class,
             FavoriteExerciseAlreadyExistsException.class,
-            FavoriteFoodAlreadyExistsException.class
+            FavoriteFoodAlreadyExistsException.class,
+            WorkoutAccessAlreadyExistsException.class
     })
     public ResponseEntity<Object> handleAlreadyExists(RuntimeException ex) {
         return buildResponse(ex.getMessage(), HttpStatus.CONFLICT);

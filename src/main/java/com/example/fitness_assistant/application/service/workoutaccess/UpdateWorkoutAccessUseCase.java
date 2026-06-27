@@ -1,0 +1,32 @@
+package com.example.fitness_assistant.application.service.workoutaccess;
+
+import com.example.fitness_assistant.core.exception.WorkoutAccessNotFoundException;
+import com.example.fitness_assistant.core.model.workoutaccess.WorkoutAccess;
+import com.example.fitness_assistant.core.repository.WorkoutAccessRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class UpdateWorkoutAccessUseCase {
+
+    private final WorkoutAccessRepository workoutAccessRepository;
+
+    @Transactional
+    public WorkoutAccess updateWorkoutAccess(Long userId, WorkoutAccess updates) {
+        Long accessId = updates.getId();
+        WorkoutAccess updatedWorkoutAccess = workoutAccessRepository.findByIdAndOwnerId(accessId, userId)
+                .map(existingWorkoutAccess -> {
+                    if (updates.getAccessLevel() != null) {
+                        existingWorkoutAccess.setAccessLevel(updates.getAccessLevel());
+                    }
+                    return workoutAccessRepository.save(existingWorkoutAccess);
+                })
+                .orElseThrow(() -> new WorkoutAccessNotFoundException(accessId));
+        log.info("Доступ к тренировке обновлён | id={} | accessLevel={}", accessId, updatedWorkoutAccess.getAccessLevel());
+        return updatedWorkoutAccess;
+    }
+}

@@ -25,3 +25,5 @@ CREATE INDEX IF NOT EXISTS idx_hydrations_consumed_at  ON hydrations(consumed_at
 CREATE INDEX IF NOT EXISTS idx_hydrations_user_date    ON hydrations(user_id, consumed_at);
 
 CREATE INDEX IF NOT EXISTS idx_body_weights_user_date ON body_weights(user_id, measured_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_workout_access_shared_with_user ON workout_access(shared_with_user_id);
