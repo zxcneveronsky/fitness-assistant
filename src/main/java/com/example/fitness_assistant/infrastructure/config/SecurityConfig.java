@@ -49,7 +49,7 @@ public class SecurityConfig {
                                 "/api/v1/auth/register",
                                 "/api/v1/food/search",
                                 "/api/v1/food/{id}",
-                                "/api/v1/food/calc/**",
+                                "/api/v1/food/*/calculate",
                                 "/api/v1/exercise/search",
                                 "/api/v1/exercise/{id}",
                                 "/api/v1/muscle/search",

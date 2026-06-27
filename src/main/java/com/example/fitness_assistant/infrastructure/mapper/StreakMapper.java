@@ -24,7 +24,7 @@ public class StreakMapper {
         }
         return new StreakEntity(
                 domain.getUserId(),
-                null,
+                null, // Это поле проставляется в адаптере через getReferenceById
                 domain.getStreak(),
                 domain.getLastVisitDate()
         );

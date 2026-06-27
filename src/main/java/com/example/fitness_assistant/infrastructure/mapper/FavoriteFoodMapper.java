@@ -24,8 +24,8 @@ public class FavoriteFoodMapper {
         }
         return new FavoriteFoodEntity(
                 domain.getId(),
-                null,
-                null
+                null, // Это поле проставляется в адаптере через getReferenceById
+                null  // Это поле проставляется в адаптере через getReferenceById
         );
     }
 }

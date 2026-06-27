@@ -10,11 +10,11 @@ import java.util.Optional;
 
 
 public interface MealRepository {
-    Optional<Meal> findById(Long id,Long userId);
-    Page<Meal> searchMeal(LocalDateTime localDateTime,Long userId, Pageable pageable);
+    Optional<Meal> findById(Long id, Long userId);
+    Page<Meal> searchMeal(Long userId, LocalDateTime consumedAt, Pageable pageable);
     Meal save(Meal meal);
-    void deleteById(Long id,Long userId);
-    boolean existsById(Long id,Long userId);
-    DailyNutrition getDailyNutrition(LocalDateTime localDateTime,Long userId);
+    void deleteById(Long id, Long userId);
+    boolean existsById(Long id, Long userId);
+    DailyNutrition getDailyNutrition(Long userId, LocalDateTime consumedAt);
 
 }

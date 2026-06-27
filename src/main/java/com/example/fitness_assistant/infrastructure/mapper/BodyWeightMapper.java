@@ -25,7 +25,7 @@ public class BodyWeightMapper {
         }
         return new BodyWeightEntity(
                 domain.getId(),
-                null,
+                null, // Это поле проставляется в адаптере через getReferenceById
                 domain.getWeight(),
                 domain.getMeasuredAt()
         );

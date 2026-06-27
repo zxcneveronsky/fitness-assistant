@@ -21,7 +21,7 @@ public class FindHydrationUseCase {
 
     @Transactional(readOnly = true)
     public Page<Hydration> searchHydration(Long userId, LocalDateTime consumedAt, Pageable pageable) {
-        Page<Hydration> hydrations = hydrationRepository.searchHydration(consumedAt, userId, pageable);
+        Page<Hydration> hydrations = hydrationRepository.searchHydration(userId, consumedAt, pageable);
         log.info("Поиск гидратации завершён | userId={} | найдено={} | страница={}/{}",
                 userId, hydrations.getTotalElements(), hydrations.getNumber() + 1, hydrations.getTotalPages());
         return hydrations;

@@ -36,16 +36,16 @@ public class MealRepositoryAdapter implements MealRepository {
     }
 
     @Override
-    public Page<Meal> searchMeal(LocalDateTime localDateTime, Long userId, Pageable pageable) {
-        LocalDate date = localDateTime != null ? localDateTime.toLocalDate() : LocalDate.now();
+    public Page<Meal> searchMeal(Long userId, LocalDateTime consumedAt, Pageable pageable) {
+        LocalDate date = consumedAt != null ? consumedAt.toLocalDate() : LocalDate.now();
         LocalDateTime startOfDay = date.atStartOfDay();
         LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
         return jpaMealRepository.searchMeal(userId, startOfDay, endOfDay, pageable)
                 .map(mealMapper::toDomain);
     }
     @Override
-    public DailyNutrition getDailyNutrition(LocalDateTime localDateTime, Long userId) {
-        LocalDate date = localDateTime != null ? localDateTime.toLocalDate() : LocalDate.now();
+    public DailyNutrition getDailyNutrition(Long userId, LocalDateTime consumedAt) {
+        LocalDate date = consumedAt != null ? consumedAt.toLocalDate() : LocalDate.now();
         LocalDateTime startOfDay = date.atStartOfDay();
         LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
         return dailyNutritionMapper.toDomain(jpaMealRepository.getDailyNutrition(userId, startOfDay, endOfDay));

@@ -20,7 +20,7 @@ public class FindMealUseCase {
 
     @Transactional(readOnly = true)
     public Page<Meal> searchMeal(Long userId, LocalDateTime consumedAt, Pageable pageable){
-        Page<Meal> meals = mealRepository.searchMeal(consumedAt,userId,pageable);
+        Page<Meal> meals = mealRepository.searchMeal(userId, consumedAt, pageable);
         log.info("Поиск приёмов пищи завершён | userId={} | найдено={} | страница={}/{}",
                 userId, meals.getTotalElements(), meals.getNumber() + 1, meals.getTotalPages());
         return meals;

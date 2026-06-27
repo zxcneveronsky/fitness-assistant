@@ -26,9 +26,13 @@ public class UserProfileEntity {
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
+    @Column(name = "name")
     private String name;
+    @Column(name = "birth_date")
     private LocalDate birthDate;
+    @Column(name = "weight")
     private Double weight;
+    @Column(name = "height")
     private Double height;
 
     @Enumerated(EnumType.STRING)

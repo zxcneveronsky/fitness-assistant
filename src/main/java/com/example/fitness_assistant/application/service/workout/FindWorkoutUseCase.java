@@ -32,7 +32,7 @@ public class FindWorkoutUseCase {
 
     @Transactional(readOnly = true)
     public Page<Workout> searchWorkout(Long userId, String name, Pageable pageable) {
-        Page<Workout> workouts = workoutRepository.searchWorkout(name, userId, pageable);
+        Page<Workout> workouts = workoutRepository.searchWorkout(userId, name, pageable);
         log.info("Поиск тренировок завершён | userId={} | name='{}' | найдено={} | страница={}/{}",
                 userId, name, workouts.getTotalElements(), workouts.getNumber() + 1, workouts.getTotalPages());
         return workouts;

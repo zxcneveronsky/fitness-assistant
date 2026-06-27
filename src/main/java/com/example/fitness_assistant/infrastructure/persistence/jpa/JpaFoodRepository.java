@@ -21,4 +21,5 @@ public interface JpaFoodRepository extends JpaRepository<FoodEntity, Long> {
         OR LOWER(f.name) LIKE LOWER(CONCAT('%', cast(:name as text), '%'))
         OR LOWER(f.brands) LIKE LOWER(CONCAT('%', cast(:name as text), '%')))
         """)
-    Page<FoodEntity> searchFood(@Param("name") String name, Pageable pageable);}
+    Page<FoodEntity> searchFood(@Param("name") String name, Pageable pageable);
+}

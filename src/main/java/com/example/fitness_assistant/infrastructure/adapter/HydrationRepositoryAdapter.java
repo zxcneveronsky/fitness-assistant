@@ -34,8 +34,8 @@ public class HydrationRepositoryAdapter implements HydrationRepository {
     }
 
     @Override
-    public Page<Hydration> searchHydration(LocalDateTime localDateTime, Long userId, Pageable pageable) {
-        LocalDate date = localDateTime != null ? localDateTime.toLocalDate() : LocalDate.now();
+    public Page<Hydration> searchHydration(Long userId, LocalDateTime consumedAt, Pageable pageable) {
+        LocalDate date = consumedAt != null ? consumedAt.toLocalDate() : LocalDate.now();
         LocalDateTime startOfDay = date.atStartOfDay();
         LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
         return jpaHydrationRepository.searchHydration(userId, startOfDay, endOfDay, pageable)
@@ -43,8 +43,8 @@ public class HydrationRepositoryAdapter implements HydrationRepository {
     }
 
     @Override
-    public DailyHydration getDailyHydration(LocalDateTime localDateTime, Long userId) {
-        LocalDate date = localDateTime != null ? localDateTime.toLocalDate() : LocalDate.now();
+    public DailyHydration getDailyHydration(Long userId, LocalDateTime consumedAt) {
+        LocalDate date = consumedAt != null ? consumedAt.toLocalDate() : LocalDate.now();
         LocalDateTime startOfDay = date.atStartOfDay();
         LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
         return dailyHydrationMapper.toDomain(jpaHydrationRepository.getDailyHydration(userId, startOfDay, endOfDay));

@@ -36,7 +36,7 @@ public class WorkoutRepositoryAdapter implements WorkoutRepository {
     }
 
     @Override
-    public Page<Workout> searchWorkout(String name,Long userId, Pageable pageable) {
+    public Page<Workout> searchWorkout(Long userId, String name, Pageable pageable) {
         return jpaWorkoutRepository.searchWorkout(name, userId, pageable)
                 .map(workoutMapper::toDomain);
     }

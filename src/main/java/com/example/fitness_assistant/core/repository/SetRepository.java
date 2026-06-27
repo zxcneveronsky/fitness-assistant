@@ -15,6 +15,6 @@ public interface SetRepository {
     Page<Set> findByExerciseIdAndUserIdAndStartTimeBetween(Long exerciseId, Long userId, LocalDateTime from, LocalDateTime to, Pageable pageable);
     List<SetDetail> findAllSetDetailBySessionId(Long sessionId);
     Set save(Set set);
-    void deleteById(Long id,Long sessionId);
-    boolean existsById(Long id,Long sessionId);
+    void deleteById(Long id, Long sessionId);
+    boolean existsById(Long id, Long sessionId);
 }
