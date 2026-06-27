@@ -12,8 +12,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserProfile {
-    private Long id;
-    private User user;
+    private Long userId;
     private String name;
     private LocalDate birthDate;
     private Double weight;

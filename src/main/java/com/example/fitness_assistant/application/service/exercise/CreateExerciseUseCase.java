@@ -1,7 +1,7 @@
 package com.example.fitness_assistant.application.service.exercise;
 
 import com.example.fitness_assistant.core.exception.MuscleNotFoundException;
-import com.example.fitness_assistant.core.model.Exercise;
+import com.example.fitness_assistant.core.model.exercise.Exercise;
 import com.example.fitness_assistant.core.model.Muscle;
 import com.example.fitness_assistant.core.repository.ExerciseRepository;
 import com.example.fitness_assistant.core.repository.MuscleRepository;

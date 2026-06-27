@@ -11,7 +11,7 @@ public class UserWebMapper {
 
     public User toDomain(RegisterRequest request) {
         return  new User (
-                null,
+                null, // Этого поля нет в запросе, поэтому проставляем null
                 request.email(),
                 request.password(),
                 User.Role.USER

@@ -6,10 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
 public class UserProfileMapper {
-
-    private final UserMapper userMapper;
 
     public UserProfile toDomain(UserProfileEntity entity) {
         if (entity == null) {
@@ -17,7 +14,6 @@ public class UserProfileMapper {
         }
         return new UserProfile(
                 entity.getId(),
-                null, // Это поле проставляется в адаптере через getReferenceById
                 entity.getName(),
                 entity.getBirthDate(),
                 entity.getWeight(),
@@ -31,7 +27,7 @@ public class UserProfileMapper {
             return null;
         }
         return new UserProfileEntity(
-                domain.getId(),
+                domain.getUserId(),
                 null, // Это поле проставляется в адаптере через getReference
                 domain.getName(),
                 domain.getBirthDate(),

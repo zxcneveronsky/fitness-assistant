@@ -1,6 +1,6 @@
 package com.example.fitness_assistant.infrastructure.adapter;
 
-import com.example.fitness_assistant.core.model.Exercise;
+import com.example.fitness_assistant.core.model.exercise.Exercise;
 import com.example.fitness_assistant.core.model.FavoriteExercise;
 import com.example.fitness_assistant.core.repository.FavoriteExerciseRepository;
 import com.example.fitness_assistant.infrastructure.mapper.ExerciseMapper;

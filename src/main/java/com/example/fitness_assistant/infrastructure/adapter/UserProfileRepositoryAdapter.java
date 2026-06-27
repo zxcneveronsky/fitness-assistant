@@ -28,7 +28,7 @@ public class UserProfileRepositoryAdapter implements UserProfileRepository {
     @Override
     public UserProfile save(UserProfile userProfile) {
         UserProfileEntity userProfileEntity = userProfileMapper.toEntity(userProfile);
-        userProfileEntity.setUser(jpaUserRepository.getReferenceById(userProfile.getId()));
+        userProfileEntity.setUser(jpaUserRepository.getReferenceById(userProfile.getUserId()));
         UserProfileEntity saved = jpaUserProfileRepository.save(userProfileEntity);
         return userProfileMapper.toDomain(saved);
     }

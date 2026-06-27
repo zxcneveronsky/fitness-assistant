@@ -1,6 +1,6 @@
 package com.example.fitness_assistant.core.model.workout;
 
-import com.example.fitness_assistant.core.model.Exercise;
+import com.example.fitness_assistant.core.model.exercise.Exercise;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -49,7 +49,7 @@ public class UpdateUserProfileUseCase {
             bodyWeightRepository.save(new BodyWeight(null, userId, profileUpdate.getWeight(), LocalDate.now()));
         }
 
-        log.info("Профиль обновлён | userId={}", updatedProfile.getId());
+        log.info("Профиль обновлён | userId={}", updatedProfile.getUserId());
         return updatedProfile;
     }
 }

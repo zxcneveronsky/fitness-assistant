@@ -1,6 +1,6 @@
 package com.example.fitness_assistant.web.mapper;
 
-import com.example.fitness_assistant.core.model.Exercise;
+import com.example.fitness_assistant.core.model.exercise.Exercise;
 import com.example.fitness_assistant.core.model.Muscle;
 import com.example.fitness_assistant.web.dto.request.create.CreateExerciseRequest;
 import com.example.fitness_assistant.web.dto.request.update.UpdateExerciseRequest;
@@ -19,7 +19,7 @@ public class ExerciseWebMapper {
 
     public Exercise toDomain(CreateExerciseRequest request) {
         return new Exercise(
-                null,
+                null, // Этого поля нет в запросе, поэтому проставляем null
                 request.name(),
                 request.description(),
                 request.muscleIds().stream().map(id -> new Muscle(id, null)).toList()

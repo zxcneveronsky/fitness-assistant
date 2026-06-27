@@ -1,6 +1,6 @@
 package com.example.fitness_assistant.application.service.favoriteexercise;
 
-import com.example.fitness_assistant.core.model.Exercise;
+import com.example.fitness_assistant.core.model.exercise.Exercise;
 import com.example.fitness_assistant.core.repository.FavoriteExerciseRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -31,7 +31,7 @@ public class CreateUserProfileUseCase {
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException(userId);
         }
-        userProfile.setId(userId);
+        userProfile.setUserId(userId);
         UserProfile savedProfile = userProfileRepository.save(userProfile);
 
         Targets targets = new Targets();
@@ -44,7 +44,7 @@ public class CreateUserProfileUseCase {
             bodyWeightRepository.save(new BodyWeight(null, userId, userProfile.getWeight(), LocalDate.now()));
         }
 
-        log.info("Профиль создан | userId={}", savedProfile.getId());
+        log.info("Профиль создан | userId={}", savedProfile.getUserId());
         return savedProfile;
     }
 }

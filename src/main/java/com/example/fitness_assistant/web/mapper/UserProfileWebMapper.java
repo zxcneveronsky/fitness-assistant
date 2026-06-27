@@ -14,7 +14,6 @@ public class UserProfileWebMapper {
     public UserProfile toDomain(CreateUserProfileRequest request) {
         return new UserProfile(
                 null, // Этого поля нет в запросе, поэтому проставляем null
-                null, // Этого поля нет в запросе, поэтому проставляем null
                 request.name(),
                 request.birthDate(),
                 request.weight(),
@@ -25,7 +24,6 @@ public class UserProfileWebMapper {
 
     public UserProfile toDomain(UpdateUserProfileRequest request) {
         return new UserProfile(
-                null, // Этого поля нет в запросе, поэтому проставляем null
                 null, // Этого поля нет в запросе, поэтому проставляем null
                 request.name(),
                 request.birthDate(),

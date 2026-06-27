@@ -11,8 +11,8 @@ public class BodyWeightWebMapper {
 
     public BodyWeight toDomain(CreateBodyWeightRequest request) {
         return new BodyWeight(
-                null,
-                null,
+                null, // Этого поля нет в запросе, поэтому проставляем null
+                null, // Этого поля нет в запросе, поэтому проставляем null
                 request.weight(),
                 request.measuredAt()
         );
@@ -21,7 +21,7 @@ public class BodyWeightWebMapper {
     public BodyWeight toDomain(UpdateBodyWeightRequest request) {
         return new BodyWeight(
                 request.id(),
-                null,
+                null, // Этого поля нет в запросе, поэтому проставляем null
                 request.weight(),
                 request.measuredAt()
         );
