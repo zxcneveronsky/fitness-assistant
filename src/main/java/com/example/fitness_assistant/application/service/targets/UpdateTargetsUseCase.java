@@ -21,13 +21,13 @@ public class UpdateTargetsUseCase {
     private final UserProfileRepository userProfileRepository;
 
     @Transactional
-    public Targets updateTargets(Long userId, Targets request) {
+    public Targets updateTargets(Long userId, Targets targetsUpdate) {
         Targets targets = targetsRepository.findById(userId)
                 .orElseThrow(() -> new TargetsNotFoundException());
 
-        if (request.getTargetKcal() != null || targetCalculationService.hasMacros(request) || request.getTargetHydration() != null) {
+        if (targetsUpdate.getTargetKcal() != null || targetCalculationService.hasMacros(targetsUpdate) || targetsUpdate.getTargetHydration() != null) {
             targets.setUseAutopilot(false);
-            targetCalculationService.applyManualTargets(targets, request);
+            targetCalculationService.applyManualTargets(targets, targetsUpdate);
         }
         Targets savedTargets = targetsRepository.save(targets);
         log.info("Цели обновлены | userId={}", savedTargets.getProfileId());

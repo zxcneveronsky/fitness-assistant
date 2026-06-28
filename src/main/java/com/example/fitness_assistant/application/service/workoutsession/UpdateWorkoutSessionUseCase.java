@@ -19,12 +19,12 @@ public class UpdateWorkoutSessionUseCase {
     @Transactional
     public WorkoutSession updateWorkoutSession(Long userId, Long sessionId, LocalDateTime endTime) {
         WorkoutSession updatedSession = workoutSessionRepository.findById(sessionId, userId)
-                .map(session -> {
-                    if (endTime != null && session.getStartTime() != null && endTime.isBefore(session.getStartTime())) {
+                .map(existingSession -> {
+                    if (endTime != null && existingSession.getStartTime() != null && endTime.isBefore(existingSession.getStartTime())) {
                         throw new IllegalArgumentException("Время окончания не может быть раньше времени начала");
                     }
-                    session.setEndTime(endTime);
-                    return workoutSessionRepository.save(session);
+                    existingSession.setEndTime(endTime);
+                    return workoutSessionRepository.save(existingSession);
                 })
                 .orElseThrow(() -> new WorkoutSessionNotFoundException(sessionId));
         log.info("Сессия тренировки обновлена | id={}", updatedSession.getId());

@@ -18,13 +18,13 @@ public class CreateBodyWeightUseCase {
 
     @Transactional
     public BodyWeight createBodyWeight(Long userId, BodyWeight bodyWeight) {
-        BodyWeight toSave = new BodyWeight(
+        BodyWeight savedBodyWeight = bodyWeightRepository.save(
+                new BodyWeight(
                 null,
                 userId,
                 bodyWeight.getWeight(),
-                bodyWeight.getMeasuredAt() != null ? bodyWeight.getMeasuredAt() : LocalDate.now()
+                bodyWeight.getMeasuredAt() != null ? bodyWeight.getMeasuredAt() : LocalDate.now())
         );
-        BodyWeight savedBodyWeight = bodyWeightRepository.save(toSave);
         log.info("Запись веса создана | id={} | weight={}", savedBodyWeight.getId(), savedBodyWeight.getWeight());
         return savedBodyWeight;
     }

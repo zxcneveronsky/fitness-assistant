@@ -16,12 +16,12 @@ public class UpdateWorkoutAccessUseCase {
     private final WorkoutAccessRepository workoutAccessRepository;
 
     @Transactional
-    public WorkoutAccess updateWorkoutAccess(Long userId, WorkoutAccess updates) {
-        Long accessId = updates.getId();
+    public WorkoutAccess updateWorkoutAccess(Long userId, WorkoutAccess workoutAccessUpdate) {
+        Long accessId = workoutAccessUpdate.getId();
         WorkoutAccess updatedWorkoutAccess = workoutAccessRepository.findByIdAndOwnerId(accessId, userId)
                 .map(existingWorkoutAccess -> {
-                    if (updates.getAccessLevel() != null) {
-                        existingWorkoutAccess.setAccessLevel(updates.getAccessLevel());
+                    if (workoutAccessUpdate.getAccessLevel() != null) {
+                        existingWorkoutAccess.setAccessLevel(workoutAccessUpdate.getAccessLevel());
                     }
                     return workoutAccessRepository.save(existingWorkoutAccess);
                 })
