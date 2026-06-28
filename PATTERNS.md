@@ -135,6 +135,8 @@ public record UpdateExerciseRequest(
 - **Нет аннотаций валидации**
 - Всегда содержит `Long id` (кроме случаев, где сущность не имеет своего id — например `UserProfile`)
 - **Не содержит userId** — это антипаттерн, пробрасывать userId наружу запрещено
+- **Не содержит любые user ID** — даже `sharedWithUserId` заменяется на `sharedWithUserEmail`
+- **Нет isOwner в API** — фронт сам знает контекст через URL-параметр `access` (см. Безопасность)
 - Вложенные records для композитных данных
 - Пакет: `web/dto/response/`
 
@@ -142,6 +144,17 @@ public record UpdateExerciseRequest(
 public record ExerciseResponse(Long id, String name, String description, List<ExerciseMuscleResponse> muscles) {
     public record ExerciseMuscleResponse(Long id, String name) {}
 }
+```
+
+```java
+// WorkoutAccessResponse — вместо sharedWithUserId идёт sharedWithUserEmail
+public record WorkoutAccessResponse(
+        Long id,
+        String sharedWithUserEmail,  // не sharedWithUserId!
+        Long workoutId,
+        String workoutName,
+        AccessLevel accessLevel
+) {}
 ```
 
 ---
@@ -495,6 +508,18 @@ public class BodyWeightEntity {
 - `@Table(name = "snake_case_plural")`
 - `@UniqueConstraint` на таблицу для композитных уникальностей
 
+#### N+1 prevention
+
+- **`JOIN FETCH`** — во всех кастомных `@Query` в JPA-репозиториях, где загружается связанная сущность
+- **`@EntityGraph(attributePaths = {...})`** — альтернатива JOIN FETCH для derived queries
+- **`@BatchSize(size = 15)`** — на коллекциях (`@OneToMany`, `@ElementCollection`)
+- **Ленивая загрузка** — `FetchType.LAZY` везде. `.getId()` на LAZY-прокси не делает запрос к БД
+- Пример:
+  ```java
+  @Query("SELECT wa FROM WorkoutAccessEntity wa JOIN FETCH wa.workout JOIN FETCH wa.owner JOIN FETCH wa.sharedWithUser WHERE wa.workout.id = :workoutId AND wa.owner.id = :ownerId")
+  List<WorkoutAccessEntity> findByWorkoutIdAndOwnerId(...);
+  ```
+
 ---
 
 ### Infrastructure Mapper (Entity ↔ Domain)
@@ -559,6 +584,23 @@ public class BodyWeightRepositoryAdapter implements BodyWeightRepository {
 - `implements` доменный интерфейс репозитория
 - `save()`: domain → entity → простановка связей через `getReferenceById()` → save → entity → domain
 - find/delete/exists: делегирование в JPA + маппинг
+
+#### @MapsId — persist/merge
+
+Для entity с `@MapsId` (PK = FK: UserProfile, Targets, Streak) **`SimpleJpaRepository.save()` вызывает `merge()` при non-null ID** — это ломает INSERT для новых записей. Фикс: явный вызов `persist()` для новых, `merge()` для существующих:
+
+```java
+@Override
+public UserProfile save(UserProfile userProfile) {
+    UserProfileEntity entity = userProfileMapper.toEntity(userProfile);
+    entity.setUser(jpaUserRepository.getReferenceById(userProfile.getUserId()));
+    if (entity.getId() != null && jpaUserProfileRepository.existsById(entity.getId())) {
+        return userProfileMapper.toDomain(entityManager.merge(entity));
+    }
+    entityManager.persist(entity);
+    return userProfileMapper.toDomain(entity);
+}
+```
 
 ---
 
@@ -633,6 +675,32 @@ public record UserDetailsAdapter(User user) implements UserDetails {
 }
 ```
 
+#### WorkoutAccess — проверка доступа
+
+Стандартный паттерн проверки во всех use case'ах, где нужен доступ к тренировке:
+
+```java
+boolean isOwner = workoutRepository.existsById(workoutId, userId);
+boolean hasAccess = workoutAccessRepository.existsBySharedWithUserIdAndWorkoutId(userId, workoutId);
+if (!isOwner && !hasAccess) {
+    throw new WorkoutNotFoundException(workoutId);  // или AccessDeniedException
+}
+```
+
+**Таблица прав:**
+
+| Операция | Владелец | READ | COPY |
+|---|---|---|---|
+| Просмотр `GET /workout/{id}` | ✅ | ✅ | ✅ |
+| Старт сессии `POST /workout/session/start` | ✅ | ✅ | ✅ |
+| Копирование `POST /workout/{id}/copy` | ✅ | ❌ | ✅ |
+| Редактирование / удаление | ✅ | ❌ | ❌ |
+| Управление доступами | ✅ | ❌ | ❌ |
+
+- Фронт получает `access` через URL-параметр (`workout-detail.html?id=X&access=READ`), а не через `isOwner` в API
+- `workoutAccessRepository.existsBySharedWithUserIdAndWorkoutId(userId, workoutId)` — проверяет любой доступ (READ или COPY)
+- Для копирования используется `existsBySharedWithUserIdAndWorkoutIdAndAccessLevel(userId, workoutId, COPY)` — только COPY
+
 ---
 
 ### Кэширование
@@ -650,3 +718,177 @@ public record UserDetailsAdapter(User user) implements UserDetails {
 - Нумерация: V01, V02, ..., V19
 - Описание на английском (snake_case)
 - Все изменения только через миграции (не через JPA ddl-auto)
+
+---
+
+## ДОП ПАТТЕРНЫ
+
+### 1. CREATE patterns
+
+Четыре паттерна создания сущностей в зависимости от наличия DTO и маппера:
+
+| Паттерн | DTO | Маппер (web) | userId в DTO | Use case строит `new` | Примеры |
+|---|---|---|---|---|---|
+| **А** | Есть | Есть | Нет | Нет | Food, Exercise |
+| **Б** | Есть | Есть | Да | Нет | Workout, Set, Hydration, BodyWeight, Meal/manual, UserProfile, WorkoutAccess/update |
+| **В** | Нет | Нет | — | Да | Favorite, CopyWorkout |
+| **Г** | Есть | Нет | — | Да | Session/start, Meal/auto, WorkoutAccess/create |
+
+**Правила выбора:**
+- **А** — если ресурс публичный (не привязан к пользователю). DTO без `userId`
+- **Б** — если ресурс привязан к пользователю (user-scoped). DTO содержит `userId`, маппер маппит
+- **В** — если операция тривиальная (1-2 поля), не стоит заводить DTO и маппер
+- **Г** — если нужен DTO (валидация с фронта), но создание сущности достаточно простое, чтобы не писать маппер — use case сам строит `new Entity(...)`. Пример: `CreateWorkoutAccessRequest` валидирует workoutId, email, accessLevel, а `CreateWorkoutAccessUseCase` сам создаёт `new WorkoutAccess(null, userId, sharedWithUserId, email, workoutId, null, accessLevel)`
+
+### 2. α pattern — userId всегда первым
+
+Во **всех** методах use case'ов `userId` — строго первый аргумент:
+
+```java
+// user-scoped
+BodyWeight createBodyWeight(Long userId, BodyWeight bodyWeight)
+
+// множество параметров
+WorkoutAccess createWorkoutAccess(Long userId, Long workoutId, String email, AccessLevel accessLevel)
+
+// поиск с пагинацией
+Page<ExerciseHistory> findExerciseHistory(Long userId, Long exerciseId, LocalDateTime from, LocalDateTime to, Pageable pageable)
+```
+
+Исключения:
+- Публичные ресурсы без привязки к пользователю (search food/exercise/muscle)
+- Auth (register/login — пользователь ещё не аутентифицирован)
+
+---
+
+### 3. DataInitializer — CommandLineRunner + CSV seeding
+
+**Файл:** `infrastructure/init/DataInitializer.java`
+
+- `implements CommandLineRunner` — запускается после старта приложения
+- **Guard clause**: `if (foodRepository.count() > 0) return;` — защита от повторного импорта при каждом рестарте
+- **OpenCSV** (`CSVReader`) для чтения CSV из `ClassPathResource("data/{file}.csv")`
+- Пропуск заголовка: `reader.readNext()` вхолостую
+- **Helper-методы** `parseDouble()` / `parseLong()` с null-safety и логированием
+- **Демо-пользователь**: хардкод `user@example.com` / `password123` с BCrypt
+- Загрузка **напрямую в JPA Entity** (food, muscles, exercises), минуя слой адаптеров
+- `saveAll()` для batch-вставки
+
+---
+
+### 4. JPA Interface Projections — агрегатные запросы
+
+Для запросов с агрегацией (`SUM`, `COALESCE`) используются **Spring Data JPA interface-based closed projections**:
+
+- `DailyHydrationProjection` — `Double getTotalAmount()`
+- `DailyNutritionProjection` — `getKcal()`, `getProteins()`, `getFats()`, `getCarbs()`
+
+**Цепочка маппинга:**
+
+```
+JpaRepository.@Query → Projection interface → InfrastructureMapper → Domain → WebMapper → Response
+```
+
+- Проекции маппятся в доменные модели через отдельные **инфраструктурные мапперы**:
+  - `DailyHydrationMapper` — projection → `DailyHydration`
+  - `DailyNutritionMapper` — projection → `DailyNutrition`
+- `COALESCE(SUM(...), 0)` — если нет записей, проекция не null, маппер отдаёт `DailyHydration(0.0)` / `DailyNutrition(0.0, ...)`
+
+---
+
+### 5. Composite Domain Models — in-memory агрегации
+
+Собираются в **use case** через координацию нескольких репозиториев. Не persist, а read-only value objects.
+
+| Модель | Состав | Строится в | Особенность |
+|---|---|---|---|
+| `WorkoutWithExercise` | `Workout` + `List<Exercise>` | `FindWorkoutUseCase.findById()` | `@Getter @AllArgsConstructor`, без `@Setter` |
+| `SessionDetail` → `ExerciseDetail` → `SetDetail` | 3 уровня вложенности | `GetSessionDetailUseCase.getSessionDetail()` | `@Getter @AllArgsConstructor`, immutable |
+| `ExerciseHistory` | метаданные сессии + `List<Set>` | `FindExerciseHistoryUseCase.findExerciseHistory()` | собран через `groupingBy`, обёрнут в `PageImpl` |
+
+```java
+@Getter
+@AllArgsConstructor
+public class SessionDetail {
+    private Long id;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
+    private List<ExerciseDetail> exercises;
+}
+```
+
+**Принцип:** use case загружает данные из нескольких репозиториев, группирует/собирает и возвращает плоскую или вложенную read-only структуру.
+
+---
+
+### 6. TargetCalculationService — Helper Service
+
+Статус: stateless `@Service` с чистой бизнес-логикой, **без репозиториев**.
+
+```java
+@Service
+public class TargetCalculationService {
+    private static final double PROTEIN_RATIO = 0.30;
+    // ...
+
+    public void applyManualTargets(Targets targets, Targets request) { ... }
+    public void applyAutoTargets(Targets targets, UserProfile profile) { ... }
+}
+```
+
+- **Не `@Transactional`** — только мутация переданного доменного объекта
+- Инжектится в use case, который вызывает его методы
+- Содержит: Mifflin-St Jeor equation, балансировку макросов, активность multiplier
+- **Паттерн:** изоляция сложных вычислений из use case в отдельный stateless-сервис
+
+---
+
+### 7. Enum Convention
+
+| Где определён | Когда использовать | Примеры |
+|---|---|---|
+| **Внутри класса** | Если enum tightly coupled к одной сущности | `User.Role`, `UserProfile.Gender` |
+| **Отдельный файл** | Если enum переиспользуется между сущностями | `AccessLevel` (WorkoutAccess, проверки прав) |
+| **В JPA Entity** | Дублирует значения доменного enum | `UserEntity.Role`, `UserProfileEntity.Gender` |
+
+---
+
+### 8. @DateTimeFormat — формат дат в контроллерах
+
+| Тип Java | Аннотация | Пример |
+|---|---|---|
+| `LocalDate` | `@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)` | `2026-06-28` |
+| `LocalDateTime` | `@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)` | `2026-06-28T15:30:00` |
+
+- Всегда на `@RequestParam` (не на `@RequestBody`)
+- `required = false` + дефолт в use case (если null — подставляется `now()`)
+
+---
+
+### 9. @EntityGraph — борьба с N+1
+
+Используется на derived queries с `AndUserId` в JPA-репозиториях для подгрузки `user`:
+
+```java
+@EntityGraph(attributePaths = "user")
+Optional<HydrationEntity> findByIdAndUserId(Long id, Long userId);
+```
+
+Применяется в: `JpaHydrationRepository`, `JpaMealRepository`, `JpaWorkoutSessionRepository`.
+
+---
+
+### 10. ResponseEntity в проекте
+
+**Контроллеры** — никогда не используют `ResponseEntity`. Статус через `@ResponseStatus`, возврат — напрямую DTO.
+
+**GlobalExceptionHandler** — единственное место, где используется `ResponseEntity` (для формирования ошибок).
+
+---
+
+### 11. @Transactional — method-level vs class-level
+
+- **Method-level** — доминирующий паттерн (~60 use cases). Каждый метод аннотирован отдельно.
+- **Class-level** — только если **все** методы read-only (исключение: `FindWorkoutAccessUseCase`).
+
+Правило: предпочтение method-level, class-level только для read-only классов без write-методов.
