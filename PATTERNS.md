@@ -301,6 +301,45 @@ LoginResult loginUser(String email, String password)
 LoginResult registerUser(User user)
 ```
 
+#### Порядок аргументов методов репозитория
+
+Репозитории используют **обратный** порядок относительно use case'ов — userId не первый, а после других ID:
+
+```
+1. name | id (ids)          — поисковые данные, первичный ID сущности
+2. ___id | ____ids          — второстепенные фильтры (muscleId, exerciseId, workoutId...)
+3. Long userId               — всегда после других ID
+4. from / to                — временные параметры
+5. Pageable                  — всегда последним
+```
+
+**Примеры:**
+
+```java
+// name (поиск) → muscleId (фильтр) → userId → Pageable
+Page<Exercise> searchFavoriteExercise(String name, Long muscleId, Long userId, Pageable pageable);
+
+// id (первичный) → userId (фильтр)
+boolean existsByExerciseIdAndUserId(Long exerciseId, Long userId);
+void deleteByExerciseIdAndUserId(Long exerciseId, Long userId);
+
+// workoutId (первичный) → ownerId → sharedWithUserId
+boolean existsByWorkoutIdAndOwnerIdAndSharedWithUserId(Long workoutId, Long ownerId, Long sharedWithUserId);
+
+// search: name → userId → Pageable
+Page<Workout> searchWorkout(String name, Long userId, Pageable pageable);
+Page<Food> searchFavoriteFood(String name, Long userId, Pageable pageable);
+
+// entityId → userId → from → to → Pageable
+Page<Set> findByExerciseIdAndUserIdAndStartTimeBetween(Long exerciseId, Long userId, LocalDateTime from, LocalDateTime to, Pageable pageable);
+```
+
+**Почему userId не первый:** репозиторий работает с данными — первым идёт то, по чему ищут (имя, первичный ID сущности). userId — лишь один из фильтров, он идёт после основных идентификаторов.
+
+**В адаптере** порядок совпадает с domain-интерфейсом. **В use case** — userId первый (см. α pattern). Use case при вызове репозитория переставляет аргументы в репозиторный порядок.
+
+---
+
 #### Нейминг переменных в юзкейсе
 
 **Бизнес-имена** — как они называются в предметной области:
@@ -847,9 +886,21 @@ public class TargetCalculationService {
 
 | Где определён | Когда использовать | Примеры |
 |---|---|---|
-| **Внутри класса** | Если enum tightly coupled к одной сущности | `User.Role`, `UserProfile.Gender` |
-| **Отдельный файл** | Если enum переиспользуется между сущностями | `AccessLevel` (WorkoutAccess, проверки прав) |
-| **В JPA Entity** | Дублирует значения доменного enum | `UserEntity.Role`, `UserProfileEntity.Gender` |
+| **Внутри доменной модели** | Всегда. Enum tightly coupled к одной сущности | `User.Role`, `UserProfile.Gender`, `WorkoutAccess.AccessLevel` |
+| **Дублирован внутри JPA Entity** | Всегда. Те же значения, отдельный enum в entity | `UserEntity.Role`, `UserProfileEntity.Gender`, `WorkoutAccessEntity.AccessLevel` |
+| **Отдельный файл** | Только если enum переиспользуется между **разными** сущностями (таких пока нет) | — |
+
+**Конвертация в Infrastructure Mapper:**
+
+```java
+// toDomain: entity → domain
+User.Role.valueOf(entity.getRole().name())
+
+// toEntity: domain → entity
+UserEntity.Role.valueOf(domain.getRole().name())
+```
+
+Значения enum всегда идентичны, поэтому конвертация через `valueOf(name())`.
 
 ---
 

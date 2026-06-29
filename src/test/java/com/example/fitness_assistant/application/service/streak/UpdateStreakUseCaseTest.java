@@ -23,14 +23,19 @@ public class UpdateStreakUseCaseTest {
     @Test
     public void updateStreakTest(){
         LocalDate today = LocalDate.now();
+
         Streak testStreak = new Streak(1L, 0, today.minusDays(1));
         Streak testStreak0 = new Streak(2L, 1, today.minusDays(2));
+
         when(streakRepository.findById(1L)).thenReturn(Optional.of(testStreak));
         when(streakRepository.findById(2L)).thenReturn(Optional.of(testStreak0));
+
         when(streakRepository.save(testStreak)).thenReturn(testStreak);
         when(streakRepository.save(testStreak0)).thenReturn(testStreak0);
+
         Streak testSavedStreak = updateStreakUseCase.updateStreak(1L);
         Streak testSavedStreak0 = updateStreakUseCase.updateStreak(2L);
+
         assertEquals(1,testSavedStreak.getStreak());
         assertEquals(0,testSavedStreak0.getStreak());
 

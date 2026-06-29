@@ -27,8 +27,8 @@ public class FavoriteExerciseRepositoryAdapter implements FavoriteExerciseReposi
     private final ExerciseMapper exerciseMapper;
 
     @Override
-    public boolean existsByUserIdAndExerciseId(Long userId, Long exerciseId) {
-        return jpaFavoriteExerciseRepository.existsByUserIdAndExerciseId(userId, exerciseId);
+    public boolean existsByExerciseIdAndUserId(Long exerciseId, Long userId) {
+        return jpaFavoriteExerciseRepository.existsByExerciseIdAndUserId(exerciseId, userId);
     }
 
     @Override
@@ -40,13 +40,13 @@ public class FavoriteExerciseRepositoryAdapter implements FavoriteExerciseReposi
     }
 
     @Override
-    public void deleteByUserIdAndExerciseId(Long userId, Long exerciseId) {
-        jpaFavoriteExerciseRepository.deleteByUserIdAndExerciseId(userId, exerciseId);
+    public void deleteByExerciseIdAndUserId(Long exerciseId, Long userId) {
+        jpaFavoriteExerciseRepository.deleteByExerciseIdAndUserId(exerciseId, userId);
     }
 
     @Override
-    public Page<Exercise> searchFavoriteExercise(Long userId, String name, Long muscleId, Pageable pageable) {
-        return jpaFavoriteExerciseRepository.searchFavoriteExercises(userId, name, muscleId, pageable)
+    public Page<Exercise> searchFavoriteExercise(String name, Long muscleId, Long userId, Pageable pageable) {
+        return jpaFavoriteExerciseRepository.searchFavoriteExercises(name, muscleId, userId, pageable)
                 .map(exerciseMapper::toDomain);
     }
 

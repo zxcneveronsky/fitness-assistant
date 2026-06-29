@@ -30,8 +30,8 @@ public class CopyWorkoutUseCase {
             throw new UserNotFoundException(userId);
         }
         boolean isOwner = workoutRepository.existsById(workoutId, userId);
-        boolean hasCopyAccess = workoutAccessRepository.existsBySharedWithUserIdAndWorkoutIdAndAccessLevel(
-                userId, workoutId, AccessLevel.COPY);
+        boolean hasCopyAccess = workoutAccessRepository.existsByWorkoutIdAndSharedWithUserIdAndAccessLevel(
+                workoutId, userId, AccessLevel.COPY);
         if (!isOwner && !hasCopyAccess) {
             throw new AccessDeniedException();
         }

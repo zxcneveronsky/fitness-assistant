@@ -29,7 +29,7 @@ public class CreateFavoriteExerciseUseCase {
         if (!exerciseRepository.existsById(exerciseId)) {
             throw new ExerciseNotFoundException(exerciseId);
         }
-        if (favoriteExerciseRepository.existsByUserIdAndExerciseId(userId, exerciseId)) {
+        if (favoriteExerciseRepository.existsByExerciseIdAndUserId(exerciseId, userId)) {
             throw new FavoriteExerciseAlreadyExistsException(exerciseId);
         }
         FavoriteExercise savedFavoriteExercise = favoriteExerciseRepository.save(

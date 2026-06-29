@@ -12,9 +12,9 @@ import java.util.List;
 
 public interface JpaFavoriteFoodRepository extends JpaRepository<FavoriteFoodEntity, Long> {
 
-    boolean existsByUserIdAndFoodId(Long userId, Long foodId);
+    boolean existsByFoodIdAndUserId(Long foodId, Long userId);
 
-    void deleteByUserIdAndFoodId(Long userId, Long foodId);
+    void deleteByFoodIdAndUserId(Long foodId, Long userId);
 
     @Query(value = """
         SELECT f FROM FoodEntity f
@@ -31,7 +31,7 @@ public interface JpaFavoriteFoodRepository extends JpaRepository<FavoriteFoodEnt
         OR LOWER(f.name) LIKE LOWER(CONCAT('%', cast(:name as text), '%'))
         OR LOWER(f.brands) LIKE LOWER(CONCAT('%', cast(:name as text), '%')))
         """)
-    Page<FoodEntity> searchFavoriteFoods(@Param("userId") Long userId, @Param("name") String name, Pageable pageable);
+    Page<FoodEntity> searchFavoriteFoods(@Param("name") String name, @Param("userId") Long userId, Pageable pageable);
 
     @Query("SELECT ff.food.id FROM FavoriteFoodEntity ff WHERE ff.user.id = :userId ORDER BY ff.food.id ASC")
     List<Long> findIdsByUserId(@Param("userId") Long userId);

@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface WorkoutAccessRepository {
     WorkoutAccess save(WorkoutAccess workoutAccess);
 
-    List<WorkoutAccess> findByOwnerIdAndWorkoutId(Long ownerId, Long workoutId);
+    List<WorkoutAccess> findByWorkoutIdAndOwnerId(Long workoutId, Long ownerId);
 
     List<WorkoutAccess> findAllSharedWithUserId(Long userId);
 
@@ -19,9 +19,9 @@ public interface WorkoutAccessRepository {
 
     void deleteById(Long id);
 
-    boolean existsByOwnerIdAndSharedWithUserIdAndWorkoutId(Long ownerId, Long sharedWithUserId, Long workoutId);
+    boolean existsByWorkoutIdAndOwnerIdAndSharedWithUserId(Long workoutId, Long ownerId, Long sharedWithUserId);
 
-    boolean existsBySharedWithUserIdAndWorkoutIdAndAccessLevel(Long userId, Long workoutId, AccessLevel accessLevel);
+    boolean existsByWorkoutIdAndSharedWithUserIdAndAccessLevel(Long workoutId, Long userId, AccessLevel accessLevel);
 
-    boolean existsBySharedWithUserIdAndWorkoutId(Long userId, Long workoutId);
+    boolean existsByWorkoutIdAndSharedWithUserId(Long workoutId, Long userId);
 }

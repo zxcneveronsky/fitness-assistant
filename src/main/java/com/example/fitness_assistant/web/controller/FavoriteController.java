@@ -84,7 +84,7 @@ public class FavoriteController {
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Long muscleId,
             @PageableDefault(size = 12) Pageable pageable) {
-        return findFavoriteExerciseUseCase.searchFavoriteExercise(adapter.getUserId(), name, muscleId, pageable)
+        return findFavoriteExerciseUseCase.searchFavoriteExercise(adapter.getUserId(), muscleId, name, pageable)
                 .map(exerciseWebMapper::toResponse);
     }
 

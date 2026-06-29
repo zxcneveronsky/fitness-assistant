@@ -17,8 +17,8 @@ public class FindFavoriteExerciseUseCase {
     private final FavoriteExerciseRepository favoriteExerciseRepository;
 
     @Transactional(readOnly = true)
-    public Page<Exercise> searchFavoriteExercise(Long userId, String name, Long muscleId, Pageable pageable) {
-        Page<Exercise> exercises = favoriteExerciseRepository.searchFavoriteExercise(userId, name, muscleId, pageable);
+    public Page<Exercise> searchFavoriteExercise(Long userId, Long muscleId, String name, Pageable pageable) {
+        Page<Exercise> exercises = favoriteExerciseRepository.searchFavoriteExercise(name, muscleId, userId, pageable);
         log.info("Поиск избранных упражнений завершён | userId={} | name='{}' | muscleId={} | найдено={}", userId, name, muscleId, exercises.getTotalElements());
         return exercises;
     }

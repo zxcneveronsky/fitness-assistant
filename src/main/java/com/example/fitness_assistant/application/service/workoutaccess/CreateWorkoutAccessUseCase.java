@@ -34,7 +34,7 @@ public class CreateWorkoutAccessUseCase {
         User sharedWithUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException(email));
         Long sharedWithUserId = sharedWithUser.getId();
-        if (workoutAccessRepository.existsByOwnerIdAndSharedWithUserIdAndWorkoutId(userId, sharedWithUserId, workoutId)) {
+        if (workoutAccessRepository.existsByWorkoutIdAndOwnerIdAndSharedWithUserId(workoutId, userId, sharedWithUserId)) {
             throw new WorkoutAccessAlreadyExistsException(workoutId);
         }
         WorkoutAccess savedWorkoutAccess = workoutAccessRepository.save(

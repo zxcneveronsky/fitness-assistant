@@ -38,8 +38,8 @@ public class UpdateStreakUseCase {
             streak.setLastVisitDate(today);
         }
 
-        Streak savedStreak = streakRepository.save(streak);
-        log.info("Streak обновлён | userId={} | streak={}", userId, savedStreak.getStreak());
-        return savedStreak;
+        Streak updatedStreak = streakRepository.save(streak);
+        log.info("Streak обновлён | userId={} | streak={}", userId, updatedStreak.getStreak());
+        return updatedStreak;
     }
 }

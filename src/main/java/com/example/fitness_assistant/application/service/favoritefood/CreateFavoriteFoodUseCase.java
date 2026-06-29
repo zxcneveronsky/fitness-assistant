@@ -29,7 +29,7 @@ public class CreateFavoriteFoodUseCase {
         if (!foodRepository.existsById(foodId)) {
             throw new FoodNotFoundException(foodId);
         }
-        if (favoriteFoodRepository.existsByUserIdAndFoodId(userId, foodId)) {
+        if (favoriteFoodRepository.existsByFoodIdAndUserId(foodId, userId)) {
             throw new FavoriteFoodAlreadyExistsException(foodId);
         }
         FavoriteFood savedFavoriteFood = favoriteFoodRepository.save(

@@ -12,16 +12,16 @@ import java.util.Optional;
 public interface JpaWorkoutAccessRepository extends JpaRepository<WorkoutAccessEntity, Long> {
 
     @Query("SELECT wa FROM WorkoutAccessEntity wa JOIN FETCH wa.workout JOIN FETCH wa.owner JOIN FETCH wa.sharedWithUser WHERE wa.owner.id = :ownerId AND wa.workout.id = :workoutId")
-    List<WorkoutAccessEntity> findByOwnerIdAndWorkoutId(@Param("ownerId") Long ownerId, @Param("workoutId") Long workoutId);
+    List<WorkoutAccessEntity> findByWorkoutIdAndOwnerId(@Param("workoutId") Long workoutId, @Param("ownerId") Long ownerId);
 
     @Query("SELECT wa FROM WorkoutAccessEntity wa JOIN FETCH wa.workout JOIN FETCH wa.owner JOIN FETCH wa.sharedWithUser WHERE wa.sharedWithUser.id = :userId")
     List<WorkoutAccessEntity> findAllBySharedWithUserId(@Param("userId") Long userId);
 
     Optional<WorkoutAccessEntity> findByIdAndOwnerId(Long id, Long ownerId);
 
-    boolean existsByOwnerIdAndSharedWithUserIdAndWorkoutId(Long ownerId, Long sharedWithUserId, Long workoutId);
+    boolean existsByWorkoutIdAndOwnerIdAndSharedWithUserId(Long workoutId, Long ownerId, Long sharedWithUserId);
 
-    boolean existsBySharedWithUserIdAndWorkoutIdAndAccessLevel(Long userId, Long workoutId, AccessLevel accessLevel);
+    boolean existsByWorkoutIdAndSharedWithUserIdAndAccessLevel(Long workoutId, Long userId, AccessLevel accessLevel);
 
-    boolean existsBySharedWithUserIdAndWorkoutId(Long userId, Long workoutId);
+    boolean existsByWorkoutIdAndSharedWithUserId(Long workoutId, Long userId);
 }

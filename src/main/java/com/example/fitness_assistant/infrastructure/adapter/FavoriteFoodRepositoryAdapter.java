@@ -27,8 +27,8 @@ public class FavoriteFoodRepositoryAdapter implements FavoriteFoodRepository {
     private final FoodMapper foodMapper;
 
     @Override
-    public boolean existsByUserIdAndFoodId(Long userId, Long foodId) {
-        return jpaFavoriteFoodRepository.existsByUserIdAndFoodId(userId, foodId);
+    public boolean existsByFoodIdAndUserId(Long foodId, Long userId) {
+        return jpaFavoriteFoodRepository.existsByFoodIdAndUserId(foodId, userId);
     }
 
     @Override
@@ -40,13 +40,13 @@ public class FavoriteFoodRepositoryAdapter implements FavoriteFoodRepository {
     }
 
     @Override
-    public void deleteByUserIdAndFoodId(Long userId, Long foodId) {
-        jpaFavoriteFoodRepository.deleteByUserIdAndFoodId(userId, foodId);
+    public void deleteByFoodIdAndUserId(Long foodId, Long userId) {
+        jpaFavoriteFoodRepository.deleteByFoodIdAndUserId(foodId, userId);
     }
 
     @Override
-    public Page<Food> searchFavoriteFood(Long userId, String name, Pageable pageable) {
-        return jpaFavoriteFoodRepository.searchFavoriteFoods(userId, name, pageable)
+    public Page<Food> searchFavoriteFood(String name, Long userId, Pageable pageable) {
+        return jpaFavoriteFoodRepository.searchFavoriteFoods(name, userId, pageable)
                 .map(foodMapper::toDomain);
     }
 

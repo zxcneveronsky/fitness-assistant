@@ -16,10 +16,10 @@ public class DeleteFavoriteFoodUseCase {
 
     @Transactional
     public void deleteFavoriteFood(Long userId, Long foodId) {
-        if (!favoriteFoodRepository.existsByUserIdAndFoodId(userId, foodId)) {
+        if (!favoriteFoodRepository.existsByFoodIdAndUserId(foodId, userId)) {
             throw new FavoriteFoodNotFoundException(foodId);
         }
-        favoriteFoodRepository.deleteByUserIdAndFoodId(userId, foodId);
+        favoriteFoodRepository.deleteByFoodIdAndUserId(foodId, userId);
         log.info("Продукт удалён из избранного | foodId={}", foodId);
     }
 }

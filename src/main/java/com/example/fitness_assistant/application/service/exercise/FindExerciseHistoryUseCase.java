@@ -54,7 +54,7 @@ public class FindExerciseHistoryUseCase {
                 .toList();
         Map<Long, String> workoutNameMap = workoutRepository.findAllById(workoutIds).stream()
                 .filter(w -> workoutRepository.existsById(w.getId(), userId)
-                        || workoutAccessRepository.existsBySharedWithUserIdAndWorkoutId(userId, w.getId()))
+                        || workoutAccessRepository.existsByWorkoutIdAndSharedWithUserId(w.getId(), userId))
                 .collect(Collectors.toMap(Workout::getId, Workout::getName));
 
         List<ExerciseHistory> history = sessionIds.stream()

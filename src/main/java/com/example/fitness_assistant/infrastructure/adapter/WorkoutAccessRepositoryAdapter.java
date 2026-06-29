@@ -33,8 +33,8 @@ public class WorkoutAccessRepositoryAdapter implements WorkoutAccessRepository {
     }
 
     @Override
-    public List<WorkoutAccess> findByOwnerIdAndWorkoutId(Long ownerId, Long workoutId) {
-        return jpaWorkoutAccessRepository.findByOwnerIdAndWorkoutId(ownerId, workoutId)
+    public List<WorkoutAccess> findByWorkoutIdAndOwnerId(Long workoutId, Long ownerId) {
+        return jpaWorkoutAccessRepository.findByWorkoutIdAndOwnerId(workoutId, ownerId)
                 .stream()
                 .map(workoutAccessMapper::toDomain)
                 .toList();
@@ -66,17 +66,17 @@ public class WorkoutAccessRepositoryAdapter implements WorkoutAccessRepository {
     }
 
     @Override
-    public boolean existsByOwnerIdAndSharedWithUserIdAndWorkoutId(Long ownerId, Long sharedWithUserId, Long workoutId) {
-        return jpaWorkoutAccessRepository.existsByOwnerIdAndSharedWithUserIdAndWorkoutId(ownerId, sharedWithUserId, workoutId);
+    public boolean existsByWorkoutIdAndOwnerIdAndSharedWithUserId(Long workoutId, Long ownerId, Long sharedWithUserId) {
+        return jpaWorkoutAccessRepository.existsByWorkoutIdAndOwnerIdAndSharedWithUserId(workoutId, ownerId, sharedWithUserId);
     }
 
     @Override
-    public boolean existsBySharedWithUserIdAndWorkoutIdAndAccessLevel(Long userId, Long workoutId, AccessLevel accessLevel) {
-        return jpaWorkoutAccessRepository.existsBySharedWithUserIdAndWorkoutIdAndAccessLevel(userId, workoutId, accessLevel);
+    public boolean existsByWorkoutIdAndSharedWithUserIdAndAccessLevel(Long workoutId, Long userId, AccessLevel accessLevel) {
+        return jpaWorkoutAccessRepository.existsByWorkoutIdAndSharedWithUserIdAndAccessLevel(workoutId, userId, accessLevel);
     }
 
     @Override
-    public boolean existsBySharedWithUserIdAndWorkoutId(Long userId, Long workoutId) {
-        return jpaWorkoutAccessRepository.existsBySharedWithUserIdAndWorkoutId(userId, workoutId);
+    public boolean existsByWorkoutIdAndSharedWithUserId(Long workoutId, Long userId) {
+        return jpaWorkoutAccessRepository.existsByWorkoutIdAndSharedWithUserId(workoutId, userId);
     }
 }

@@ -18,7 +18,7 @@ public class FindWorkoutAccessUseCase {
     private final WorkoutAccessRepository workoutAccessRepository;
 
     public List<WorkoutAccess> findByOwnerIdAndWorkoutId(Long userId, Long workoutId) {
-        List<WorkoutAccess> accesses = workoutAccessRepository.findByOwnerIdAndWorkoutId(userId, workoutId);
+        List<WorkoutAccess> accesses = workoutAccessRepository.findByWorkoutIdAndOwnerId(workoutId, userId);
         log.info("Поиск доступов к тренировке завершён | userId={} | workoutId={} | найдено={}", userId, workoutId, accesses.size());
         return accesses;
     }

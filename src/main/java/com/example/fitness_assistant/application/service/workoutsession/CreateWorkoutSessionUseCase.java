@@ -31,7 +31,7 @@ public class CreateWorkoutSessionUseCase {
             throw new UserNotFoundException(userId);
         }
         boolean isOwner = workoutRepository.existsById(workoutId, userId);
-        boolean hasAccess = workoutAccessRepository.existsBySharedWithUserIdAndWorkoutId(userId, workoutId);
+        boolean hasAccess = workoutAccessRepository.existsByWorkoutIdAndSharedWithUserId(workoutId, userId);
         if (!isOwner && !hasAccess) {
             throw new AccessDeniedException();
         }

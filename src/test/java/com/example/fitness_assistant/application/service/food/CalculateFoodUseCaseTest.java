@@ -22,8 +22,11 @@ public class CalculateFoodUseCaseTest {
     @Test
     public void calculateFoodTest(){
         Food testFood = new Food(1L,"Pizza","null",100D,10D,20D,10D);
+
         when(foodRepository.findById(1L)).thenReturn(Optional.of(testFood));
+
         Food testCalculatedFood = calculateFoodUseCase.calculateFood(1L,200D);
+
         assertEquals(200D,testCalculatedFood.getKcal());
         assertEquals(20D,testCalculatedFood.getProteins());
         assertEquals(40D,testCalculatedFood.getFats());

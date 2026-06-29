@@ -34,7 +34,7 @@ public class FindWorkoutUseCase {
 
     @Transactional(readOnly = true)
     public Page<Workout> searchWorkout(Long userId, String name, Pageable pageable) {
-        Page<Workout> workouts = workoutRepository.searchWorkout(userId, name, pageable);
+        Page<Workout> workouts = workoutRepository.searchWorkout(name, userId, pageable);
         log.info("Поиск тренировок завершён | userId={} | name='{}' | найдено={} | страница={}/{}",
                 userId, name, workouts.getTotalElements(), workouts.getNumber() + 1, workouts.getTotalPages());
         return workouts;
@@ -43,7 +43,7 @@ public class FindWorkoutUseCase {
     @Transactional(readOnly = true)
     public WorkoutWithExercise findById(Long userId, Long workoutId){
         boolean isOwner = workoutRepository.existsById(workoutId, userId);
-        boolean hasAccess = workoutAccessRepository.existsBySharedWithUserIdAndWorkoutId(userId, workoutId);
+        boolean hasAccess = workoutAccessRepository.existsByWorkoutIdAndSharedWithUserId(workoutId, userId);
         if (!isOwner && !hasAccess) {
             throw new WorkoutNotFoundException(workoutId);
         }

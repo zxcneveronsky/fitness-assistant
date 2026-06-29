@@ -9,13 +9,13 @@ import java.util.List;
 
 public interface FavoriteExerciseRepository {
 
-    boolean existsByUserIdAndExerciseId(Long userId, Long exerciseId);
+    boolean existsByExerciseIdAndUserId(Long exerciseId, Long userId);
 
     FavoriteExercise save(FavoriteExercise favoriteExercise);
 
-    void deleteByUserIdAndExerciseId(Long userId, Long exerciseId);
+    void deleteByExerciseIdAndUserId(Long exerciseId, Long userId);
 
-    Page<Exercise> searchFavoriteExercise(Long userId, String name, Long muscleId, Pageable pageable);
+    Page<Exercise> searchFavoriteExercise(String name, Long muscleId, Long userId, Pageable pageable);
 
     List<Long> findIdsByUserId(Long userId);
 }

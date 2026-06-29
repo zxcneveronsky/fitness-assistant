@@ -12,9 +12,9 @@ import java.util.List;
 
 public interface JpaFavoriteExerciseRepository extends JpaRepository<FavoriteExerciseEntity, Long> {
 
-    boolean existsByUserIdAndExerciseId(Long userId, Long exerciseId);
+    boolean existsByExerciseIdAndUserId(Long exerciseId, Long userId);
 
-    void deleteByUserIdAndExerciseId(Long userId, Long exerciseId);
+    void deleteByExerciseIdAndUserId(Long exerciseId, Long userId);
 
     @Query(value = """
         SELECT DISTINCT e FROM ExerciseEntity e
@@ -35,7 +35,7 @@ public interface JpaFavoriteExerciseRepository extends JpaRepository<FavoriteExe
         OR LOWER(m.name) LIKE LOWER(CONCAT('%', cast(:name as text), '%')))
         AND (:muscleId IS NULL OR m.id = :muscleId)
         """)
-    Page<ExerciseEntity> searchFavoriteExercises(@Param("userId") Long userId, @Param("name") String name, @Param("muscleId") Long muscleId, Pageable pageable);
+    Page<ExerciseEntity> searchFavoriteExercises(@Param("name") String name, @Param("muscleId") Long muscleId, @Param("userId") Long userId, Pageable pageable);
 
     @Query("SELECT fe.exercise.id FROM FavoriteExerciseEntity fe WHERE fe.user.id = :userId ORDER BY fe.exercise.id ASC")
     List<Long> findIdsByUserId(@Param("userId") Long userId);

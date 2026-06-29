@@ -29,9 +29,9 @@ public class UpdateTargetsUseCase {
             targets.setUseAutopilot(false);
             targetCalculationService.applyManualTargets(targets, targetsUpdate);
         }
-        Targets savedTargets = targetsRepository.save(targets);
-        log.info("Цели обновлены | userId={}", savedTargets.getProfileId());
-        return savedTargets;
+        Targets updatedTargets = targetsRepository.save(targets);
+        log.info("Цели обновлены | userId={}", updatedTargets.getProfileId());
+        return updatedTargets;
     }
 
     @Transactional
@@ -45,9 +45,9 @@ public class UpdateTargetsUseCase {
         if (enabled) {
             targetCalculationService.applyAutoTargets(targets, profile);
         }
-        Targets savedTargets = targetsRepository.save(targets);
+        Targets updatedTargets = targetsRepository.save(targets);
 
         log.info("Статус автопилота обновлён | userId={} | enabled={}", userId, enabled);
-        return savedTargets;
+        return updatedTargets;
     }
 }

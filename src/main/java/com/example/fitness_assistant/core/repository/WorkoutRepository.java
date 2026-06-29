@@ -11,7 +11,7 @@ public interface WorkoutRepository {
     Optional<Workout> findById(Long id, Long userId);
     Optional<Workout> findByIdAccessible(Long id);
     Page<Workout> findAllByUserId(Long userId, Pageable pageable);
-    Page<Workout> searchWorkout(Long userId, String name, Pageable pageable);
+    Page<Workout> searchWorkout(String name, Long userId, Pageable pageable);
     List<Workout> findAllById(List<Long> ids);
     Workout save(Workout workout);
     void deleteById(Long id, Long userId);

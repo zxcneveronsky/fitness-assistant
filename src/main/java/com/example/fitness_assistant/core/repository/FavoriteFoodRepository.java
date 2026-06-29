@@ -9,13 +9,13 @@ import java.util.List;
 
 public interface FavoriteFoodRepository {
 
-    boolean existsByUserIdAndFoodId(Long userId, Long foodId);
+    boolean existsByFoodIdAndUserId(Long foodId, Long userId);
 
     FavoriteFood save(FavoriteFood favoriteFood);
 
-    void deleteByUserIdAndFoodId(Long userId, Long foodId);
+    void deleteByFoodIdAndUserId(Long foodId, Long userId);
 
-    Page<Food> searchFavoriteFood(Long userId, String name, Pageable pageable);
+    Page<Food> searchFavoriteFood(String name, Long userId, Pageable pageable);
 
     List<Long> findIdsByUserId(Long userId);
 }
