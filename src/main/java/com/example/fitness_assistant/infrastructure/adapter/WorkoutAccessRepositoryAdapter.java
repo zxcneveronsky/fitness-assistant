@@ -1,7 +1,7 @@
 package com.example.fitness_assistant.infrastructure.adapter;
 
-import com.example.fitness_assistant.core.model.workoutaccess.AccessLevel;
-import com.example.fitness_assistant.core.model.workoutaccess.WorkoutAccess;
+import com.example.fitness_assistant.core.model.WorkoutAccess;
+import com.example.fitness_assistant.core.model.WorkoutAccess.AccessLevel;
 import com.example.fitness_assistant.core.repository.WorkoutAccessRepository;
 import com.example.fitness_assistant.infrastructure.mapper.WorkoutAccessMapper;
 import com.example.fitness_assistant.infrastructure.persistence.entity.WorkoutAccessEntity;

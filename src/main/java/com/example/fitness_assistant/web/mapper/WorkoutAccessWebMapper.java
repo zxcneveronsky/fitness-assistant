@@ -1,6 +1,7 @@
 package com.example.fitness_assistant.web.mapper;
 
-import com.example.fitness_assistant.core.model.workoutaccess.WorkoutAccess;
+import com.example.fitness_assistant.core.model.WorkoutAccess;
+import com.example.fitness_assistant.core.model.WorkoutAccess.AccessLevel;
 import com.example.fitness_assistant.web.dto.request.update.UpdateWorkoutAccessRequest;
 import com.example.fitness_assistant.web.dto.response.WorkoutAccessResponse;
 import org.springframework.stereotype.Component;

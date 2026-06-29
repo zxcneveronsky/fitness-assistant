@@ -1,6 +1,5 @@
 package com.example.fitness_assistant.infrastructure.persistence.entity;
 
-import com.example.fitness_assistant.core.model.workoutaccess.AccessLevel;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -37,4 +36,8 @@ public class WorkoutAccessEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private AccessLevel accessLevel;
+
+    public enum AccessLevel {
+        READ, COPY
+    }
 }

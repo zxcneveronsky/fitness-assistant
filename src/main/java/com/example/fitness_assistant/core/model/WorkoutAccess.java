@@ -1,4 +1,4 @@
-package com.example.fitness_assistant.core.model.workoutaccess;
+package com.example.fitness_assistant.core.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,4 +17,8 @@ public class WorkoutAccess {
     private Long workoutId;
     private String workoutName;
     private AccessLevel accessLevel;
+    public enum AccessLevel {
+        READ, COPY
+    }
+
 }

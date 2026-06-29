@@ -1,7 +1,7 @@
 package com.example.fitness_assistant.core.repository;
 
-import com.example.fitness_assistant.core.model.workoutaccess.AccessLevel;
-import com.example.fitness_assistant.core.model.workoutaccess.WorkoutAccess;
+import com.example.fitness_assistant.core.model.WorkoutAccess;
+import com.example.fitness_assistant.core.model.WorkoutAccess.AccessLevel;
 
 import java.util.List;
 import java.util.Optional;

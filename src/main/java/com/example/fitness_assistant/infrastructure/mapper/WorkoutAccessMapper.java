@@ -1,6 +1,6 @@
 package com.example.fitness_assistant.infrastructure.mapper;
 
-import com.example.fitness_assistant.core.model.workoutaccess.WorkoutAccess;
+import com.example.fitness_assistant.core.model.WorkoutAccess;
 import com.example.fitness_assistant.infrastructure.persistence.entity.WorkoutAccessEntity;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +18,7 @@ public class WorkoutAccessMapper {
                 entity.getSharedWithUser().getEmail(),
                 entity.getWorkout().getId(),
                 entity.getWorkout().getName(),
-                entity.getAccessLevel()
+                WorkoutAccess.AccessLevel.valueOf(entity.getAccessLevel().name())
         );
     }
 
@@ -31,7 +31,7 @@ public class WorkoutAccessMapper {
                 null, // Это поле проставляется в адаптере через getReferenceById
                 null, // Это поле проставляется в адаптере через getReferenceById
                 null, // Это поле проставляется в адаптере через getReferenceById
-                domain.getAccessLevel()
+                WorkoutAccessEntity.AccessLevel.valueOf(domain.getAccessLevel().name())
         );
     }
 }

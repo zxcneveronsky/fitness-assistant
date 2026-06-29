@@ -1,6 +1,6 @@
 package com.example.fitness_assistant.web.dto.response;
 
-import com.example.fitness_assistant.core.model.workoutaccess.AccessLevel;
+import com.example.fitness_assistant.core.model.WorkoutAccess.AccessLevel;
 
 public record WorkoutAccessResponse(
         Long id,

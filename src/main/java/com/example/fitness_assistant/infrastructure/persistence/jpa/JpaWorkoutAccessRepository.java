@@ -1,6 +1,6 @@
 package com.example.fitness_assistant.infrastructure.persistence.jpa;
 
-import com.example.fitness_assistant.core.model.workoutaccess.AccessLevel;
+import com.example.fitness_assistant.core.model.WorkoutAccess.AccessLevel;
 import com.example.fitness_assistant.infrastructure.persistence.entity.WorkoutAccessEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
