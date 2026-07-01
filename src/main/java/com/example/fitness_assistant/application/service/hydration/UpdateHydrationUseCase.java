@@ -26,7 +26,7 @@ public class UpdateHydrationUseCase {
                     return hydrationRepository.save(existingHydration);
                 })
                 .orElseThrow(() -> new HydrationNotFoundException(hydrationId));
-        log.info("Запись гидратации обновлена | id={}", updatedHydration.getId());
+        log.info("Запись гидратации обновлена | id={}", hydrationId);
         return updatedHydration;
     }
 }

@@ -5,9 +5,7 @@ import jakarta.validation.constraints.*;
 public record UpdateSetRequest(
         @NotNull(message = "ID подхода не может быть пустым")
         Long id,
-        @NotNull(message = "ID сессии не может быть пустым")
         Long sessionId,
-        @NotNull(message = "ID упражнения не может быть пустым")
         Long exerciseId,
         @PositiveOrZero(message = "Вес не может быть отрицательным")
         @Max(value = 10000, message = "Вес не может быть больше 10000 кг")

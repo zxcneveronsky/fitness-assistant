@@ -1,9 +1,11 @@
 package com.example.fitness_assistant.application.service.exercise;
 
+import com.example.fitness_assistant.core.exception.ExerciseNotFoundException;
 import com.example.fitness_assistant.core.model.exercise.ExerciseHistory;
 import com.example.fitness_assistant.core.model.Set;
 import com.example.fitness_assistant.core.model.WorkoutSession;
 import com.example.fitness_assistant.core.model.workout.Workout;
+import com.example.fitness_assistant.core.repository.ExerciseRepository;
 import com.example.fitness_assistant.core.repository.SetRepository;
 import com.example.fitness_assistant.core.repository.WorkoutAccessRepository;
 import com.example.fitness_assistant.core.repository.WorkoutRepository;
@@ -28,12 +30,16 @@ import java.util.stream.Collectors;
 public class FindExerciseHistoryUseCase {
 
     private final SetRepository setRepository;
+    private final ExerciseRepository exerciseRepository;
     private final WorkoutSessionRepository workoutSessionRepository;
     private final WorkoutRepository workoutRepository;
     private final WorkoutAccessRepository workoutAccessRepository;
 
     @Transactional(readOnly = true)
     public Page<ExerciseHistory> findExerciseHistory(Long userId, Long exerciseId, LocalDateTime from, LocalDateTime to, Pageable pageable) {
+        if (!exerciseRepository.existsById(exerciseId)) {
+            throw new ExerciseNotFoundException(exerciseId);
+        }
         Page<Set> setsPage = setRepository.findByExerciseIdAndUserIdAndStartTimeBetween(exerciseId, userId, from, to, pageable);
         if (setsPage.isEmpty()) {
             log.info("История упражнения пуста | exerciseId={} | userId={}", exerciseId, userId);

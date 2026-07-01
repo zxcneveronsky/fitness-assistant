@@ -6,6 +6,7 @@ import com.example.fitness_assistant.web.mapper.MuscleWebMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,6 +21,11 @@ public class MuscleController {
 
     private final FindMuscleUseCase findMuscleUseCase;
     private final MuscleWebMapper muscleWebMapper;
+
+    @GetMapping("/{id}")
+    public MuscleResponse getMuscleById(@PathVariable("id") Long muscleId) {
+        return muscleWebMapper.toResponse(findMuscleUseCase.findById(muscleId));
+    }
 
     @GetMapping("/search")
     public List<MuscleResponse> searchMuscles(@RequestParam(required = false) String name) {

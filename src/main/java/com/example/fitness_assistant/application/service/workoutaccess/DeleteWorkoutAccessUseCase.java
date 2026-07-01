@@ -1,7 +1,6 @@
 package com.example.fitness_assistant.application.service.workoutaccess;
 
 import com.example.fitness_assistant.core.exception.WorkoutAccessNotFoundException;
-import com.example.fitness_assistant.core.model.WorkoutAccess;
 import com.example.fitness_assistant.core.repository.WorkoutAccessRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,9 +16,10 @@ public class DeleteWorkoutAccessUseCase {
 
     @Transactional
     public void deleteWorkoutAccess(Long userId, Long accessId) {
-        WorkoutAccess existingWorkoutAccess = workoutAccessRepository.findByIdAndOwnerId(accessId, userId)
-                .orElseThrow(() -> new WorkoutAccessNotFoundException(accessId));
-        workoutAccessRepository.deleteById(existingWorkoutAccess.getId());
+        if (!workoutAccessRepository.existsByIdAndOwnerId(accessId, userId)) {
+            throw new WorkoutAccessNotFoundException(accessId);
+        }
+        workoutAccessRepository.deleteById(accessId);
         log.info("Доступ к тренировке удалён | id={}", accessId);
     }
 }

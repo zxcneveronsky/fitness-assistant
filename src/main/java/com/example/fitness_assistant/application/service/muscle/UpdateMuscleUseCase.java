@@ -8,27 +8,23 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class FindMuscleUseCase {
+public class UpdateMuscleUseCase {
 
     private final MuscleRepository muscleRepository;
 
-    @Transactional(readOnly = true)
-    public List<Muscle> searchMuscle(String name) {
-        List<Muscle> muscles = muscleRepository.searchMuscle(name);
-        log.info("Поиск мышц | name='{}' | найдено={}", name, muscles.size());
-        return muscles;
-    }
-
-    @Transactional(readOnly = true)
-    public Muscle findById(Long muscleId) {
-        Muscle muscle = muscleRepository.findById(muscleId)
+    @Transactional
+    public Muscle updateMuscle(Muscle muscleUpdate) {
+        Long muscleId = muscleUpdate.getId();
+        Muscle updatedMuscle = muscleRepository.findById(muscleId)
+                .map(existingMuscle -> {
+                    existingMuscle.setName(muscleUpdate.getName() != null ? muscleUpdate.getName() : existingMuscle.getName());
+                    return muscleRepository.save(existingMuscle);
+                })
                 .orElseThrow(() -> new MuscleNotFoundException(muscleId));
-        log.info("Мышца найдена | id={}", muscleId);
-        return muscle;
+        log.info("Мышца обновлена | id={}", muscleId);
+        return updatedMuscle;
     }
 }

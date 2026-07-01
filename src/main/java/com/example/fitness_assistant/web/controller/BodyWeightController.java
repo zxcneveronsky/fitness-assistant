@@ -22,7 +22,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/profile/weight")
+@RequestMapping("/api/v1/body-weight")
 @RequiredArgsConstructor
 @Validated
 public class BodyWeightController {

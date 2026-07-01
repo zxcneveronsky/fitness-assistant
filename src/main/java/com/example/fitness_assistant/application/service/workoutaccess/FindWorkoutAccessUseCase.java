@@ -1,7 +1,9 @@
 package com.example.fitness_assistant.application.service.workoutaccess;
 
+import com.example.fitness_assistant.core.exception.WorkoutNotFoundException;
 import com.example.fitness_assistant.core.model.WorkoutAccess;
 import com.example.fitness_assistant.core.repository.WorkoutAccessRepository;
+import com.example.fitness_assistant.core.repository.WorkoutRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,8 +18,12 @@ import java.util.List;
 public class FindWorkoutAccessUseCase {
 
     private final WorkoutAccessRepository workoutAccessRepository;
+    private final WorkoutRepository workoutRepository;
 
     public List<WorkoutAccess> findByOwnerIdAndWorkoutId(Long userId, Long workoutId) {
+        if (!workoutRepository.existsById(workoutId, userId)) {
+            throw new WorkoutNotFoundException(workoutId);
+        }
         List<WorkoutAccess> accesses = workoutAccessRepository.findByWorkoutIdAndOwnerId(workoutId, userId);
         log.info("Поиск доступов к тренировке завершён | userId={} | workoutId={} | найдено={}", userId, workoutId, accesses.size());
         return accesses;

@@ -61,6 +61,11 @@ public class WorkoutAccessRepositoryAdapter implements WorkoutAccessRepository {
     }
 
     @Override
+    public boolean existsByIdAndOwnerId(Long id, Long ownerId) {
+        return jpaWorkoutAccessRepository.existsByIdAndOwnerId(id, ownerId);
+    }
+
+    @Override
     public void deleteById(Long id) {
         jpaWorkoutAccessRepository.deleteById(id);
     }

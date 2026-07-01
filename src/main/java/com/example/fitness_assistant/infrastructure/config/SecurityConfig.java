@@ -53,12 +53,14 @@ public class SecurityConfig {
                                 "/api/v1/exercise/search",
                                 "/api/v1/exercise/{id}",
                                 "/api/v1/muscle/search",
+                                "/api/v1/muscle/{id}",
                                 "/exercise-history.html",
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/v3/api-docs.yaml"
                         ).permitAll()
+                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

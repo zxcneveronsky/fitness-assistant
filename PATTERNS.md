@@ -11,7 +11,7 @@
 | Сборка | Maven | 3.9+ |
 | База данных | PostgreSQL | 16+ |
 | ORM | Hibernate / JPA | через Spring Data JPA |
-| Миграции | Flyway | V01–V19 |
+| Миграции | Flyway | V01–V18 |
 | Аутентификация | JWT (jjwt) | 0.12.6 |
 | Валидация | Jakarta Validation | — |
 | Мониторинг | Spring Actuator | — |
@@ -754,7 +754,7 @@ if (!isOwner && !hasAccess) {
 ### Flyway Миграции
 
 - `V{номер}__{описание}.sql`
-- Нумерация: V01, V02, ..., V19
+- Нумерация: V01, V02, ..., V18
 - Описание на английском (snake_case)
 - Все изменения только через миграции (не через JPA ddl-auto)
 

@@ -19,6 +19,8 @@ public interface JpaWorkoutAccessRepository extends JpaRepository<WorkoutAccessE
 
     Optional<WorkoutAccessEntity> findByIdAndOwnerId(Long id, Long ownerId);
 
+    boolean existsByIdAndOwnerId(Long id, Long ownerId);
+
     boolean existsByWorkoutIdAndOwnerIdAndSharedWithUserId(Long workoutId, Long ownerId, Long sharedWithUserId);
 
     boolean existsByWorkoutIdAndSharedWithUserIdAndAccessLevel(Long workoutId, Long userId, AccessLevel accessLevel);

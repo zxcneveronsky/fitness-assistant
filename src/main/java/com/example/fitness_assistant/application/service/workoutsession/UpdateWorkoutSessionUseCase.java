@@ -27,7 +27,7 @@ public class UpdateWorkoutSessionUseCase {
                     return workoutSessionRepository.save(existingSession);
                 })
                 .orElseThrow(() -> new WorkoutSessionNotFoundException(sessionId));
-        log.info("Сессия тренировки обновлена | id={}", updatedSession.getId());
+        log.info("Сессия тренировки обновлена | id={}", sessionId);
         return updatedSession;
     }
 }

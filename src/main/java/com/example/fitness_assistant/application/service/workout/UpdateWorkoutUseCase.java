@@ -36,7 +36,7 @@ public class UpdateWorkoutUseCase {
                     return workoutRepository.save(existingWorkout);
                 })
                 .orElseThrow(() -> new WorkoutNotFoundException(workoutId));
-        log.info("Тренировка обновлена | id={}", updatedWorkout.getId());
+        log.info("Тренировка обновлена | id={}", workoutId);
         return updatedWorkout;
     }
 }

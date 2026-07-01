@@ -17,6 +17,8 @@ public interface WorkoutAccessRepository {
 
     Optional<WorkoutAccess> findByIdAndOwnerId(Long id, Long ownerId);
 
+    boolean existsByIdAndOwnerId(Long id, Long ownerId);
+
     void deleteById(Long id);
 
     boolean existsByWorkoutIdAndOwnerIdAndSharedWithUserId(Long workoutId, Long ownerId, Long sharedWithUserId);

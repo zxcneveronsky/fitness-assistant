@@ -56,6 +56,7 @@ public class UserProfileController {
     }
 
     @PostMapping("/streak")
+    @ResponseStatus(HttpStatus.CREATED)
     public StreakResponse updateStreak(@AuthenticationPrincipal UserDetailsAdapter adapter) {
         return streakWebMapper.toResponse(updateStreakUseCase.updateStreak(adapter.getUserId()));
     }

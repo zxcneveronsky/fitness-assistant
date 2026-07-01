@@ -30,7 +30,7 @@ public class UpdateMealUseCase {
                     return mealRepository.save(existingMeal);
                 })
                 .orElseThrow(() -> new MealNotFoundException(mealId));
-        log.info("Приём пищи обновлён | id={}", updatedMeal.getId());
+        log.info("Приём пищи обновлён | id={}", mealId);
         return updatedMeal;
     }
 }
