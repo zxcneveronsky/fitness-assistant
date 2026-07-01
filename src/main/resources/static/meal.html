@@ -6,14 +6,16 @@
     <title>Питание — Fitness Assistant</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         .donut-wrap { position: relative; }
         .donut-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; pointer-events: none; }
+        .glass-nav { background: rgba(255, 255, 255, 0.8); backdrop-filter: saturate(180%) blur(20px); }
     </style>
 </head>
 <body class="font-['Inter'] bg-gray-50 min-h-screen">
-<nav class="bg-white border-b border-gray-100 h-16 px-4 md:px-10 flex items-center justify-between">
+<nav class="glass-nav fixed top-0 w-full z-50 h-16 flex items-center px-4 md:px-10 border-b border-gray-100/50">
     <a id="logoLink" href="/index.html" class="font-extrabold text-xl tracking-tighter">Fitness<span class="text-blue-600">Assistant</span></a>
     <div class="hidden md:flex gap-3 items-center text-sm">
         <a href="/dashboard.html" class="text-gray-600 hover:text-black">Главная</a>
@@ -22,8 +24,9 @@
         <a href="/workout.html" class="text-gray-600 hover:text-black">Тренировки</a>
         <a href="/history.html" class="text-gray-600 hover:text-black">История</a>
         <a href="/profile.html" class="text-gray-600 hover:text-black">Профиль</a>
+        <span id="adminNavLink" class="hidden"><a href="/admin.html" class="text-purple-600 hover:text-purple-800 font-semibold">Админка</a></span>
         <button onclick="logout()" class="text-red-500 hover:text-red-700 ml-4">Выйти</button>
-                <button onclick="deleteAccount()" class="text-gray-400 hover:text-red-600 ml-2 text-sm" title="Удалить аккаунт">🗑️</button>
+        <button onclick="deleteAccount()" class="text-gray-400 hover:text-red-600 ml-2 text-sm" title="Удалить аккаунт">🗑️</button>
     </div>
     <button onclick="document.getElementById('mobileMenu').classList.toggle('hidden')" class="md:hidden text-gray-600 text-2xl px-2">☰</button>
 </nav>
@@ -35,6 +38,7 @@
     <a href="/history.html" class="block text-gray-600 hover:text-black">История</a>
     <a href="/profile.html" class="block text-gray-600 hover:text-black">Профиль</a>
     <hr class="border-gray-100">
+    <span id="mobileAdminNavLink" class="hidden"><a href="/admin.html" class="block text-purple-600 font-semibold">Админка</a></span>
     <button onclick="logout()" class="block text-red-500 hover:text-red-700 w-full text-left">Выйти</button>
     <button onclick="deleteAccount()" class="block text-gray-400 hover:text-red-600 w-full text-left text-xs">Удалить аккаунт</button>
 </div>
@@ -42,7 +46,7 @@
         <span>⏳ <strong>Активная тренировка</strong> — <span id="bannerName"></span></span>
         <a id="bannerLink" href="" class="bg-yellow-200 text-yellow-800 px-4 py-1 rounded-lg font-semibold hover:bg-yellow-300">Продолжить</a>
     </div>
-<main class="max-w-6xl mx-auto px-4 py-8">
+<main class="max-w-6xl mx-auto px-4 pt-24 pb-8">
     <div class="flex items-center justify-between mb-6">
         <h1 class="text-3xl font-bold">🥗 Приёмы пищи</h1>
         <input type="date" id="mealDate" onchange="loadMeals()" class="px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-sm">
@@ -121,6 +125,10 @@
 <script>
     if (!isAuth()) window.location.href = '/login.html';
     if (isAuth()) document.getElementById('logoLink').href = '/dashboard.html';
+    if (isAdmin()) {
+        document.getElementById('adminNavLink').classList.remove('hidden');
+        document.getElementById('mobileAdminNavLink').classList.remove('hidden');
+    }
 
     let selectedFoods = [];
     let kcalChartObj = null;

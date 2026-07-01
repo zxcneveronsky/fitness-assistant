@@ -40,6 +40,7 @@ public class JwtService implements TokenProvider {
     public String generateToken(User user) {
         Map<String, Object> extraClaims = new HashMap<>();
         extraClaims.put("userId", user.getId());
+        extraClaims.put("role", user.getRole().name());
 
         return Jwts.builder()
                 .claims(extraClaims)
@@ -48,6 +49,10 @@ public class JwtService implements TokenProvider {
                 .expiration(new Date(System.currentTimeMillis() + expirationMs))
                 .signWith(getSignInKey())
                 .compact();
+    }
+
+    public String extractRole(String token) {
+        return extractClaim(token, claims -> claims.get("role", String.class));
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {

@@ -373,7 +373,7 @@
         const to = new Date().toISOString().split('T')[0];
         const from = subDays(currentWeightRange);
         try {
-            weightHistoryData = await request('/profile/weight?from=' + encodeURIComponent(from) + '&to=' + encodeURIComponent(to));
+            weightHistoryData = await request('/body-weight?from=' + encodeURIComponent(from) + '&to=' + encodeURIComponent(to));
             if (!weightHistoryData) weightHistoryData = [];
             renderWeightHistoryChart();
             renderWeightTable();
@@ -472,7 +472,7 @@
             btn.textContent = '⏳';
         }
         try {
-            await request('/profile/weight/' + id, { method: 'DELETE' });
+            await request('/body-weight/' + id, { method: 'DELETE' });
             await loadWeightHistory();
             await loadProfile();
         } catch (e) {
@@ -508,7 +508,7 @@
 
     async function loadWeightHistoryCustom(from, to, applyBtn) {
         try {
-            weightHistoryData = await request('/profile/weight?from=' + encodeURIComponent(from) + '&to=' + encodeURIComponent(to));
+            weightHistoryData = await request('/body-weight?from=' + encodeURIComponent(from) + '&to=' + encodeURIComponent(to));
             if (!weightHistoryData) weightHistoryData = [];
             renderWeightHistoryChart();
             renderWeightTable();
@@ -561,9 +561,9 @@
         btn.textContent = '⏳ Сохраняю...';
         try {
             if (editingWeightId) {
-                await request('/profile/weight', { method: 'PATCH', body: JSON.stringify({ id: editingWeightId, weight: val, measuredAt: date }) });
+                await request('/body-weight', { method: 'PATCH', body: JSON.stringify({ id: editingWeightId, weight: val, measuredAt: date }) });
             } else {
-                await request('/profile/weight', { method: 'POST', body: JSON.stringify({ weight: val, measuredAt: date }) });
+                await request('/body-weight', { method: 'POST', body: JSON.stringify({ weight: val, measuredAt: date }) });
             }
             btn.textContent = '✅ ' + (editingWeightId ? 'Обновлено' : 'Записано');
             btn.className = 'bg-green-100 text-green-700 font-bold py-4 w-full rounded-xl text-base transition';

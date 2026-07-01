@@ -5,10 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Детали сессии — Fitness Assistant</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .glass-nav { background: rgba(255, 255, 255, 0.8); backdrop-filter: saturate(180%) blur(20px); }
+    </style>
 </head>
 <body class="font-['Inter'] bg-gray-50 min-h-screen">
-<nav class="bg-white border-b border-gray-100 h-16 px-4 md:px-10 flex items-center justify-between">
+<nav class="glass-nav fixed top-0 w-full z-50 h-16 flex items-center px-4 md:px-10 border-b border-gray-100/50">
     <a id="logoLink" href="/index.html" class="font-extrabold text-xl tracking-tighter">Fitness<span class="text-blue-600">Assistant</span></a>
     <div class="hidden md:flex gap-3 items-center text-sm">
         <a href="/dashboard.html" class="text-gray-600 hover:text-black">Главная</a>
@@ -17,8 +21,9 @@
         <a href="/workout.html" class="text-gray-600 hover:text-black">Тренировки</a>
         <a href="/history.html" class="font-semibold text-blue-600">История</a>
         <a href="/profile.html" class="text-gray-600 hover:text-black">Профиль</a>
+        <span id="adminNavLink" class="hidden"><a href="/admin.html" class="text-purple-600 hover:text-purple-800 font-semibold">Админка</a></span>
         <button onclick="logout()" class="text-red-500 hover:text-red-700 ml-4">Выйти</button>
-                <button onclick="deleteAccount()" class="text-gray-400 hover:text-red-600 ml-2 text-sm" title="Удалить аккаунт">🗑️</button>
+        <button onclick="deleteAccount()" class="text-gray-400 hover:text-red-600 ml-2 text-sm" title="Удалить аккаунт">🗑️</button>
     </div>
     <button onclick="document.getElementById('mobileMenu').classList.toggle('hidden')" class="md:hidden text-gray-600 text-2xl px-2">☰</button>
 </nav>
@@ -30,6 +35,7 @@
     <a href="/history.html" class="block text-blue-600 font-semibold">История</a>
     <a href="/profile.html" class="block text-gray-600 hover:text-black">Профиль</a>
     <hr class="border-gray-100">
+    <span id="mobileAdminNavLink" class="hidden"><a href="/admin.html" class="block text-purple-600 font-semibold">Админка</a></span>
     <button onclick="logout()" class="block text-red-500 hover:text-red-700 w-full text-left">Выйти</button>
     <button onclick="deleteAccount()" class="block text-gray-400 hover:text-red-600 w-full text-left text-xs">Удалить аккаунт</button>
 </div>
@@ -37,7 +43,7 @@
     <span>⏳ <strong>Активная тренировка</strong> — <span id="bannerName"></span></span>
     <a id="bannerLink" href="" class="bg-yellow-200 text-yellow-800 px-4 py-1 rounded-lg font-semibold hover:bg-yellow-300">Продолжить</a>
 </div>
-<main class="max-w-4xl mx-auto px-4 py-8">
+<main class="max-w-4xl mx-auto px-4 pt-24 pb-8">
     <a href="/history.html" class="text-sm text-blue-600 hover:underline mb-4 inline-block">&larr; К истории</a>
     <h1 id="sessionTitle" class="text-3xl font-bold mb-2">Детали сессии</h1>
     <p id="sessionDate" class="text-gray-400 mb-6"></p>
@@ -47,6 +53,10 @@
 <script>
     if (!isAuth()) window.location.href = '/login.html';
     if (isAuth()) document.getElementById('logoLink').href = '/dashboard.html';
+    if (isAdmin()) {
+        document.getElementById('adminNavLink').classList.remove('hidden');
+        document.getElementById('mobileAdminNavLink').classList.remove('hidden');
+    }
 
     const params = new URLSearchParams(window.location.search);
     const sessionId = params.get('id');

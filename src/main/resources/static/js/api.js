@@ -35,6 +35,19 @@ function getUserId() {
     } catch (e) { console.error('getUserId error:', e); return null; }
 }
 
+function getUserRole() {
+    try {
+        const token = getToken();
+        if (!token) return null;
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload.role || null;
+    } catch (e) { console.error('getUserRole error:', e); return null; }
+}
+
+function isAdmin() {
+    return getUserRole() === 'ADMIN';
+}
+
 async function deleteAccount() {
     const userId = getUserId();
     if (!userId) return;

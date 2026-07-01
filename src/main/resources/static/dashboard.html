@@ -105,6 +105,7 @@
     </div>
     <div class="w-1/2 lg:w-1/4 flex justify-end items-center gap-5">
         <span id="nav-email" class="hidden sm:block text-xs font-bold text-gray-400 truncate max-w-[150px]"></span>
+            <span id="adminNavLink" class="hidden"><a href="/admin.html" class="text-purple-600 hover:text-purple-800 font-semibold text-sm">Админка</a></span>
             <button onclick="logout()" class="bg-gray-100 text-gray-700 text-sm font-bold px-4 py-2 rounded-xl hover:bg-gray-200">Выйти</button>
             <button onclick="deleteAccount()" class="text-gray-400 hover:text-red-600 ml-1 text-sm" title="Удалить аккаунт">🗑️</button>
         </div>
@@ -357,6 +358,7 @@
     let lastLoadTime = 0;
 
     window.addEventListener('pageshow', async () => {
+        if (isAdmin()) document.getElementById('adminNavLink').classList.remove('hidden');
         document.getElementById('nav-email').textContent = email || '';
         startMotivation();
         initCharts();
@@ -589,7 +591,7 @@
         try {
             const to = new Date().toISOString().split('T')[0];
             const from = subDays(30);
-            weightHistory = await request('/profile/weight?from=' + encodeURIComponent(from) + '&to=' + encodeURIComponent(to));
+            weightHistory = await request('/body-weight?from=' + encodeURIComponent(from) + '&to=' + encodeURIComponent(to));
             if (weightHistory && weightHistory.length > 0) {
                 renderWeightChart(weightHistory);
                 const sortedDesc = [...weightHistory].sort(function(a, b) {
@@ -682,7 +684,7 @@
         const val = parseFloat(document.getElementById('addWeightInput').value);
         if (!val || val < 5 || val > 500) { alert('Введите вес от 5 до 500 кг'); return; }
         try {
-            await request('/profile/weight', { method: 'POST', body: JSON.stringify({ weight: val, measuredAt: new Date().toISOString().split('T')[0] }) });
+            await request('/body-weight', { method: 'POST', body: JSON.stringify({ weight: val, measuredAt: new Date().toISOString().split('T')[0] }) });
             closeAddWeightModal();
             document.getElementById('addWeightInput').value = '';
             await loadWeightData();

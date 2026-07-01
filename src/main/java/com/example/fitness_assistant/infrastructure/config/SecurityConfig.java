@@ -35,6 +35,7 @@ public class SecurityConfig {
                                 "/login.html",
                                 "/register.html",
                                 "/dashboard.html",
+                                "/admin.html",
                                 "/meal.html",
                                 "/hydration.html",
                                 "/workout.html",
