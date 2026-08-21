@@ -59,6 +59,14 @@ web (presentation) → application (use cases) → core (domain)
 | Исключение | `{Entity}NotFoundException` | `ExerciseNotFoundException` |
 | | `{Entity}AlreadyExistsException` | `WorkoutAccessAlreadyExistsException` |
 
+#### Семантика глаголов чтения (юзкейсы)
+
+| Глагол | Семантика | Примеры |
+|---|---|---|
+| `Find` | найти сущности из БД (прямые данные) | `FindExerciseUseCase`, `FindWorkoutUseCase` |
+| `Get` | получить производные данные (агрегаты, проекции id, композиты) | `GetDailyHydrationUseCase`, `GetFavoriteExerciseIdsUseCase`, `GetSessionDetailUseCase` |
+| `Calculate` | рассчитать на основе входных параметров | `CalculateFoodUseCase` |
+
 #### Переменные в юзкейсах
 
 | Контекст | Шаблон | Пример |
