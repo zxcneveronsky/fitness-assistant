@@ -2,7 +2,6 @@ package com.example.fitness_assistant.application.service.workoutsession;
 
 import com.example.fitness_assistant.core.exception.AccessDeniedException;
 import com.example.fitness_assistant.core.exception.UserNotFoundException;
-import com.example.fitness_assistant.core.exception.WorkoutNotFoundException;
 import com.example.fitness_assistant.core.model.WorkoutSession;
 import com.example.fitness_assistant.core.repository.UserRepository;
 import com.example.fitness_assistant.core.repository.WorkoutAccessRepository;

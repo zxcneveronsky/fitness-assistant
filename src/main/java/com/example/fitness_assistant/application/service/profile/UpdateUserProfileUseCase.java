@@ -1,10 +1,8 @@
 package com.example.fitness_assistant.application.service.profile;
 
 import com.example.fitness_assistant.application.service.targets.TargetCalculationService;
-import com.example.fitness_assistant.core.exception.TargetsNotFoundException;
 import com.example.fitness_assistant.core.exception.UserProfileNotFoundException;
 import com.example.fitness_assistant.core.model.BodyWeight;
-import com.example.fitness_assistant.core.model.Targets;
 import com.example.fitness_assistant.core.model.UserProfile;
 import java.time.LocalDate;
 import com.example.fitness_assistant.core.repository.BodyWeightRepository;

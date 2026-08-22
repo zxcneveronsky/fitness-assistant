@@ -33,9 +33,6 @@ public class JwtService implements TokenProvider {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
-    public Long extractUserId(String token) {
-        return extractClaim(token, claims -> claims.get("userId", Long.class));
-    }
 
     public String generateToken(User user) {
         Map<String, Object> extraClaims = new HashMap<>();
@@ -49,10 +46,6 @@ public class JwtService implements TokenProvider {
                 .expiration(new Date(System.currentTimeMillis() + expirationMs))
                 .signWith(getSignInKey())
                 .compact();
-    }
-
-    public String extractRole(String token) {
-        return extractClaim(token, claims -> claims.get("role", String.class));
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
