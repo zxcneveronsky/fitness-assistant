@@ -10,7 +10,7 @@ public record UpdateSetRequest(
         @PositiveOrZero(message = "Вес не может быть отрицательным")
         @Max(value = 10000, message = "Вес не может быть больше 10000 кг")
         Double weight,
-        @Positive(message = "Повторения не могут быть отрицательными")
+        @Positive(message = "Повторения должны быть положительными")
         @Max(value = 500, message = "Повторения не могут быть больше 500")
         Integer reps
 ) {

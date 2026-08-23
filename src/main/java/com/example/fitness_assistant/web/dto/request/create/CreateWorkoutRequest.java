@@ -7,11 +7,10 @@ import jakarta.validation.constraints.Size;
 import java.util.List;
 
 public record CreateWorkoutRequest(
-        @NotNull(message = "Название тренировки не может быть пустым")
         @NotBlank(message = "Название тренировки не может быть пустым")
-        @Size(max = 255, message = "Название слишком длинное")
+        @Size(max = 255, message = "Название тренировки слишком длинное")
         String name,
         @NotEmpty(message = "Список упражнений не может быть пустым")
-        List<@NotNull(message = "ID упражнения не может быть пустой ссылкой") Long> exerciseIds
+        List<@NotNull(message = "ID упражнения не может быть пустым") Long> exerciseIds
 ) {
 }

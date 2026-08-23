@@ -9,10 +9,10 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 
 public record UpdateUserProfileRequest(
-        @Size(max = 255, message = "Имя не должно превышать 255 символов")
+        @Size(max = 255, message = "Имя слишком длинное")
         String name,
 
-        @Past(message = "Дата рождения должна быть в прошлом")
+        @Past(message = "Дата рождения не может быть в будущем")
         LocalDate birthDate,
 
         @Min(value = 5, message = "Вес должен быть не менее 5 кг")

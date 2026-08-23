@@ -11,7 +11,7 @@ public record UpdateUserRequest(
         @Email(message = "Некорректный email")
         @Size(max = 255, message = "Email слишком длинный")
         String email,
-        @Size(min = 6, max = 255, message = "Пароль минимум 6 символов")
+        @Size(min = 6, max = 255, message = "Пароль должен содержать от 6 до 255 символов")
         String password,
         User.Role role
 ) {}

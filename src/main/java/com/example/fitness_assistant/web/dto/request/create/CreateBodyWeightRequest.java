@@ -13,6 +13,7 @@ public record CreateBodyWeightRequest(
         @Max(value = 500, message = "Вес должен быть не более 500 кг")
         Double weight,
 
-        @PastOrPresent(message = "Дата не может быть в будущем")
+        @NotNull(message = "Дата взвешивания должна быть указана")
+        @PastOrPresent(message = "Дата взвешивания не может быть в будущем")
         LocalDate measuredAt
 ) {}

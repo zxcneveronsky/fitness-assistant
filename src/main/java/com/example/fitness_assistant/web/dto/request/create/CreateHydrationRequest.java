@@ -4,9 +4,8 @@ import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
 
 public record CreateHydrationRequest(
-        @NotNull(message = "Название напитка не может быть пустым")
         @NotBlank(message = "Название напитка не может быть пустым")
-        @Size(max = 255, message = "Название слишком длинное")
+        @Size(max = 255, message = "Название напитка слишком длинное")
         String name,
 
         @NotNull(message = "Количество не может быть пустым")

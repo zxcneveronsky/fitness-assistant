@@ -9,9 +9,10 @@ public record CreateMealAutoRequest(
         Long id,
         @NotNull(message = "Вес не может быть пустым")
         @Positive(message = "Вес должен быть положительным")
+        @Max(value = 5000, message = "Вес не может быть больше 5000 г")
         Double weight,
-        @NotNull(message = "Дата приема пищи должна быть указана")
-        @PastOrPresent(message = "Дата приема пищи не может быть в будущем")
+        @NotNull(message = "Дата приема должна быть указана")
+        @PastOrPresent(message = "Дата приема не может быть в будущем")
         LocalDateTime consumedAt
 ) {
 }

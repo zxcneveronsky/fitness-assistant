@@ -12,5 +12,5 @@ public record UpdateExerciseRequest(
         String name,
         @Size(max = 1000, message = "Описание слишком длинное")
         String description,
-        List<@NotNull Long> muscleIds
+        List<@NotNull(message = "ID мышцы не может быть пустым") Long> muscleIds
 ) {}

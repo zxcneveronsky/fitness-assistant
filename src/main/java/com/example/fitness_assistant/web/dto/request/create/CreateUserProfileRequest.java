@@ -11,13 +11,12 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 
 public record CreateUserProfileRequest(
-        @NotNull(message = "Имя не может быть пустым")
         @NotBlank(message = "Имя не может быть пустым")
-        @Size(max = 255, message = "Имя не должно превышать 255 символов")
+        @Size(max = 255, message = "Имя слишком длинное")
         String name,
 
-        @NotNull(message = "Дата рождения не может быть пустой")
-        @Past(message = "Дата рождения должна быть в прошлом")
+        @NotNull(message = "Дата рождения должна быть указана")
+        @Past(message = "Дата рождения не может быть в будущем")
         LocalDate birthDate,
 
         @NotNull(message = "Вес не может быть пустым")

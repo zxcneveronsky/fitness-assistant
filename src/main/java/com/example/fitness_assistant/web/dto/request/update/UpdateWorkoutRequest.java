@@ -8,8 +8,8 @@ public record UpdateWorkoutRequest(
         @NotNull(message = "ID тренировки не может быть пустым")
         Long id,
 
-        @Size(max = 255, message = "Название слишком длинное")
+        @Size(max = 255, message = "Название тренировки слишком длинное")
         String name,
 
-        List<@NotNull(message = "ID упражнения не может быть пустой ссылкой") Long> exerciseIds
+        List<@NotNull(message = "ID упражнения не может быть пустым") Long> exerciseIds
 ) { }
