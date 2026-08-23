@@ -46,7 +46,7 @@ public class ExerciseController {
     }
 
     @GetMapping("/search")
-    public Page<ExerciseResponse> searchExercises(
+    public Page<ExerciseResponse> searchExercise(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Long muscleId,
             @PageableDefault(size = 12) Pageable pageable) {

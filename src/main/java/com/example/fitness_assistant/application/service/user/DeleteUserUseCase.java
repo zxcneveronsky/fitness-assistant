@@ -1,5 +1,6 @@
 package com.example.fitness_assistant.application.service.user;
 
+import com.example.fitness_assistant.core.exception.AccessDeniedException;
 import com.example.fitness_assistant.core.exception.UserNotFoundException;
 import com.example.fitness_assistant.core.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class DeleteUserUseCase {
 
     private final UserRepository userRepository;
+
     @Transactional
     public void deleteUser(Long userId) {
         if (!userRepository.existsById(userId)) {
@@ -20,5 +22,13 @@ public class DeleteUserUseCase {
         }
         userRepository.deleteById(userId);
         log.info("Пользователь удалён | id={}", userId);
+    }
+
+    @Transactional
+    public void deleteUser(Long currentUserId, Long userId) {
+        if (!currentUserId.equals(userId)) {
+            throw new AccessDeniedException();
+        }
+        deleteUser(userId);
     }
 }

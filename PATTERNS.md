@@ -240,6 +240,11 @@ public class ExerciseController {
 - Дополнительные юзкейсы (не CRUD) добавляются по необходимости
 - `@Validated` на классе обязателен
 
+#### Нейминг методов контроллера
+
+- Шаблон: `{verb}{Entity}` — сущность в **единственном числе**: `searchFood`, `getBodyWeightById`, `createBodyWeight`
+- Исключения (осознанные): `addFavorite...` / `removeFavorite...` (семантика избранного), `updateStreak`, `getDailyMeal`, `copyWorkout` в `WorkoutAccessController`
+
 #### HTTP-методы
 
 | Операция | Аннотация | Статус |
@@ -546,6 +551,9 @@ public class ExerciseNotFoundException extends RuntimeException {
 | 1. DTO-level | `web/dto/request/` | Jakarta Validation аннотации |
 | 2. Controller-level | Контроллер | `@Validated` + `@Valid @RequestBody` |
 | 3. Use Case level | Юзкейсы | Ручные проверки (exists, unique, ownership) |
+
+- Шаблоны сообщений валидации применяются и к **параметрам методов контроллеров** (`@RequestParam`, `@PathVariable`) — для их работы нужен `@Validated` на классе контроллера. Пример: `@RequestParam @Positive(message = "Вес должен быть положительным") @Max(value = 5000) Double weight`
+- **Проверки владения / access — только в use case**, не в контроллере. Контроллер передаёт `currentUserId` первым аргументом (α pattern), юзкейс сравнивает и бросает `AccessDeniedException`. Исключение — админские эндпоинты: доступ ограничен на уровне SecurityConfig (`hasRole("ADMIN")`), проверка владения там не нужна
 
 ---
 

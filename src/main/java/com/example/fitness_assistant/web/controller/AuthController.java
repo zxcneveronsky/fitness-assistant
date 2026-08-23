@@ -4,7 +4,6 @@ import com.example.fitness_assistant.application.service.user.DeleteUserUseCase;
 import com.example.fitness_assistant.application.service.user.LoginResult;
 import com.example.fitness_assistant.application.service.user.LoginUserUseCase;
 import com.example.fitness_assistant.application.service.user.RegisterUserUseCase;
-import com.example.fitness_assistant.core.exception.AccessDeniedException;
 import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import com.example.fitness_assistant.web.dto.response.AuthResponse;
 import com.example.fitness_assistant.web.dto.request.create.LoginRequest;
@@ -44,9 +43,6 @@ public class AuthController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUser(@AuthenticationPrincipal UserDetailsAdapter adapter,
                            @PathVariable("id") Long userId) {
-        if (!adapter.getUserId().equals(userId)) {
-            throw new AccessDeniedException();
-        }
-        deleteUserUseCase.deleteUser(userId);
+        deleteUserUseCase.deleteUser(adapter.getUserId(), userId);
     }
 }

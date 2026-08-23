@@ -4,6 +4,7 @@ import com.example.fitness_assistant.application.service.food.CalculateFoodUseCa
 import com.example.fitness_assistant.application.service.food.FindFoodUseCase;
 import com.example.fitness_assistant.web.dto.response.FoodResponse;
 import com.example.fitness_assistant.web.mapper.FoodWebMapper;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -36,7 +37,10 @@ public class FoodController {
     }
 
     @GetMapping("/{id}/calculate")
-    public FoodResponse calculateNutrition(@PathVariable("id") Long foodId, @RequestParam @Positive Double weight){
+    public FoodResponse calculateNutrition(
+            @PathVariable("id") Long foodId,
+            @RequestParam @Positive(message = "Вес должен быть положительным")
+            @Max(value = 5000, message = "Вес не может быть больше 5000 г") Double weight) {
         return foodWebMapper.toResponse(calculateFoodUseCase.calculateFood(foodId, weight));
     }
 
