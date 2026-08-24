@@ -27,7 +27,7 @@ public class FindSetUseCase {
         if (!workoutSessionRepository.existsById(sessionId, userId)) {
             throw new WorkoutSessionNotFoundException(sessionId);
         }
-        if (!exerciseRepository.existsById(exerciseId)){
+        if (!exerciseRepository.existsById(exerciseId)) {
             throw new ExerciseNotFoundException(exerciseId);
         }
         Page<Set> sets = setRepository.findBySessionIdAndExerciseId(sessionId, exerciseId, pageable);
@@ -49,6 +49,4 @@ public class FindSetUseCase {
         log.info("Подход найден | userId={} | sessionId={} | id={}", userId, sessionId, setId);
         return set;
     }
-
-
 }

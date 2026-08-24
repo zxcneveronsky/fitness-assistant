@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class DeleteExerciseUseCase {
 
     private final ExerciseRepository exerciseRepository;
+
     @Transactional
     public void deleteExercise(Long exerciseId) {
         if (!exerciseRepository.existsById(exerciseId)) {

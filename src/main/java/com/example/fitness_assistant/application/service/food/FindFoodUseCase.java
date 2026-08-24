@@ -27,9 +27,10 @@ public class FindFoodUseCase {
                 foods.getTotalPages());
         return foods;
     }
+
     @Transactional(readOnly = true)
     public Food findById(Long foodId) {
-        Food food = foodRepository.findById(foodId).orElseThrow(()->new FoodNotFoundException(foodId));
+        Food food = foodRepository.findById(foodId).orElseThrow(() -> new FoodNotFoundException(foodId));
         log.info("Продукт найден | id={}", foodId);
         return food;
     }

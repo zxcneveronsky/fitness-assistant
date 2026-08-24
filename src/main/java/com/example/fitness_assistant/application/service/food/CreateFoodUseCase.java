@@ -16,8 +16,16 @@ public class CreateFoodUseCase {
 
     @Transactional
     public Food createFood(Food food) {
-        food.setId(null);
-        Food savedFood = foodRepository.save(food);
+        Food newFood = new Food(
+                null,
+                food.getName(),
+                food.getBrands(),
+                food.getKcal(),
+                food.getProteins(),
+                food.getFats(),
+                food.getCarbs()
+        );
+        Food savedFood = foodRepository.save(newFood);
         log.info("Продукт создан | id={} | название='{}'",
                 savedFood.getId(), savedFood.getName());
         return savedFood;

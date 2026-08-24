@@ -14,8 +14,9 @@ import java.time.LocalDateTime;
 @Slf4j
 public class GetDailyNutritionUseCase {
     private final MealRepository mealRepository;
+
     @Transactional(readOnly = true)
-    public DailyNutrition getDailyNutrition(Long userId, LocalDateTime consumedAt){
+    public DailyNutrition getDailyNutrition(Long userId, LocalDateTime consumedAt) {
         DailyNutrition dailyNutrition = mealRepository.getDailyNutrition(userId, consumedAt);
         log.info("Дневная норма питания получена | userId={} | consumedAt={}", userId, consumedAt);
         return dailyNutrition;

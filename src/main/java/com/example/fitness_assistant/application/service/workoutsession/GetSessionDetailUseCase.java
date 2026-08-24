@@ -16,8 +16,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.groupingBy;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -34,7 +32,7 @@ public class GetSessionDetailUseCase {
         List<SetDetail> sets = setRepository.findAllSetDetailBySessionId(sessionId);
 
         List<ExerciseDetail> exercises = sets.stream()
-                .collect(groupingBy(
+                .collect(Collectors.groupingBy(
                         set -> new ExerciseDetailKey(set.getExerciseId(), set.getName()),
                         LinkedHashMap::new,
                         Collectors.toList()

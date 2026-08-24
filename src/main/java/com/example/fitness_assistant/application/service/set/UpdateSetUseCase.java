@@ -30,9 +30,8 @@ public class UpdateSetUseCase {
             existingSet.setReps(setUpdate.getReps() != null ? setUpdate.getReps() : existingSet.getReps());
             existingSet.setWeight(setUpdate.getWeight() != null ? setUpdate.getWeight() : existingSet.getWeight());
             return setRepository.save(existingSet);
-        }).orElseThrow(()->new SetNotFoundException(setId));
-        log.info("Подход обновлен | id={}", setId);
+        }).orElseThrow(() -> new SetNotFoundException(setId));
+        log.info("Подход обновлён | id={}", setId);
         return updatedSet;
     }
-
 }

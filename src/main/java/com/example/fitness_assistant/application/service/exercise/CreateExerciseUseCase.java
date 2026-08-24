@@ -22,19 +22,22 @@ public class CreateExerciseUseCase {
 
     @Transactional
     public Exercise createExercise(Exercise exercise) {
-        exercise.setId(null);
-        List<Long> muscleIds = exercise.getMuscles().stream().map(Muscle::getId).toList();
+        List<Long> muscleIds = exercise.getMuscles().stream().map(Muscle::getId).distinct().toList();
         List<Muscle> muscles = muscleRepository.findAllById(muscleIds);
         if (muscles.size() != muscleIds.size()) {
             List<Long> foundMuscleIds = muscles.stream().map(Muscle::getId).toList();
             Long missingMuscleId = muscleIds.stream().filter(id -> !foundMuscleIds.contains(id)).findFirst().orElse(muscleIds.getFirst());
             throw new MuscleNotFoundException(missingMuscleId);
         }
-        exercise.setMuscles(muscles);
-        Exercise savedExercise = exerciseRepository.save(exercise);
+        Exercise newExercise = new Exercise(
+                null,
+                exercise.getName(),
+                exercise.getDescription(),
+                muscles
+        );
+        Exercise savedExercise = exerciseRepository.save(newExercise);
         log.info("Упражнение создано | id={} | название='{}'",
                 savedExercise.getId(), savedExercise.getName());
         return savedExercise;
     }
-
 }

@@ -29,7 +29,7 @@ public class UpdateFoodUseCase {
                     return foodRepository.save(existingFood);
                 })
                 .orElseThrow(() -> new FoodNotFoundException(foodId));
-        log.info("Продукт обновлен | id={}", foodId);
+        log.info("Продукт обновлён | id={}", foodId);
         return updatedFood;
     }
 }

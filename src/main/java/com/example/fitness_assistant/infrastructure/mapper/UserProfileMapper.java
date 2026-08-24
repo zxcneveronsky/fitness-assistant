@@ -2,7 +2,6 @@ package com.example.fitness_assistant.infrastructure.mapper;
 
 import com.example.fitness_assistant.core.model.UserProfile;
 import com.example.fitness_assistant.infrastructure.persistence.entity.UserProfileEntity;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component

@@ -20,6 +20,6 @@ public class DeleteFoodUseCase {
             throw new FoodNotFoundException(foodId);
         }
         foodRepository.deleteById(foodId);
-        log.info("Продукт удален | id={}", foodId);
+        log.info("Продукт удалён | id={}", foodId);
     }
 }

@@ -29,7 +29,7 @@ public class UpdateExerciseUseCase {
                     existingExercise.setName(exerciseUpdate.getName() != null ? exerciseUpdate.getName() : existingExercise.getName());
                     existingExercise.setDescription(exerciseUpdate.getDescription() != null ? exerciseUpdate.getDescription() : existingExercise.getDescription());
                     if (exerciseUpdate.getMuscles() != null && !exerciseUpdate.getMuscles().isEmpty()) {
-                        List<Long> muscleIds = exerciseUpdate.getMuscles().stream().map(Muscle::getId).toList();
+                        List<Long> muscleIds = exerciseUpdate.getMuscles().stream().map(Muscle::getId).distinct().toList();
                         List<Muscle> muscles = muscleRepository.findAllById(muscleIds);
                         if (muscles.size() != muscleIds.size()) {
                             List<Long> foundMuscleIds = muscles.stream().map(Muscle::getId).toList();

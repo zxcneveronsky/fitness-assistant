@@ -1,7 +1,7 @@
 package com.example.fitness_assistant.infrastructure.persistence.jpa;
 
-import com.example.fitness_assistant.core.model.WorkoutAccess.AccessLevel;
 import com.example.fitness_assistant.infrastructure.persistence.entity.WorkoutAccessEntity;
+import com.example.fitness_assistant.infrastructure.persistence.entity.WorkoutAccessEntity.AccessLevel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -23,7 +23,7 @@ public interface JpaWorkoutAccessRepository extends JpaRepository<WorkoutAccessE
 
     boolean existsByWorkoutIdAndOwnerIdAndSharedWithUserId(Long workoutId, Long ownerId, Long sharedWithUserId);
 
-    boolean existsByWorkoutIdAndSharedWithUserIdAndAccessLevel(Long workoutId, Long userId, AccessLevel accessLevel);
+    boolean existsByWorkoutIdAndSharedWithUserIdAndAccessLevel(Long workoutId, Long userId, WorkoutAccessEntity.AccessLevel accessLevel);
 
     boolean existsByWorkoutIdAndSharedWithUserId(Long workoutId, Long userId);
 }

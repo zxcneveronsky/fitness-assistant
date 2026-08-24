@@ -75,7 +75,7 @@ public class FavoriteController {
     @GetMapping("/exercise/ids")
     public List<Long> getFavoriteExerciseIds(
             @AuthenticationPrincipal UserDetailsAdapter adapter) {
-        return getFavoriteExerciseIdsUseCase.getIds(adapter.getUserId());
+        return getFavoriteExerciseIdsUseCase.getFavoriteExerciseIds(adapter.getUserId());
     }
 
     @GetMapping("/exercise/search")
@@ -109,7 +109,7 @@ public class FavoriteController {
     @GetMapping("/food/ids")
     public List<Long> getFavoriteFoodIds(
             @AuthenticationPrincipal UserDetailsAdapter adapter) {
-        return getFavoriteFoodIdsUseCase.getIds(adapter.getUserId());
+        return getFavoriteFoodIdsUseCase.getFavoriteFoodIds(adapter.getUserId());
     }
 
     @GetMapping("/food/search")

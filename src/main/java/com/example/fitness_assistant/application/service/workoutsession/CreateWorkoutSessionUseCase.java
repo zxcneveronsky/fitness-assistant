@@ -36,11 +36,11 @@ public class CreateWorkoutSessionUseCase {
         }
         WorkoutSession savedSession = workoutSessionRepository.save(
                 new WorkoutSession(
-                    null,
-                    workoutId,
-                    userId,
-                    startTime,
-                    null
+                        null,
+                        workoutId,
+                        userId,
+                        startTime,
+                        null
                 )
         );
         log.info("Сессия тренировки создана | id={} | userId={} | workoutId={}", savedSession.getId(), userId, workoutId);

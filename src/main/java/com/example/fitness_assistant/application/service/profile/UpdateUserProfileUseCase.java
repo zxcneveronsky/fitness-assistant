@@ -4,7 +4,6 @@ import com.example.fitness_assistant.application.service.targets.TargetCalculati
 import com.example.fitness_assistant.core.exception.UserProfileNotFoundException;
 import com.example.fitness_assistant.core.model.BodyWeight;
 import com.example.fitness_assistant.core.model.UserProfile;
-import java.time.LocalDate;
 import com.example.fitness_assistant.core.repository.BodyWeightRepository;
 import com.example.fitness_assistant.core.repository.TargetsRepository;
 import com.example.fitness_assistant.core.repository.UserProfileRepository;
@@ -12,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor

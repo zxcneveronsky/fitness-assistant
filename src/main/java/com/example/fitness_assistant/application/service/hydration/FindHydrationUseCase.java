@@ -28,8 +28,8 @@ public class FindHydrationUseCase {
     }
 
     @Transactional(readOnly = true)
-    public Hydration findById(Long userId, Long hydrationId){
-        Hydration hydration = hydrationRepository.findById(hydrationId,userId).orElseThrow(()->new HydrationNotFoundException(hydrationId));
+    public Hydration findById(Long userId, Long hydrationId) {
+        Hydration hydration = hydrationRepository.findById(hydrationId, userId).orElseThrow(() -> new HydrationNotFoundException(hydrationId));
         log.info("Запись гидратации найдена | id={}", hydrationId);
         return hydration;
     }

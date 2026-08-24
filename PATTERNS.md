@@ -304,6 +304,19 @@ public class CreateExerciseUseCase {
 
 #### Возвращаемые типы
 
+- Доменная сущность / `Optional<Доменная сущность>` (для `findLatest` и т.п.)
+- `Page<Доменная сущность>` — для поиска
+- **Application-level result records** — составные результаты юзкейса, которые не домен и не web-DTO: `LoginResult`, `SessionDetail` и т.п. Живут рядом с юзкейсом или в `core/model` в подпакете юзкейса. Используются, когда ответ объединяет несколько сущностей/значений.
+
+#### Несколько публичных методов в одном юзкейсе
+
+Норма, если методы обслуживают одну сущность:
+- `FindMuscleUseCase`: `searchMuscle(...)` + `findById(...)`
+- `CreateMealUseCase`: `createMealManual(...)` + `createMealAuto(...)`
+- `UpdateTargetsUseCase`: `updateTargets(...)` + `updateAutopilotStatus(...)`
+
+Разносить по классам не нужно.
+
 | Тип метода | Возврат |
 |---|---|
 | Create | Domain entity |
@@ -394,18 +407,33 @@ Page<Set> findByExerciseIdAndUserIdAndStartTimeBetween(Long exerciseId, Long use
 
 ```java
 @Transactional
-public BodyWeight createBodyWeight(Long userId, BodyWeight bodyWeight) {
-    BodyWeight savedBodyWeight = bodyWeightRepository.save(bodyWeight);
-    log.info("Запись веса создана | id={} | weight={}", savedBodyWeight.getId(), savedBodyWeight.getWeight());
-    return savedBodyWeight;
+public Meal createMealManual(Long userId, Meal meal) {
+    if (!userRepository.existsById(userId)) {
+        throw new UserNotFoundException(userId);
+    }
+    Meal newMeal = new Meal(
+            null,
+            userId,
+            meal.getName(),
+            meal.getBrands(),
+            meal.getKcal(),
+            meal.getProteins(),
+            meal.getFats(),
+            meal.getCarbs(),
+            meal.getConsumedAt()
+    );
+    Meal savedMeal = mealRepository.save(newMeal);
+    log.info("Приём пищи создан | id={} | название='{}'", savedMeal.getId(), savedMeal.getName());
+    return savedMeal;
 }
 ```
 
-1. При необходимости `domain.setId(null)` — защита от переданного id
+1. Проверка родительской сущности: `userRepository.existsById(userId)` → `UserNotFoundException` (для user-scoped сущностей)
 2. Бизнес-проверки (unique, exists)
-3. `repository.save(domain)` → `saved{Entity}`
-4. `log.info(...)` — на русском, pipe-разделители
-5. return `saved{Entity}`
+3. **Инлайн-new**: `new {Entity}(null, userId, ...)` — новая доменная сущность собирается конструктором (не мутацией переданного объекта); `null` на месте id — защита от переданного id
+4. `repository.save(domain)` → `saved{Entity}`
+5. `log.info(...)` — на русском, pipe-разделители
+6. return `saved{Entity}`
 
 #### Паттерн Update
 
@@ -510,9 +538,16 @@ public class ExerciseNotFoundException extends RuntimeException {
 
 - Наследуют `RuntimeException`
 - Конструктор принимает `Long id` (или `String email` для User)
+- **userId / profileId / targetsId не фигурируют в исключениях вообще**: конструктор без аргументов (`new UserProfileNotFoundException()` → `"Профиль пользователя не найден."`, `new TargetsNotFoundException()` → `"Цели пользователя не найдены."`) — profileId/targetsId равны userId 1-к-1 (@MapsId), идентификаторы пользователей не раскрываем в ответах API и не передаём в эти исключения
+- **Исключение**: `String email` — можно показывать в сообщении (пользователь сам вводит его на login/register)
+- **Исключение**: `InvalidPasswordException` — конструктор без аргументов (auth)
 - Сообщение на русском: `"Сущность с id " + id + " не найдена."`
 - Один файл = одно исключение = одна сущность
 - Пакет: `core/exception/`
+
+**Выбор исключения при отказе доступа к тренировке:**
+- Просмотр без доступа → `{Entity}NotFoundException` (не раскрываем существование чужого ресурса)
+- Мутация / старт сессии / копирование без доступа → `AccessDeniedException`
 
 ---
 
@@ -768,7 +803,7 @@ public record UserDetailsAdapter(User user) implements UserDetails {
 boolean isOwner = workoutRepository.existsById(workoutId, userId);
 boolean hasAccess = workoutAccessRepository.existsBySharedWithUserIdAndWorkoutId(userId, workoutId);
 if (!isOwner && !hasAccess) {
-    throw new WorkoutNotFoundException(workoutId);  // или AccessDeniedException
+    throw new WorkoutNotFoundException(workoutId);  // просмотр; для мутаций — AccessDeniedException
 }
 ```
 
@@ -989,3 +1024,49 @@ Optional<HydrationEntity> findByIdAndUserId(Long id, Long userId);
 - **Class-level** — только если **все** методы read-only (исключение: `FindWorkoutAccessUseCase`).
 
 Правило: предпочтение method-level, class-level только для read-only классов без write-методов.
+
+---
+
+### 12. Каскадные сайд-эффекты профиля
+
+`CreateUserProfileUseCase` и `UpdateUserProfileUseCase` делают больше, чем CRUD профиля:
+
+1. **Targets**: если у targets включён autopilot (`useAutopilot=true`) — пересчитываются через `TargetCalculationService.applyAutoTargets(...)`
+2. **BodyWeight**: если в профиле передан вес — создаётся запись веса (`new BodyWeight(null, userId, weight, LocalDate.now())`) за сегодня
+
+Это осознанное поведение: профиль — источник истины для расчётов.
+
+---
+
+### 13. Семантика profileId == userId для @MapsId
+
+Сущности с `@MapsId` (UserProfile, Targets) используют id пользователя как собственный PK:
+
+```java
+new Targets(userId, null, null, null, null, null, true);  // profileId == userId, отдельная генерация id не нужна
+```
+
+Поэтому поиск/удаление всегда по `userId`: `targetsRepository.findById(userId)`, а исключения бросаются без аргументов (`new TargetsNotFoundException()`) — userId/profileId/targetsId не фигурируют в исключениях (см. правило выше).
+
+---
+
+### 14. Fallback-имя чужой тренировки
+
+В `FindExerciseHistoryUseCase` история подходов показывается полностью, но имя **чужой** тренировки (без доступа) заменяется на `"Тренировка"`:
+
+```java
+workoutNameMap.getOrDefault(session.getWorkoutId(), "Тренировка");
+```
+
+Осознанное поведение: не раскрываем содержимое чужого ресурса, но сохраняем полезность истории.
+
+---
+
+### 15. deleteUser — перегрузка admin/self
+
+Две перегрузки в одном юзкейсе — норма:
+
+- `deleteUser(Long id)` — удаление любого пользователя (AdminController)
+- `deleteUser(Long currentUserId, Long id)` — самоудаление с проверкой (AuthController)
+
+Разносить на `deleteUserSelf` / `deleteUserAny` не нужно.

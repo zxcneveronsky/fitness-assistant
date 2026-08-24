@@ -77,7 +77,8 @@ public class WorkoutAccessRepositoryAdapter implements WorkoutAccessRepository {
 
     @Override
     public boolean existsByWorkoutIdAndSharedWithUserIdAndAccessLevel(Long workoutId, Long userId, AccessLevel accessLevel) {
-        return jpaWorkoutAccessRepository.existsByWorkoutIdAndSharedWithUserIdAndAccessLevel(workoutId, userId, accessLevel);
+        return jpaWorkoutAccessRepository.existsByWorkoutIdAndSharedWithUserIdAndAccessLevel(
+                workoutId, userId, WorkoutAccessEntity.AccessLevel.valueOf(accessLevel.name()));
     }
 
     @Override

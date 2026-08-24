@@ -49,34 +49,26 @@ public class FindExerciseHistoryUseCase {
         Map<Long, List<Set>> setsBySession = setsPage.getContent().stream()
                 .collect(Collectors.groupingBy(Set::getSessionId));
 
-        List<Long> sessionIds = setsBySession.keySet().stream().toList();
-        List<WorkoutSession> sessions = workoutSessionRepository.findAllByIdIn(sessionIds);
+        List<WorkoutSession> sessions = workoutSessionRepository.findAllByIdIn(setsBySession.keySet().stream().toList());
         Map<Long, WorkoutSession> sessionMap = sessions.stream()
-                .collect(Collectors.toMap(WorkoutSession::getId, session -> session));
+                .collect(Collectors.toMap(WorkoutSession::getId, s -> s));
 
-        List<Long> workoutIds = sessions.stream()
+        Set<Long> workoutIds = sessions.stream()
                 .map(WorkoutSession::getWorkoutId)
-                .distinct()
-                .toList();
+                .collect(Collectors.toSet());
         Map<Long, String> workoutNameMap = workoutRepository.findAllById(workoutIds).stream()
                 .filter(w -> workoutRepository.existsById(w.getId(), userId)
                         || workoutAccessRepository.existsByWorkoutIdAndSharedWithUserId(w.getId(), userId))
                 .collect(Collectors.toMap(Workout::getId, Workout::getName));
 
-        List<ExerciseHistory> history = sessionIds.stream()
-                .map(sessionId -> {
-                    WorkoutSession session = sessionMap.get(sessionId);
-                    if (session == null) return null;
-                    String workoutName = workoutNameMap.getOrDefault(session.getWorkoutId(), "Тренировка");
-                    return new ExerciseHistory(
-                            sessionId,
-                            workoutName,
-                            session.getStartTime(),
-                            session.getEndTime(),
-                            setsBySession.get(sessionId)
-                    );
-                })
-                .filter(java.util.Objects::nonNull)
+        List<ExerciseHistory> history = sessions.stream()
+                .map(s -> new ExerciseHistory(
+                        s.getId(),
+                        workoutNameMap.getOrDefault(s.getWorkoutId(), "Тренировка"),
+                        s.getStartTime(),
+                        s.getEndTime(),
+                        setsBySession.get(s.getId())
+                ))
                 .sorted(Comparator.comparing(ExerciseHistory::getStartTime, Comparator.nullsLast(Comparator.reverseOrder())))
                 .toList();
 

@@ -16,9 +16,9 @@ public class GetFavoriteExerciseIdsUseCase {
     private final FavoriteExerciseRepository favoriteExerciseRepository;
 
     @Transactional(readOnly = true)
-    public List<Long> getIds(Long userId) {
+    public List<Long> getFavoriteExerciseIds(Long userId) {
         List<Long> ids = favoriteExerciseRepository.findIdsByUserId(userId);
-        log.info("Получены id избранных упражнений | userId={}, count={}", userId, ids.size());
+        log.info("Получены id избранных упражнений | userId={} | count={}", userId, ids.size());
         return ids;
     }
 }

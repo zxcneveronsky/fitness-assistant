@@ -21,7 +21,6 @@ public class CreateSetUseCase {
 
     @Transactional
     public Set createSet(Long userId, Set set) {
-        set.setId(null);
         Long sessionId = set.getSessionId();
         Long exerciseId = set.getExerciseId();
         if (!workoutSessionRepository.existsById(sessionId, userId)) {
@@ -30,9 +29,16 @@ public class CreateSetUseCase {
         if (!exerciseRepository.existsById(exerciseId)) {
             throw new ExerciseNotFoundException(exerciseId);
         }
-        Set savedSet = setRepository.save(set);
-        log.info("Подход создан | id={} | sessionId={}" , savedSet.getId(), savedSet.getSessionId());
+        Set newSet = new Set(
+                null,
+                sessionId,
+                exerciseId,
+                set.getWeight(),
+                set.getReps(),
+                set.getCreatedAt()
+        );
+        Set savedSet = setRepository.save(newSet);
+        log.info("Подход создан | id={} | sessionId={}", savedSet.getId(), savedSet.getSessionId());
         return savedSet;
     }
-
 }

@@ -13,12 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class CalculateFoodUseCase {
     private final FoodRepository foodRepository;
+
     @Transactional(readOnly = true)
     public Food calculateFood(Long foodId, Double weight) {
         if (weight == null) {
             throw new IllegalArgumentException("Вес не может быть null");
         }
-        Food food = foodRepository.findById(foodId).orElseThrow(()->new FoodNotFoundException(foodId));
+        Food food = foodRepository.findById(foodId).orElseThrow(() -> new FoodNotFoundException(foodId));
         Double weightFactor = weight / 100.0;
         Food calculatedFood = new Food(
                 food.getId(),
@@ -32,5 +33,4 @@ public class CalculateFoodUseCase {
         log.info("Пищевая ценность рассчитана | id={} | вес={}", foodId, weight);
         return calculatedFood;
     }
-
 }

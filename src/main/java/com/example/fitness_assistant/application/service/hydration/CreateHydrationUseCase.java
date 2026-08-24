@@ -19,12 +19,17 @@ public class CreateHydrationUseCase {
 
     @Transactional
     public Hydration createHydration(Long userId, Hydration hydration) {
-        hydration.setId(null);
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException(userId);
         }
-        hydration.setUserId(userId);
-        Hydration savedHydration = hydrationRepository.save(hydration);
+        Hydration newHydration = new Hydration(
+                null,
+                userId,
+                hydration.getName(),
+                hydration.getAmount(),
+                hydration.getConsumedAt()
+        );
+        Hydration savedHydration = hydrationRepository.save(newHydration);
         log.info("Запись гидратации создана | id={} | название='{}'", savedHydration.getId(), savedHydration.getName());
         return savedHydration;
     }

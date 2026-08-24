@@ -27,13 +27,17 @@ public class CreateWorkoutUseCase {
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException(userId);
         }
-        workout.setId(null);
-        List<Long> ids = workout.getExerciseIds();
+        List<Long> ids = workout.getExerciseIds().stream().distinct().toList();
         if (!exerciseRepository.existsAllByIdIn(ids)) {
             throw new ExerciseNotFoundException(ids.getFirst());
         }
-        workout.setUserId(userId);
-        Workout savedWorkout = workoutRepository.save(workout);
+        Workout newWorkout = new Workout(
+                null,
+                userId,
+                workout.getName(),
+                workout.getExerciseIds()
+        );
+        Workout savedWorkout = workoutRepository.save(newWorkout);
         log.info("Тренировка создана | id={} | название='{}'", savedWorkout.getId(), savedWorkout.getName());
         return savedWorkout;
     }

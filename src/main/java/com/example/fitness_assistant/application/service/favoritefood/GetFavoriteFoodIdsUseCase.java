@@ -16,9 +16,9 @@ public class GetFavoriteFoodIdsUseCase {
     private final FavoriteFoodRepository favoriteFoodRepository;
 
     @Transactional(readOnly = true)
-    public List<Long> getIds(Long userId) {
+    public List<Long> getFavoriteFoodIds(Long userId) {
         List<Long> ids = favoriteFoodRepository.findIdsByUserId(userId);
-        log.info("Получены id избранных продуктов | userId={}, count={}", userId, ids.size());
+        log.info("Получены id избранных продуктов | userId={} | count={}", userId, ids.size());
         return ids;
     }
 }

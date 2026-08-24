@@ -41,7 +41,7 @@ public class FindWorkoutUseCase {
     }
 
     @Transactional(readOnly = true)
-    public WorkoutWithExercise findById(Long userId, Long workoutId){
+    public WorkoutWithExercise findById(Long userId, Long workoutId) {
         boolean isOwner = workoutRepository.existsById(workoutId, userId);
         boolean hasAccess = workoutAccessRepository.existsByWorkoutIdAndSharedWithUserId(workoutId, userId);
         if (!isOwner && !hasAccess) {

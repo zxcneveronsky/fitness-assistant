@@ -16,8 +16,8 @@ public class CreateMuscleUseCase {
 
     @Transactional
     public Muscle createMuscle(Muscle muscle) {
-        muscle.setId(null);
-        Muscle savedMuscle = muscleRepository.save(muscle);
+        Muscle newMuscle = new Muscle(null, muscle.getName());
+        Muscle savedMuscle = muscleRepository.save(newMuscle);
         log.info("Мышца создана | id={} | название='{}'",
                 savedMuscle.getId(), savedMuscle.getName());
         return savedMuscle;

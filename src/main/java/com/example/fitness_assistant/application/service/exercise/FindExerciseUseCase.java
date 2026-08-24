@@ -10,7 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -30,10 +29,9 @@ public class FindExerciseUseCase {
     }
 
     @Transactional(readOnly = true)
-    public Exercise findById(Long exerciseId){
+    public Exercise findById(Long exerciseId) {
         Exercise exercise = exerciseRepository.findById(exerciseId).orElseThrow(() -> new ExerciseNotFoundException(exerciseId));
         log.info("Упражнение найдено | id={}", exerciseId);
         return exercise;
-
     }
 }

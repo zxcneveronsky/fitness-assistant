@@ -5,7 +5,6 @@ import com.example.fitness_assistant.core.exception.UserNotFoundException;
 import com.example.fitness_assistant.core.model.BodyWeight;
 import com.example.fitness_assistant.core.model.Targets;
 import com.example.fitness_assistant.core.model.UserProfile;
-import java.time.LocalDate;
 import com.example.fitness_assistant.core.repository.BodyWeightRepository;
 import com.example.fitness_assistant.core.repository.TargetsRepository;
 import com.example.fitness_assistant.core.repository.UserProfileRepository;
@@ -14,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
@@ -31,12 +32,17 @@ public class CreateUserProfileUseCase {
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException(userId);
         }
-        userProfile.setUserId(userId);
-        UserProfile savedProfile = userProfileRepository.save(userProfile);
+        UserProfile newProfile = new UserProfile(
+                userId,
+                userProfile.getName(),
+                userProfile.getBirthDate(),
+                userProfile.getWeight(),
+                userProfile.getHeight(),
+                userProfile.getGender()
+        );
+        UserProfile savedProfile = userProfileRepository.save(newProfile);
 
-        Targets targets = new Targets();
-        targets.setProfileId(userId);
-        targets.setUseAutopilot(true);
+        Targets targets = new Targets(userId, null, null, null, null, null, true);
         targetCalculationService.applyAutoTargets(targets, savedProfile);
         targetsRepository.save(targets);
 

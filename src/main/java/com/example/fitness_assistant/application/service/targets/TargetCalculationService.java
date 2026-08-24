@@ -54,8 +54,7 @@ public class TargetCalculationService {
                 targets.setTargetCarbs(request.getTargetCarbs());
             }
             balanceCaloriesByMacros(targets);
-        }
-        else if (request.getTargetKcal() != null) {
+        } else if (request.getTargetKcal() != null) {
             targets.setTargetKcal(request.getTargetKcal());
             balanceMacrosByCalories(targets);
         }
@@ -70,7 +69,7 @@ public class TargetCalculationService {
         UserProfile.Gender gender = profile.getGender();
 
         if (weight == null || height == null || gender == null) {
-            log.warn("Недостаточно данных для авторасчёта: weight={}, height={}, gender={}", weight, height, gender);
+            log.warn("Недостаточно данных для авторасчёта | weight={} | height={} | gender={}", weight, height, gender);
             return;
         }
 
@@ -95,7 +94,7 @@ public class TargetCalculationService {
 
     private Integer getAge(UserProfile profile) {
         if (profile.getBirthDate() == null) {
-            log.warn("Дата рождения не указана, возраст = 0");
+            log.warn("Дата рождения не указана | возраст=0");
             return 0;
         }
         return Period.between(profile.getBirthDate(), LocalDate.now()).getYears();

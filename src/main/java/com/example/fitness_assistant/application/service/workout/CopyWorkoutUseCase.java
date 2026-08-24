@@ -4,16 +4,14 @@ import com.example.fitness_assistant.core.exception.AccessDeniedException;
 import com.example.fitness_assistant.core.exception.UserNotFoundException;
 import com.example.fitness_assistant.core.exception.WorkoutNotFoundException;
 import com.example.fitness_assistant.core.model.workout.Workout;
-import com.example.fitness_assistant.core.repository.UserRepository;
 import com.example.fitness_assistant.core.model.WorkoutAccess.AccessLevel;
+import com.example.fitness_assistant.core.repository.UserRepository;
 import com.example.fitness_assistant.core.repository.WorkoutAccessRepository;
 import com.example.fitness_assistant.core.repository.WorkoutRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -35,9 +33,7 @@ public class CopyWorkoutUseCase {
         if (!isOwner && !hasCopyAccess) {
             throw new AccessDeniedException();
         }
-        Workout existingWorkout = workoutRepository.findAllById(List.of(workoutId))
-                .stream()
-                .findFirst()
+        Workout existingWorkout = workoutRepository.findByIdAccessible(workoutId)
                 .orElseThrow(() -> new WorkoutNotFoundException(workoutId));
         Workout copy = new Workout(
                 null,

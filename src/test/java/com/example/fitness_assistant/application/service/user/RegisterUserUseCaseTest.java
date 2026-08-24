@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,7 +35,7 @@ public class RegisterUserUseCaseTest {
         when(userRepository.existsByEmail("s@m")).thenReturn(Boolean.FALSE);
         when(userRepository.existsByEmail("ss@m")).thenReturn(Boolean.TRUE);
         when(passwordEncoder.encode("123")).thenReturn("123");
-        when(userRepository.save(testUser)).thenReturn(testUser);
+        when(userRepository.save(any(User.class))).thenReturn(testUser);
         when(tokenProvider.generateToken(testUser)).thenReturn("ggz");
 
         LoginResult testLoginResult = registerUserUseCase.registerUser(testUser);

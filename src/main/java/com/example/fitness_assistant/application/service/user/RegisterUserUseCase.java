@@ -24,9 +24,9 @@ public class RegisterUserUseCase {
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new UserAlreadyExistsException(user.getEmail());
         }
-        user.setId(null);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        User savedUser = userRepository.save(user);
+        String encodedPassword = passwordEncoder.encode(user.getPassword());
+        User newUser = new User(null, user.getEmail(), encodedPassword, user.getRole());
+        User savedUser = userRepository.save(newUser);
         String token = tokenProvider.generateToken(savedUser);
         log.info("Пользователь зарегистрирован | id={} | email='{}'", savedUser.getId(), savedUser.getEmail());
         return new LoginResult(token, savedUser.getEmail(), savedUser.getRole().name());
