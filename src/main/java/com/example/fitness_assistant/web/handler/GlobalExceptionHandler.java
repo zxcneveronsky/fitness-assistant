@@ -4,6 +4,7 @@ import com.example.fitness_assistant.core.exception.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -68,6 +69,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MeasurementDateRequiredException.class)
     public ResponseEntity<Object> handleMeasurementDateRequired(MeasurementDateRequiredException ex) {
         return buildResponse(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Object> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        log.warn("Нарушение целостности данных", ex);
+        return buildResponse("Операция нарушает целостность данных: запись уже существует или используется другими данными.", HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(AccessDeniedException.class)

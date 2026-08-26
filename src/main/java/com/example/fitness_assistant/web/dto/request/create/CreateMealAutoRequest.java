@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 
 public record CreateMealAutoRequest(
         @NotNull(message = "ID продукта не может быть пустым")
+        @Positive(message = "ID продукта должен быть положительным")
         Long id,
         @NotNull(message = "Вес не может быть пустым")
         @Positive(message = "Вес должен быть положительным")

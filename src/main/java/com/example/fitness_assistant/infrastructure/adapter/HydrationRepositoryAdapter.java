@@ -53,8 +53,8 @@ public class HydrationRepositoryAdapter implements HydrationRepository {
     }
 
     @Override
-    public void deleteById(Long id, Long userId) {
-        jpaHydrationRepository.deleteByIdAndUserId(id, userId);
+    public long deleteById(Long id, Long userId) {
+        return jpaHydrationRepository.deleteByIdAndUserId(id, userId);
     }
 
     @Override

@@ -2,9 +2,11 @@ package com.example.fitness_assistant.application.service.set;
 
 import com.example.fitness_assistant.core.exception.ExerciseNotFoundException;
 import com.example.fitness_assistant.core.exception.SetNotFoundException;
+import com.example.fitness_assistant.core.exception.WorkoutSessionNotFoundException;
 import com.example.fitness_assistant.core.model.Set;
 import com.example.fitness_assistant.core.repository.ExerciseRepository;
 import com.example.fitness_assistant.core.repository.SetRepository;
+import com.example.fitness_assistant.core.repository.WorkoutSessionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -17,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class FindSetUseCase {
     private final SetRepository setRepository;
+    private final WorkoutSessionRepository workoutSessionRepository;
     private final ExerciseRepository exerciseRepository;
 
     @Transactional(readOnly = true)

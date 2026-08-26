@@ -12,6 +12,6 @@ public interface WorkoutSessionRepository {
     Page<WorkoutSession> findAllByUserId(Long userId, Pageable pageable);
     List<WorkoutSession> findAllByIdIn(List<Long> ids);
     WorkoutSession save(WorkoutSession workoutSession);
-    void deleteById(Long id, Long userId);
+    long deleteById(Long id, Long userId);
     boolean existsById(Long id, Long userId);
 }

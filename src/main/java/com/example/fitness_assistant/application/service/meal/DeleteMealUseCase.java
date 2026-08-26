@@ -15,10 +15,10 @@ public class DeleteMealUseCase {
 
     @Transactional
     public void deleteMeal(Long userId, Long mealId) {
-        if (!mealRepository.existsById(mealId, userId)) {
+        long deleted = mealRepository.deleteById(mealId, userId);
+        if (deleted == 0) {
             throw new MealNotFoundException(mealId);
         }
-        mealRepository.deleteById(mealId, userId);
         log.info("Приём пищи удалён | id={}", mealId);
     }
 }

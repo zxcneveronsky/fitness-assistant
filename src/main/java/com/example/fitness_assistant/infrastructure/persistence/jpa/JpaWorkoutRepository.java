@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -16,7 +17,9 @@ public interface JpaWorkoutRepository extends JpaRepository<WorkoutEntity, Long>
     @EntityGraph(attributePaths = "user")
     Optional<WorkoutEntity> findByIdAndUserId(Long id, Long userId);
     boolean existsByIdAndUserId(Long id, Long userId);
-    void deleteByIdAndUserId(Long id, Long userId);
+    @Modifying
+    @Query("DELETE FROM WorkoutEntity w WHERE w.id = :id AND w.user.id = :userId")
+    long deleteByIdAndUserId(@Param("id") Long id, @Param("userId") Long userId);
 
     @Query("SELECT w FROM WorkoutEntity w WHERE w.user.id = :userId ORDER BY w.id DESC")
     Page<WorkoutEntity> findAllByUserId(@Param("userId") Long userId, Pageable pageable);
@@ -24,7 +27,7 @@ public interface JpaWorkoutRepository extends JpaRepository<WorkoutEntity, Long>
     @Query("""
             SELECT w FROM WorkoutEntity w
             WHERE w.user.id = :userId
-            AND LOWER(w.name) LIKE LOWER(CONCAT('%', :name, '%'))
+            AND LOWER(w.name) LIKE LOWER(CONCAT('%', :name, '%')) ESCAPE '\\'
             ORDER BY w.id DESC
             """)
     Page<WorkoutEntity> searchByName(@Param("name") String name, @Param("userId") Long userId, Pageable pageable);

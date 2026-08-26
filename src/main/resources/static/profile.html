@@ -356,6 +356,8 @@
     let weightHistoryData = [];
     let weightHistoryChart = null;
     let currentWeightRange = 30;
+    let currentWeightFrom = null;
+    let currentWeightTo = null;
 
     function subDays(n) {
         const d = new Date();
@@ -369,12 +371,20 @@
         return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
     }
 
+    function syncWeightPickers() {
+        document.getElementById('weightFrom').value = currentWeightFrom;
+        document.getElementById('weightTo').value = currentWeightTo;
+    }
+
     async function loadWeightHistory() {
-        const to = todayLocal();
-        const from = subDays(currentWeightRange);
+        if (!currentWeightFrom || !currentWeightTo) {
+            currentWeightTo = todayLocal();
+            currentWeightFrom = subDays(currentWeightRange);
+        }
         try {
-            weightHistoryData = await request('/body-weight?from=' + encodeURIComponent(from) + '&to=' + encodeURIComponent(to));
+            weightHistoryData = await request('/body-weight?from=' + encodeURIComponent(currentWeightFrom) + '&to=' + encodeURIComponent(currentWeightTo));
             if (!weightHistoryData) weightHistoryData = [];
+            syncWeightPickers();
             renderWeightHistoryChart();
             renderWeightTable();
         } catch (e) { console.error('loadWeightHistory error:', e); }
@@ -486,10 +496,14 @@
 
     function setWeightRange(days, btn) {
         currentWeightRange = days;
+        currentWeightFrom = subDays(days);
+        currentWeightTo = todayLocal();
         document.querySelectorAll('.weight-range-btn').forEach(function(b) {
             b.className = 'weight-range-btn text-xs font-bold px-4 py-2 rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200';
         });
         btn.className = 'weight-range-btn text-xs font-bold px-4 py-2 rounded-xl bg-blue-600 text-white';
+        document.getElementById('weightFrom').value = currentWeightFrom;
+        document.getElementById('weightTo').value = currentWeightTo;
         loadWeightHistory();
     }
 
@@ -507,9 +521,12 @@
     }
 
     async function loadWeightHistoryCustom(from, to, applyBtn) {
+        currentWeightFrom = from;
+        currentWeightTo = to;
         try {
             weightHistoryData = await request('/body-weight?from=' + encodeURIComponent(from) + '&to=' + encodeURIComponent(to));
             if (!weightHistoryData) weightHistoryData = [];
+            syncWeightPickers();
             renderWeightHistoryChart();
             renderWeightTable();
         } catch (e) {
@@ -590,6 +607,8 @@
     weightToEl.max = todayLocal();
     weightToEl.value = todayLocal();
     weightFromEl.value = subDays(30);
+    currentWeightTo = todayLocal();
+    currentWeightFrom = subDays(30);
     document.getElementById('weightModalDate').max = todayLocal();
 
     loadProfile();

@@ -69,6 +69,7 @@
 
     let currentPage = 0;
     let totalPages = 0;
+    let lastFoods = [];
     let selectedCategoryId = null;
     let favoritesOnly = false;
     let favoriteIds = new Set();
@@ -83,10 +84,11 @@
         }
     }
 
-    function toggleSelection(id, name, checkbox) {
+    function toggleSelection(id, checkbox) {
         if (checkbox.checked) {
             selectedIds.add(id);
-            foodNameMap[id] = name;
+            const f = lastFoods.find(x => x.id === id);
+            foodNameMap[id] = f ? f.name : 'Продукт';
         } else {
             selectedIds.delete(id);
         }
@@ -149,6 +151,7 @@
         let endpoint = favoritesOnly ? `/favorite/food/search?page=${page}&size=9` : `/food/search?page=${page}&size=9`;
         if (q) endpoint += `&name=${encodeURIComponent(q)}`;
         const data = await request(endpoint);
+        lastFoods = data.content || [];
         totalPages = data.totalPages;
         expandedFoodId = null;
         document.getElementById('results').innerHTML = data.content.length === 0
@@ -159,13 +162,13 @@
             <div class="bg-white rounded-2xl p-5 border border-gray-100 hover:shadow-lg transition-shadow cursor-pointer relative${selectMode ? ' pl-10' : ''}" onclick="toggleDetail(${f.id})">
                 ${selectMode
                     ? `<div class="absolute top-3 left-3">
-                        <input type="checkbox" ${selectedIds.has(f.id) ? 'checked' : ''} onchange="event.stopPropagation(); toggleSelection(${f.id}, '${f.name.replace(/'/g, "\\'")}', this)" class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500 cursor-pointer">
+                        <input type="checkbox" ${selectedIds.has(f.id) ? 'checked' : ''} onchange="event.stopPropagation(); toggleSelection(${f.id}, this)" class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500 cursor-pointer">
                        </div>
                        <button onclick="event.stopPropagation(); toggleFavorite(${f.id}, this)" class="absolute top-3 right-3 text-xl text-red-500 hover:scale-110 transition-transform">${isFav ? '♥' : '♡'}</button>`
                     : (isAuth() ? `<button onclick="event.stopPropagation(); toggleFavorite(${f.id}, this)" class="absolute top-3 right-3 text-xl text-red-500 hover:scale-110 transition-transform">${isFav ? '♥' : '♡'}</button>` : '')
                 }
-                <h3 class="font-bold text-lg">${f.name}</h3>
-                <p class="text-sm text-gray-400">${f.brands || 'Нет бренда'}</p>
+                <h3 class="font-bold text-lg">${escapeHtml(f.name)}</h3>
+                <p class="text-sm text-gray-400">${escapeHtml(f.brands) || 'Нет бренда'}</p>
                 <div class="grid grid-cols-4 gap-2 mt-3 text-center text-sm">
                     <div><span class="font-bold text-blue-600">${f.kcal.toFixed(2)}</span><br><span class="text-gray-400 text-xs">ккал</span></div>
                     <div><span class="font-bold">${f.proteins.toFixed(2)}</span><br><span class="text-gray-400 text-xs">белки</span></div>

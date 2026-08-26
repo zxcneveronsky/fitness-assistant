@@ -16,7 +16,7 @@ public interface BodyWeightRepository {
 
     BodyWeight save(BodyWeight bodyWeight);
 
-    void deleteById(Long id, Long userId);
+    long deleteById(Long id, Long userId);
 
     boolean existsById(Long id, Long userId);
 }

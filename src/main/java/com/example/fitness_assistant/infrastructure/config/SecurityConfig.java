@@ -27,6 +27,11 @@ public class SecurityConfig {
                             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                             response.getWriter().write("{\"timestamp\":\"" + java.time.LocalDateTime.now() + "\",\"status\":401,\"error\":\"Unauthorized\",\"message\":\"Требуется авторизация\"}");
                         })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setContentType("application/json;charset=UTF-8");
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            response.getWriter().write("{\"timestamp\":\"" + java.time.LocalDateTime.now() + "\",\"status\":403,\"error\":\"Forbidden\",\"message\":\"Недостаточно прав\"}");
+                        })
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
@@ -35,7 +40,6 @@ public class SecurityConfig {
                                 "/login.html",
                                 "/register.html",
                                 "/dashboard.html",
-                                "/admin.html",
                                 "/meal.html",
                                 "/hydration.html",
                                 "/workout.html",

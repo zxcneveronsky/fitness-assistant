@@ -49,8 +49,8 @@ public class BodyWeightRepositoryAdapter implements BodyWeightRepository {
     }
 
     @Override
-    public void deleteById(Long id, Long userId) {
-        jpaBodyWeightRepository.deleteByIdAndUserId(id, userId);
+    public long deleteById(Long id, Long userId) {
+        return jpaBodyWeightRepository.deleteByIdAndUserId(id, userId);
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.example.fitness_assistant.infrastructure.persistence.entity.FavoriteE
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -13,7 +14,9 @@ public interface JpaFavoriteExerciseRepository extends JpaRepository<FavoriteExe
 
     boolean existsByExerciseIdAndUserId(Long exerciseId, Long userId);
 
-    void deleteByExerciseIdAndUserId(Long exerciseId, Long userId);
+    @Modifying
+    @Query("DELETE FROM FavoriteExerciseEntity fe WHERE fe.exercise.id = :exerciseId AND fe.user.id = :userId")
+    long deleteByExerciseIdAndUserId(@Param("exerciseId") Long exerciseId, @Param("userId") Long userId);
 
     @Query("SELECT fe.exercise.id FROM FavoriteExerciseEntity fe WHERE fe.user.id = :userId ORDER BY fe.exercise.id ASC")
     List<Long> findIdsByUserId(@Param("userId") Long userId);
@@ -37,8 +40,8 @@ public interface JpaFavoriteExerciseRepository extends JpaRepository<FavoriteExe
             LEFT JOIN e.muscles m
             WHERE EXISTS (SELECT 1 FROM FavoriteExerciseEntity fe
                           WHERE fe.exercise.id = e.id AND fe.user.id = :userId)
-            AND (LOWER(e.name) LIKE LOWER(CONCAT('%', :name, '%'))
-            OR LOWER(m.name) LIKE LOWER(CONCAT('%', :name, '%')))
+            AND (LOWER(e.name) LIKE LOWER(CONCAT('%', :name, '%')) ESCAPE '\\'
+            OR LOWER(m.name) LIKE LOWER(CONCAT('%', :name, '%')) ESCAPE '\\')
             GROUP BY e.id, e.name
             ORDER BY e.name ASC
             """,
@@ -47,8 +50,8 @@ public interface JpaFavoriteExerciseRepository extends JpaRepository<FavoriteExe
             LEFT JOIN e.muscles m
             WHERE EXISTS (SELECT 1 FROM FavoriteExerciseEntity fe
                           WHERE fe.exercise.id = e.id AND fe.user.id = :userId)
-            AND (LOWER(e.name) LIKE LOWER(CONCAT('%', :name, '%'))
-            OR LOWER(m.name) LIKE LOWER(CONCAT('%', :name, '%')))
+            AND (LOWER(e.name) LIKE LOWER(CONCAT('%', :name, '%')) ESCAPE '\\'
+            OR LOWER(m.name) LIKE LOWER(CONCAT('%', :name, '%')) ESCAPE '\\')
             """)
     Page<Long> findPageIdsByUserIdAndName(@Param("userId") Long userId, @Param("name") String name, Pageable pageable);
 
@@ -76,8 +79,8 @@ public interface JpaFavoriteExerciseRepository extends JpaRepository<FavoriteExe
             WHERE EXISTS (SELECT 1 FROM FavoriteExerciseEntity fe
                           WHERE fe.exercise.id = e.id AND fe.user.id = :userId)
             AND m.id = :muscleId
-            AND (LOWER(e.name) LIKE LOWER(CONCAT('%', :name, '%'))
-            OR LOWER(m.name) LIKE LOWER(CONCAT('%', :name, '%')))
+            AND (LOWER(e.name) LIKE LOWER(CONCAT('%', :name, '%')) ESCAPE '\\'
+            OR LOWER(m.name) LIKE LOWER(CONCAT('%', :name, '%')) ESCAPE '\\')
             GROUP BY e.id, e.name
             ORDER BY e.name ASC
             """,
@@ -87,8 +90,8 @@ public interface JpaFavoriteExerciseRepository extends JpaRepository<FavoriteExe
             WHERE EXISTS (SELECT 1 FROM FavoriteExerciseEntity fe
                           WHERE fe.exercise.id = e.id AND fe.user.id = :userId)
             AND m.id = :muscleId
-            AND (LOWER(e.name) LIKE LOWER(CONCAT('%', :name, '%'))
-            OR LOWER(m.name) LIKE LOWER(CONCAT('%', :name, '%')))
+            AND (LOWER(e.name) LIKE LOWER(CONCAT('%', :name, '%')) ESCAPE '\\'
+            OR LOWER(m.name) LIKE LOWER(CONCAT('%', :name, '%')) ESCAPE '\\')
             """)
     Page<Long> findPageIdsByUserIdAndMuscleIdAndName(@Param("userId") Long userId, @Param("muscleId") Long muscleId, @Param("name") String name, Pageable pageable);
 }

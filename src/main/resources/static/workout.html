@@ -120,7 +120,7 @@
             ? '<p class="text-gray-400 text-sm">Упражнения не выбраны</p>'
             : selectedExercises.map(e => `
                 <div class="flex items-center justify-between bg-blue-50 rounded-xl px-4 py-2">
-                    <span class="text-sm font-medium">${e.name}</span>
+                    <span class="text-sm font-medium">${escapeHtml(e.name)}</span>
                     <button onclick="removeSelected(${e.id})" class="text-red-400 hover:text-red-600 text-sm font-bold">✕</button>
                 </div>
             `).join('');
@@ -157,7 +157,7 @@
             : workouts.map(w => `
                 <div class="bg-white rounded-2xl p-5 border border-gray-100 hover:shadow-lg transition-shadow">
                     <a href="/workout-detail.html?id=${w.id}" class="block">
-                        <h3 class="font-bold text-lg hover:text-blue-600 transition-colors">${w.name}</h3>
+                        <h3 class="font-bold text-lg hover:text-blue-600 transition-colors">${escapeHtml(w.name)}</h3>
                         <p class="text-sm text-gray-400 mt-1">${(w.exerciseIds && w.exerciseIds.length) || 0} упражнений</p>
                     </a>
                     <div class="flex gap-2 mt-4">

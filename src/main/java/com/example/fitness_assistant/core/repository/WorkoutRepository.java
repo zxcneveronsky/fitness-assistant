@@ -18,6 +18,6 @@ public interface WorkoutRepository {
     boolean hasAccess(Long workoutId, Long userId);
     List<Workout> findAllAccessibleByIdIn(List<Long> ids, Long userId);
     Workout save(Workout workout);
-    void deleteById(Long id, Long userId);
+    long deleteById(Long id, Long userId);
     boolean existsById(Long id, Long userId);
 }

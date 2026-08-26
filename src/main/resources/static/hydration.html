@@ -179,9 +179,9 @@
                 : waters.map(w => `
                     <div class="bg-white rounded-xl p-4 border border-gray-100 flex items-center justify-between" id="waterRow_${w.id}">
                         <div class="flex-1">
-                            <span id="wView_${w.id}"><span class="font-semibold">${w.name}</span> <span class="text-blue-600 font-bold ml-2">${w.amount.toFixed(2)} л</span></span>
+                            <span id="wView_${w.id}"><span class="font-semibold">${escapeHtml(w.name)}</span> <span class="text-blue-600 font-bold ml-2">${w.amount.toFixed(2)} л</span></span>
                             <div id="wEdit_${w.id}" class="hidden items-center gap-2">
-                                <input id="wName_${w.id}" value="${w.name.replace(/'/g, "\\'")}" class="w-28 px-2 py-1 border border-gray-200 rounded-lg text-sm">
+                                <input id="wName_${w.id}" value="${escapeHtml(w.name)}" class="w-28 px-2 py-1 border border-gray-200 rounded-lg text-sm">
                                 <input id="wAmt_${w.id}" type="number" step="0.1" value="${w.amount}" class="w-20 px-2 py-1 border border-gray-200 rounded-lg text-sm">
                                 <span class="text-sm text-gray-400">л</span>
                                 <button onclick="saveWaterEdit(${w.id})" class="text-green-600 hover:text-green-800 text-sm">💾</button>

@@ -10,6 +10,7 @@ import com.example.fitness_assistant.infrastructure.persistence.entity.FoodEntit
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaFavoriteFoodRepository;
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaFoodRepository;
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaUserRepository;
+import com.example.fitness_assistant.infrastructure.util.LikePattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -41,15 +42,15 @@ public class FavoriteFoodRepositoryAdapter implements FavoriteFoodRepository {
     }
 
     @Override
-    public void deleteByFoodIdAndUserId(Long foodId, Long userId) {
-        jpaFavoriteFoodRepository.deleteByFoodIdAndUserId(foodId, userId);
+    public long deleteByFoodIdAndUserId(Long foodId, Long userId) {
+        return jpaFavoriteFoodRepository.deleteByFoodIdAndUserId(foodId, userId);
     }
 
     @Override
     public Page<Food> searchFavoriteFood(String name, Long userId, Pageable pageable) {
         Page<FoodEntity> page = (name == null || name.isBlank())
                 ? jpaFavoriteFoodRepository.findByUserIdOrderByNameAsc(userId, pageable)
-                : jpaFavoriteFoodRepository.searchByNameAndUserId(name.trim(), userId, pageable);
+                : jpaFavoriteFoodRepository.searchByNameAndUserId(LikePattern.escape(name.trim()), userId, pageable);
         return page.map(foodMapper::toDomain);
     }
 

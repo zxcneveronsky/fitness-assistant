@@ -13,7 +13,7 @@ public interface FavoriteFoodRepository {
 
     FavoriteFood save(FavoriteFood favoriteFood);
 
-    void deleteByFoodIdAndUserId(Long foodId, Long userId);
+    long deleteByFoodIdAndUserId(Long foodId, Long userId);
 
     Page<Food> searchFavoriteFood(String name, Long userId, Pageable pageable);
 

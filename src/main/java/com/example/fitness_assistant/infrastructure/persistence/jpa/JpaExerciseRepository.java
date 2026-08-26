@@ -24,16 +24,16 @@ public interface JpaExerciseRepository extends JpaRepository<ExerciseEntity, Lon
     @Query(value = """
             SELECT e.id FROM ExerciseEntity e
             LEFT JOIN e.muscles m
-            WHERE LOWER(e.name) LIKE LOWER(CONCAT('%', :name, '%'))
-            OR LOWER(m.name) LIKE LOWER(CONCAT('%', :name, '%'))
+            WHERE LOWER(e.name) LIKE LOWER(CONCAT('%', :name, '%')) ESCAPE '\\'
+            OR LOWER(m.name) LIKE LOWER(CONCAT('%', :name, '%')) ESCAPE '\\'
             GROUP BY e.id, e.name
             ORDER BY e.name ASC
             """,
             countQuery = """
             SELECT COUNT(DISTINCT e.id) FROM ExerciseEntity e
             LEFT JOIN e.muscles m
-            WHERE LOWER(e.name) LIKE LOWER(CONCAT('%', :name, '%'))
-            OR LOWER(m.name) LIKE LOWER(CONCAT('%', :name, '%'))
+            WHERE LOWER(e.name) LIKE LOWER(CONCAT('%', :name, '%')) ESCAPE '\\'
+            OR LOWER(m.name) LIKE LOWER(CONCAT('%', :name, '%')) ESCAPE '\\'
             """)
     Page<Long> findPageIdsByName(@Param("name") String name, Pageable pageable);
 
@@ -55,8 +55,8 @@ public interface JpaExerciseRepository extends JpaRepository<ExerciseEntity, Lon
             SELECT e.id FROM ExerciseEntity e
             JOIN e.muscles m
             WHERE m.id = :muscleId
-            AND (LOWER(e.name) LIKE LOWER(CONCAT('%', :name, '%'))
-            OR LOWER(m.name) LIKE LOWER(CONCAT('%', :name, '%')))
+            AND (LOWER(e.name) LIKE LOWER(CONCAT('%', :name, '%')) ESCAPE '\\'
+            OR LOWER(m.name) LIKE LOWER(CONCAT('%', :name, '%')) ESCAPE '\\')
             GROUP BY e.id, e.name
             ORDER BY e.name ASC
             """,
@@ -64,8 +64,8 @@ public interface JpaExerciseRepository extends JpaRepository<ExerciseEntity, Lon
             SELECT COUNT(DISTINCT e.id) FROM ExerciseEntity e
             JOIN e.muscles m
             WHERE m.id = :muscleId
-            AND (LOWER(e.name) LIKE LOWER(CONCAT('%', :name, '%'))
-            OR LOWER(m.name) LIKE LOWER(CONCAT('%', :name, '%')))
+            AND (LOWER(e.name) LIKE LOWER(CONCAT('%', :name, '%')) ESCAPE '\\'
+            OR LOWER(m.name) LIKE LOWER(CONCAT('%', :name, '%')) ESCAPE '\\')
             """)
     Page<Long> findPageIdsByMuscleIdAndName(@Param("muscleId") Long muscleId, @Param("name") String name, Pageable pageable);
 }

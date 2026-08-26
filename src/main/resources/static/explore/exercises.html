@@ -68,6 +68,7 @@
 
     let currentPage = 0;
     let totalPages = 0;
+    let lastExercises = [];
     let selectedMuscleId = null;
     let favoritesOnly = false;
     let favoriteIds = new Set();
@@ -115,10 +116,11 @@
         }
     }
 
-    function toggleSelection(id, name, checkbox) {
+    function toggleSelection(id, checkbox) {
         if (checkbox.checked) {
             selectedIds.add(id);
-            exerciseNameMap[id] = name;
+            const ex = lastExercises.find(x => x.id === id);
+            exerciseNameMap[id] = ex ? (ex.name || 'Без названия') : 'Упражнение';
         } else {
             selectedIds.delete(id);
         }
@@ -147,7 +149,7 @@
             const muscles = await request('/muscle/search');
             const container = document.getElementById('muscleChips');
             container.innerHTML = '<button onclick="setMuscle(null)" class="px-3 py-1.5 rounded-full text-xs font-bold border transition-colors whitespace-nowrap shrink-0 ' + (selectedMuscleId === null ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-500 border-gray-200 hover:border-blue-300') + '">Все</button>' +
-                muscles.map(m => `<button onclick="setMuscle(${m.id})" class="px-3 py-1.5 rounded-full text-xs font-bold border transition-colors whitespace-nowrap shrink-0 ${selectedMuscleId === m.id ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-500 border-gray-200 hover:border-blue-300'}">${m.name}</button>`).join('');
+                muscles.map(m => `<button onclick="setMuscle(${m.id})" class="px-3 py-1.5 rounded-full text-xs font-bold border transition-colors whitespace-nowrap shrink-0 ${selectedMuscleId === m.id ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-500 border-gray-200 hover:border-blue-300'}">${escapeHtml(m.name)}</button>`).join('');
         } catch (e) { console.error('loadChips error:', e); }
     }
 
@@ -164,6 +166,7 @@
         if (q) endpoint += `&name=${encodeURIComponent(q)}`;
         if (selectedMuscleId) endpoint += `&muscleId=${selectedMuscleId}`;
         const data = await request(endpoint);
+        lastExercises = data.content || [];
         totalPages = data.totalPages;
         document.getElementById('results').innerHTML = data.content.length === 0
             ? '<p class="text-gray-400 col-span-3 text-center py-8">Ничего не найдено</p>'
@@ -174,14 +177,14 @@
             <div class="bg-white rounded-2xl p-5 border border-gray-100 hover:shadow-lg transition-shadow relative${selectMode ? ' pl-10' : ''}">
                 ${selectMode
                     ? `<div class="absolute top-3 left-3">
-                        <input type="checkbox" ${selectedIds.has(ex.id) ? 'checked' : ''} onchange="toggleSelection(${ex.id}, '${exName.replace(/'/g, "\\'")}', this)" class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500 cursor-pointer">
+                        <input type="checkbox" ${selectedIds.has(ex.id) ? 'checked' : ''} onchange="toggleSelection(${ex.id}, this)" class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500 cursor-pointer">
                        </div>
                        <button onclick="event.stopPropagation(); toggleFavorite(${ex.id}, this)" class="absolute top-3 right-3 text-xl text-red-500 hover:scale-110 transition-transform">${isFav ? '♥' : '♡'}</button>`
                     : (isAuth() ? `<button onclick="event.stopPropagation(); toggleFavorite(${ex.id}, this)" class="absolute top-3 right-3 text-xl text-red-500 hover:scale-110 transition-transform">${isFav ? '♥' : '♡'}</button>` : '')
                 }
-                <a href="/exercise-history.html?exerciseId=${ex.id}&name=${encodeURIComponent(exName)}" class="font-bold text-lg hover:text-blue-600">${exName}</a>
-                <p class="text-sm text-gray-500 mt-2">${ex.description || 'Нет описания'}</p>
-                <div class="flex flex-wrap gap-1 mt-3">${(ex.muscles || []).map(m => `<span class="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded-full">${m.name}</span>`).join('')}</div>
+                <a href="/exercise-history.html?exerciseId=${ex.id}&name=${encodeURIComponent(exName)}" class="font-bold text-lg hover:text-blue-600">${escapeHtml(exName)}</a>
+                <p class="text-sm text-gray-500 mt-2">${escapeHtml(ex.description) || 'Нет описания'}</p>
+                <div class="flex flex-wrap gap-1 mt-3">${(ex.muscles || []).map(m => `<span class="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded-full">${escapeHtml(m.name)}</span>`).join('')}</div>
             </div>
         `}).join('');
         renderPagination();

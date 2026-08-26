@@ -177,7 +177,7 @@
         }
         container.innerHTML = exercises.map((ex, idx) => `
             <div class="bg-white rounded-2xl p-5 border border-gray-100">
-                <a href="/exercise-history.html?exerciseId=${ex.id}&name=${encodeURIComponent(ex.name)}" class="font-bold text-lg hover:text-blue-600">${idx + 1}. ${ex.name}</a>
+                <a href="/exercise-history.html?exerciseId=${ex.id}&name=${encodeURIComponent(ex.name)}" class="font-bold text-lg hover:text-blue-600">${idx + 1}. ${escapeHtml(ex.name)}</a>
                 <div class="flex gap-2 mt-3">
                     <input id="weight_${ex.id}" type="number" step="0.5" placeholder="Вес" class="w-20 sm:w-28 px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-200 rounded-lg sm:rounded-xl text-sm">
                     <input id="reps_${ex.id}" type="number" placeholder="Повторы" class="w-16 sm:w-24 px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-200 rounded-lg sm:rounded-xl text-sm">

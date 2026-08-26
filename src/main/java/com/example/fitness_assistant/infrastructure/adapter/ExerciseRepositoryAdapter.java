@@ -5,6 +5,7 @@ import com.example.fitness_assistant.core.repository.ExerciseRepository;
 import com.example.fitness_assistant.infrastructure.persistence.entity.ExerciseEntity;
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaExerciseRepository;
 import com.example.fitness_assistant.infrastructure.mapper.ExerciseMapper;
+import com.example.fitness_assistant.infrastructure.util.LikePattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -53,9 +54,9 @@ public class ExerciseRepositoryAdapter implements ExerciseRepository {
             return jpaExerciseRepository.findPageIdsByMuscleId(muscleId, pageable);
         }
         if (muscleId == null) {
-            return jpaExerciseRepository.findPageIdsByName(trimmed, pageable);
+            return jpaExerciseRepository.findPageIdsByName(LikePattern.escape(trimmed), pageable);
         }
-        return jpaExerciseRepository.findPageIdsByMuscleIdAndName(muscleId, trimmed, pageable);
+        return jpaExerciseRepository.findPageIdsByMuscleIdAndName(muscleId, LikePattern.escape(trimmed), pageable);
     }
 
     private Page<Exercise> fetchExercisesPage(Page<Long> idPage, Pageable pageable) {
@@ -76,7 +77,7 @@ public class ExerciseRepositoryAdapter implements ExerciseRepository {
     @Override
     public boolean existsAllByIdIn(List<Long> ids) {
         if (ids == null || ids.isEmpty()) return true;
-        return jpaExerciseRepository.countAllByIdIn(ids) == ids.size();
+        return jpaExerciseRepository.countAllByIdIn(ids) == ids.stream().distinct().count();
     }
 
     @Override

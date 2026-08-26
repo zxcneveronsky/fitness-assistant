@@ -13,7 +13,7 @@ public interface FavoriteExerciseRepository {
 
     FavoriteExercise save(FavoriteExercise favoriteExercise);
 
-    void deleteByExerciseIdAndUserId(Long exerciseId, Long userId);
+    long deleteByExerciseIdAndUserId(Long exerciseId, Long userId);
 
     Page<Exercise> searchFavoriteExercise(String name, Long muscleId, Long userId, Pageable pageable);
 

@@ -52,8 +52,8 @@ public class WorkoutSessionRepositoryAdapter implements WorkoutSessionRepository
     }
 
     @Override
-    public void deleteById(Long id, Long userId) {
-        jpaWorkoutSessionRepository.deleteByIdAndUserId(id, userId);
+    public long deleteById(Long id, Long userId) {
+        return jpaWorkoutSessionRepository.deleteByIdAndUserId(id, userId);
     }
 
     @Override

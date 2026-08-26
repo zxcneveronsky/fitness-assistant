@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -18,7 +19,9 @@ public interface JpaHydrationRepository extends JpaRepository<HydrationEntity, L
 
     boolean existsByIdAndUserId(Long id, Long userId);
 
-    void deleteByIdAndUserId(Long id, Long userId);
+    @Modifying
+    @Query("DELETE FROM HydrationEntity h WHERE h.id = :id AND h.user.id = :userId")
+    long deleteByIdAndUserId(@Param("id") Long id, @Param("userId") Long userId);
 
     @Query("""
             SELECT h FROM HydrationEntity h

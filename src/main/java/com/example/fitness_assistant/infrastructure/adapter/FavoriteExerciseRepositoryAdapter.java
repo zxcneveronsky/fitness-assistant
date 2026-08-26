@@ -10,6 +10,7 @@ import com.example.fitness_assistant.infrastructure.persistence.entity.FavoriteE
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaExerciseRepository;
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaFavoriteExerciseRepository;
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaUserRepository;
+import com.example.fitness_assistant.infrastructure.util.LikePattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -45,8 +46,8 @@ public class FavoriteExerciseRepositoryAdapter implements FavoriteExerciseReposi
     }
 
     @Override
-    public void deleteByExerciseIdAndUserId(Long exerciseId, Long userId) {
-        jpaFavoriteExerciseRepository.deleteByExerciseIdAndUserId(exerciseId, userId);
+    public long deleteByExerciseIdAndUserId(Long exerciseId, Long userId) {
+        return jpaFavoriteExerciseRepository.deleteByExerciseIdAndUserId(exerciseId, userId);
     }
 
     @Override
@@ -65,9 +66,9 @@ public class FavoriteExerciseRepositoryAdapter implements FavoriteExerciseReposi
             return jpaFavoriteExerciseRepository.findPageIdsByUserIdAndMuscleId(userId, muscleId, pageable);
         }
         if (muscleId == null) {
-            return jpaFavoriteExerciseRepository.findPageIdsByUserIdAndName(userId, trimmed, pageable);
+            return jpaFavoriteExerciseRepository.findPageIdsByUserIdAndName(userId, LikePattern.escape(trimmed), pageable);
         }
-        return jpaFavoriteExerciseRepository.findPageIdsByUserIdAndMuscleIdAndName(userId, muscleId, trimmed, pageable);
+        return jpaFavoriteExerciseRepository.findPageIdsByUserIdAndMuscleIdAndName(userId, muscleId, LikePattern.escape(trimmed), pageable);
     }
 
     private Page<Exercise> fetchExercisesPage(Page<Long> idPage, Pageable pageable) {

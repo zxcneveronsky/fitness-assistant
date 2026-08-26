@@ -45,8 +45,8 @@ public class MealRepositoryAdapter implements MealRepository {
     }
 
     @Override
-    public void deleteById(Long id, Long userId) {
-        jpaMealRepository.deleteByIdAndUserId(id, userId);
+    public long deleteById(Long id, Long userId) {
+        return jpaMealRepository.deleteByIdAndUserId(id, userId);
     }
 
     @Override

@@ -13,7 +13,7 @@ public interface JpaMuscleRepository extends JpaRepository<MuscleEntity, Long> {
 
     @Query("""
             SELECT m FROM MuscleEntity m
-            WHERE LOWER(m.name) LIKE LOWER(CONCAT('%', :name, '%'))
+            WHERE LOWER(m.name) LIKE LOWER(CONCAT('%', :name, '%')) ESCAPE '\\'
             ORDER BY m.name ASC
             """)
     List<MuscleEntity> searchByName(@Param("name") String name);

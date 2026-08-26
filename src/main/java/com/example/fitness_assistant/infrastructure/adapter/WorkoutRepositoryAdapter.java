@@ -9,6 +9,7 @@ import com.example.fitness_assistant.infrastructure.persistence.entity.WorkoutEn
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaUserRepository;
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaWorkoutRepository;
 import com.example.fitness_assistant.infrastructure.mapper.WorkoutMapper;
+import com.example.fitness_assistant.infrastructure.util.LikePattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -53,7 +54,7 @@ public class WorkoutRepositoryAdapter implements WorkoutRepository {
     public Page<Workout> searchWorkout(String name, Long userId, Pageable pageable) {
         Page<WorkoutEntity> page = (name == null || name.isBlank())
                 ? jpaWorkoutRepository.findAllByUserId(userId, pageable)
-                : jpaWorkoutRepository.searchByName(name.trim(), userId, pageable);
+                : jpaWorkoutRepository.searchByName(LikePattern.escape(name.trim()), userId, pageable);
         return page.map(workoutMapper::toDomain);
     }
 
@@ -85,8 +86,8 @@ public class WorkoutRepositoryAdapter implements WorkoutRepository {
     }
 
     @Override
-    public void deleteById(Long id, Long userId) {
-        jpaWorkoutRepository.deleteByIdAndUserId(id, userId);
+    public long deleteById(Long id, Long userId) {
+        return jpaWorkoutRepository.deleteByIdAndUserId(id, userId);
     }
 
     @Override

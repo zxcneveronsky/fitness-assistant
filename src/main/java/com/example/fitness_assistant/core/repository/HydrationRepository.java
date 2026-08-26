@@ -12,7 +12,7 @@ public interface HydrationRepository {
     Optional<Hydration> findById(Long id, Long userId);
     Page<Hydration> searchHydration(Long userId, LocalDate date, Pageable pageable);
     Hydration save(Hydration hydration);
-    void deleteById(Long id, Long userId);
+    long deleteById(Long id, Long userId);
     boolean existsById(Long id, Long userId);
     DailyHydration getDailyHydration(Long userId, LocalDate date);
 }

@@ -5,6 +5,7 @@ import com.example.fitness_assistant.core.repository.FoodRepository;
 import com.example.fitness_assistant.infrastructure.persistence.entity.FoodEntity;
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaFoodRepository;
 import com.example.fitness_assistant.infrastructure.mapper.FoodMapper;
+import com.example.fitness_assistant.infrastructure.util.LikePattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -32,7 +33,7 @@ public class FoodRepositoryAdapter implements FoodRepository {
     public Page<Food> searchFood(String name, Pageable pageable) {
         Page<FoodEntity> page = (name == null || name.isBlank())
                 ? jpaFoodRepository.findAllByOrderByNameAsc(pageable)
-                : jpaFoodRepository.searchByName(name.trim(), pageable);
+                : jpaFoodRepository.searchByName(LikePattern.escape(name.trim()), pageable);
         return page.map(foodMapper::toDomain);
     }
 

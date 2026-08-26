@@ -13,7 +13,7 @@ public interface MealRepository {
     Optional<Meal> findById(Long id, Long userId);
     Page<Meal> searchMeal(Long userId, LocalDate date, Pageable pageable);
     Meal save(Meal meal);
-    void deleteById(Long id, Long userId);
+    long deleteById(Long id, Long userId);
     boolean existsById(Long id, Long userId);
     DailyNutrition getDailyNutrition(Long userId, LocalDate date);
 

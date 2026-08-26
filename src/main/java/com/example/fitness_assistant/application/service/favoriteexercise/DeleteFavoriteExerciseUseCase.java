@@ -16,10 +16,10 @@ public class DeleteFavoriteExerciseUseCase {
 
     @Transactional
     public void deleteFavoriteExercise(Long userId, Long exerciseId) {
-        if (!favoriteExerciseRepository.existsByExerciseIdAndUserId(exerciseId, userId)) {
+        long deleted = favoriteExerciseRepository.deleteByExerciseIdAndUserId(exerciseId, userId);
+        if (deleted == 0) {
             throw new FavoriteExerciseNotFoundException(exerciseId);
         }
-        favoriteExerciseRepository.deleteByExerciseIdAndUserId(exerciseId, userId);
         log.info("Упражнение удалено из избранного | exerciseId={}", exerciseId);
     }
 }

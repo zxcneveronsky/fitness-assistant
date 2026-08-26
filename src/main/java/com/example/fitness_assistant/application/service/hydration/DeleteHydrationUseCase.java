@@ -16,10 +16,10 @@ public class DeleteHydrationUseCase {
 
     @Transactional
     public void deleteHydration(Long userId, Long hydrationId) {
-        if (!hydrationRepository.existsById(hydrationId, userId)) {
+        long deleted = hydrationRepository.deleteById(hydrationId, userId);
+        if (deleted == 0) {
             throw new HydrationNotFoundException(hydrationId);
         }
-        hydrationRepository.deleteById(hydrationId, userId);
         log.info("Запись гидратации удалена | id={}", hydrationId);
     }
 }

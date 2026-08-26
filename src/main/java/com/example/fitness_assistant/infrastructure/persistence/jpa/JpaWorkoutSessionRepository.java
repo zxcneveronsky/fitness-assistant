@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -17,6 +18,8 @@ public interface JpaWorkoutSessionRepository extends JpaRepository<WorkoutSessio
     @Query("SELECT w FROM WorkoutSessionEntity w WHERE w.user.id = :userId ORDER BY w.startTime DESC")
     @EntityGraph(attributePaths = "user")
     Page<WorkoutSessionEntity> findAllByUserId(@Param("userId") Long userId, Pageable pageable);
-    void deleteByIdAndUserId(Long id, Long userId);
+    @Modifying
+    @Query("DELETE FROM WorkoutSessionEntity w WHERE w.id = :id AND w.user.id = :userId")
+    long deleteByIdAndUserId(@Param("id") Long id, @Param("userId") Long userId);
     boolean existsByIdAndUserId(Long id, Long userId);
 }

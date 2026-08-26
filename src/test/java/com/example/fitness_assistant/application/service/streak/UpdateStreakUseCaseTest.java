@@ -33,8 +33,8 @@ public class UpdateStreakUseCaseTest {
         when(streakRepository.save(testStreak)).thenReturn(testStreak);
         when(streakRepository.save(testStreak0)).thenReturn(testStreak0);
 
-        Streak testSavedStreak = updateStreakUseCase.updateStreak(1L);
-        Streak testSavedStreak0 = updateStreakUseCase.updateStreak(2L);
+        Streak testSavedStreak = updateStreakUseCase.updateStreak(1L, today);
+        Streak testSavedStreak0 = updateStreakUseCase.updateStreak(2L, today);
 
         assertEquals(1,testSavedStreak.getStreak());
         assertEquals(0,testSavedStreak0.getStreak());
