@@ -28,7 +28,7 @@ public class CreateUserProfileUseCase {
     private final BodyWeightRepository bodyWeightRepository;
 
     @Transactional
-    public UserProfile createUserProfile(Long userId, UserProfile userProfile) {
+    public UserProfile createUserProfile(Long userId, UserProfile userProfile, LocalDate measuredAt) {
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException(userId);
         }
@@ -47,7 +47,7 @@ public class CreateUserProfileUseCase {
         targetsRepository.save(targets);
 
         if (userProfile.getWeight() != null) {
-            bodyWeightRepository.save(new BodyWeight(null, userId, userProfile.getWeight(), LocalDate.now()));
+            bodyWeightRepository.save(new BodyWeight(null, userId, userProfile.getWeight(), measuredAt));
         }
 
         log.info("Профиль создан | userId={}", savedProfile.getUserId());

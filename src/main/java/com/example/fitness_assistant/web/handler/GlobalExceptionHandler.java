@@ -60,6 +60,16 @@ public class GlobalExceptionHandler {
         return buildResponse(ex.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
+    @ExceptionHandler(InvalidDateRangeException.class)
+    public ResponseEntity<Object> handleInvalidDateRange(InvalidDateRangeException ex) {
+        return buildResponse(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MeasurementDateRequiredException.class)
+    public ResponseEntity<Object> handleMeasurementDateRequired(MeasurementDateRequiredException ex) {
+        return buildResponse(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<Object> handleAccessDenied(AccessDeniedException ex) {
         return buildResponse(ex.getMessage(), HttpStatus.FORBIDDEN);

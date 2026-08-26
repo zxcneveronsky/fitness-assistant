@@ -129,7 +129,7 @@
         } catch (e) { console.error('loadWaterData targets error:', e); }
 
         try {
-            const data = await request(`/hydration/daily?localDateTime=${encodeURIComponent(selectedWaterDate())}`);
+            const data = await request(`/hydration/daily?date=${encodeURIComponent(selectedWaterDate())}`);
             if (data) {
                 waterToday = (data.totalAmount || 0) * 1000;
             }
@@ -138,8 +138,7 @@
         }
 
         function selectedWaterDate() {
-            const d = document.getElementById('waterDate').value;
-            return d ? new Date(d).toISOString() : new Date().toISOString();
+            return document.getElementById('waterDate').value || todayLocal();
         }
 
         async function addWater() {
@@ -147,7 +146,7 @@
             const amount = safeFloat(document.getElementById('waterAmount').value);
             if (!amount || amount <= 0) { showError('Укажите объём'); return; }
             try {
-                await request('/hydration', { method: 'POST', body: JSON.stringify({ name, amount, consumedAt: selectedWaterDate() }) });
+                await request('/hydration', { method: 'POST', body: JSON.stringify({ name, amount, consumedAt: withLocalTime(selectedWaterDate()) }) });
                 document.getElementById('waterName').value = 'Вода';
                 document.getElementById('waterAmount').value = '0.25';
                 loadWater();
@@ -156,7 +155,7 @@
 
         async function quickAddWater(ml) {
             try {
-                await request('/hydration', { method: 'POST', body: JSON.stringify({ name: 'Вода', amount: ml / 1000, consumedAt: selectedWaterDate() }) });
+                await request('/hydration', { method: 'POST', body: JSON.stringify({ name: 'Вода', amount: ml / 1000, consumedAt: withLocalTime(selectedWaterDate()) }) });
                 waterToday += ml;
                 updateWaterChart();
                 loadWater();
@@ -172,9 +171,10 @@
 
         async function loadWater() {
             await loadWaterData();
-            const waterData = await request(`/hydration/search?localDateTime=${encodeURIComponent(selectedWaterDate())}&size=50`);
-            const waters = waterData.content || [];
-            document.getElementById('waterList').innerHTML = waters.length === 0
+            try {
+                const waterData = await request(`/hydration/search?date=${encodeURIComponent(selectedWaterDate())}&size=50`);
+                const waters = waterData.content || [];
+                document.getElementById('waterList').innerHTML = waters.length === 0
                 ? '<p class="text-gray-400 text-center py-8">Сегодня ещё не пили воду</p>'
                 : waters.map(w => `
                     <div class="bg-white rounded-xl p-4 border border-gray-100 flex items-center justify-between" id="waterRow_${w.id}">
@@ -193,6 +193,9 @@
                         </div>
                     </div>
                 `).join('');
+            } catch (e) {
+                showError(e.message);
+            }
         }
 
         function toggleWaterEdit(id) {
@@ -216,7 +219,9 @@
         }
 
         async function deleteWater(id) { await request(`/hydration/${id}`, { method: 'DELETE' }); loadWater(); }
-        document.getElementById('waterDate').value = new Date().toISOString().split('T')[0];
+        const waterDateEl = document.getElementById('waterDate');
+        waterDateEl.max = todayLocal();
+        waterDateEl.value = todayLocal();
         renderActiveSessionBanner(); syncActiveSessions(); function logout() { clearToken(); window.location.href = '/index.html'; }
         initWaterChart(); loadWaterData(); loadWater();
     </script>

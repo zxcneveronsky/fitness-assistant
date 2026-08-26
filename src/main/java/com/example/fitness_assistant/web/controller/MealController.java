@@ -14,6 +14,7 @@ import com.example.fitness_assistant.web.dto.response.meal.MealResponse;
 import com.example.fitness_assistant.web.mapper.DailyNutritionWebMapper;
 import com.example.fitness_assistant.web.mapper.MealWebMapper;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.PastOrPresent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +25,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/v1/meal")
@@ -48,17 +49,17 @@ public class MealController {
     @GetMapping("/search")
     public Page<MealResponse> searchMeal(
             @AuthenticationPrincipal UserDetailsAdapter adapter,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime localDateTime,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @PastOrPresent LocalDate date,
             @PageableDefault(size = 12) Pageable pageable) {
-        return findMealUseCase.searchMeal(adapter.getUserId(), localDateTime, pageable)
+        return findMealUseCase.searchMeal(adapter.getUserId(), date, pageable)
                 .map(mealWebMapper::toResponse);
     }
 
     @GetMapping("/daily")
     public DailyNutritionResponse getDailyMeal(
             @AuthenticationPrincipal UserDetailsAdapter adapter,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime localDateTime) {
-        return dailyNutritionWebMapper.toResponse(getDailyNutritionUseCase.getDailyNutrition(adapter.getUserId(), localDateTime));
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @PastOrPresent LocalDate date) {
+        return dailyNutritionWebMapper.toResponse(getDailyNutritionUseCase.getDailyNutrition(adapter.getUserId(), date));
     }
 
     @PostMapping("/manual")

@@ -256,9 +256,9 @@
         btn.textContent = '⏳ Сохраняю...';
         try {
             if (profileExists) {
-                await request('/profile', { method: 'PATCH', body: JSON.stringify({ name, weight, height, gender, birthDate }) });
+                await request('/profile', { method: 'PATCH', body: JSON.stringify({ name, weight, height, gender, birthDate, measuredAt: todayLocal() }) });
             } else {
-                await request('/profile', { method: 'POST', body: JSON.stringify({ name, weight, height, gender, birthDate }) });
+                await request('/profile', { method: 'POST', body: JSON.stringify({ name, weight, height, gender, birthDate, measuredAt: todayLocal() }) });
             }
             await loadProfile();
             await loadWeightHistory();
@@ -360,7 +360,7 @@
     function subDays(n) {
         const d = new Date();
         d.setDate(d.getDate() - n);
-        return d.toISOString().split('T')[0];
+        return formatDate(d);
     }
 
     function formatShortDate(dateStr) {
@@ -370,7 +370,7 @@
     }
 
     async function loadWeightHistory() {
-        const to = new Date().toISOString().split('T')[0];
+        const to = todayLocal();
         const from = subDays(currentWeightRange);
         try {
             weightHistoryData = await request('/body-weight?from=' + encodeURIComponent(from) + '&to=' + encodeURIComponent(to));
@@ -528,7 +528,7 @@
     function openWeightModal() {
         editingWeightId = null;
         document.getElementById('weightModalInput').value = '';
-        document.getElementById('weightModalDate').value = new Date().toISOString().split('T')[0];
+        document.getElementById('weightModalDate').value = todayLocal();
         document.getElementById('weightModalTitle').textContent = 'Записать вес';
         const btn = document.getElementById('saveWeightBtn');
         btn.textContent = 'Сохранить';
@@ -585,8 +585,12 @@
 
     renderActiveSessionBanner(); syncActiveSessions(); function logout() { clearToken(); window.location.href = '/index.html'; }
 
-    document.getElementById('weightTo').value = new Date().toISOString().split('T')[0];
-    document.getElementById('weightFrom').value = subDays(30);
+    const weightToEl = document.getElementById('weightTo');
+    const weightFromEl = document.getElementById('weightFrom');
+    weightToEl.max = todayLocal();
+    weightToEl.value = todayLocal();
+    weightFromEl.value = subDays(30);
+    document.getElementById('weightModalDate').max = todayLocal();
 
     loadProfile();
     loadWeightHistory();

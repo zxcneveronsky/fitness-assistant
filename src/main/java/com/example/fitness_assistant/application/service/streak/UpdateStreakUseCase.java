@@ -17,11 +17,10 @@ public class UpdateStreakUseCase {
     private final StreakRepository streakRepository;
 
     @Transactional
-    public Streak updateStreak(Long userId) {
+    public Streak updateStreak(Long userId, LocalDate today) {
         Streak streak = streakRepository.findById(userId)
                 .orElse(new Streak(userId, 0, null));
 
-        LocalDate today = LocalDate.now();
         LocalDate lastDate = streak.getLastVisitDate();
 
         if (lastDate == null) {

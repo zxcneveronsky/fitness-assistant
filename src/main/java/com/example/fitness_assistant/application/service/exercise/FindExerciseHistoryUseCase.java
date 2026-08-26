@@ -1,6 +1,7 @@
 package com.example.fitness_assistant.application.service.exercise;
 
 import com.example.fitness_assistant.core.exception.ExerciseNotFoundException;
+import com.example.fitness_assistant.core.exception.InvalidDateRangeException;
 import com.example.fitness_assistant.core.model.exercise.ExerciseHistory;
 import com.example.fitness_assistant.core.model.Set;
 import com.example.fitness_assistant.core.model.WorkoutSession;
@@ -35,6 +36,9 @@ public class FindExerciseHistoryUseCase {
 
     @Transactional(readOnly = true)
     public Page<ExerciseHistory> findExerciseHistory(Long userId, Long exerciseId, LocalDateTime from, LocalDateTime to, Pageable pageable) {
+        if (from.isAfter(to)) {
+            throw new InvalidDateRangeException();
+        }
         if (!exerciseRepository.existsById(exerciseId)) {
             throw new ExerciseNotFoundException(exerciseId);
         }

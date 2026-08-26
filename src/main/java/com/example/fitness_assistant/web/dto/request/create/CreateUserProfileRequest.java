@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
@@ -30,5 +31,9 @@ public record CreateUserProfileRequest(
         Double height,
 
         @NotNull(message = "Пол не может быть пустым")
-        UserProfile.Gender gender
+        UserProfile.Gender gender,
+
+        @NotNull(message = "Дата взвешивания должна быть указана")
+        @PastOrPresent(message = "Дата взвешивания не может быть в будущем")
+        LocalDate measuredAt
 ) { }

@@ -400,7 +400,7 @@
 
     async function loadStreak() {
         try {
-            const data = await request('/profile/streak', { method: 'POST' });
+            const data = await request('/profile/streak?date=' + encodeURIComponent(todayLocal()), { method: 'POST' });
             if (data && data.streak > 0) {
                 document.getElementById('streakCount').textContent = data.streak;
                 applyStreakStyle(data.streak);
@@ -485,9 +485,9 @@
             document.getElementById('noProfileCard').classList.remove('hidden');
         }
 
-        const today = new Date().toLocaleDateString('sv-SE') + 'T00:00:00';
+        const today = todayLocal();
         try {
-            const kcalData = await request(`/meal/daily?localDateTime=${encodeURIComponent(today)}`);
+            const kcalData = await request(`/meal/daily?date=${encodeURIComponent(today)}`);
             if (kcalData) {
                 kcalToday = kcalData.kcal || 0;
                 proteinsToday = kcalData.proteins || 0;
@@ -500,7 +500,7 @@
         } catch (e) { console.error('loadData meal error:', e); }
 
         try {
-            const waterData = await request(`/hydration/daily?localDateTime=${encodeURIComponent(today)}`);
+            const waterData = await request(`/hydration/daily?date=${encodeURIComponent(today)}`);
             if (waterData) waterToday = (waterData.totalAmount || 0) * 1000;
         } catch (e) { console.error('loadData hydration error:', e); }
 
@@ -540,7 +540,7 @@
     async function quickAddWater(ml) {
         if (ml) {
             try {
-                await request('/hydration', { method: 'POST', body: JSON.stringify({ name: 'Вода', amount: ml / 1000, consumedAt: new Date().toISOString() }) });
+                await request('/hydration', { method: 'POST', body: JSON.stringify({ name: 'Вода', amount: ml / 1000, consumedAt: nowLocalISO() }) });
                 waterToday += ml;
                 updateCharts();
             } catch (e) { alert(e.message); }
@@ -548,7 +548,7 @@
             const val = parseInt(document.getElementById('custom-water').value);
             if (val > 0) {
                 try {
-                    await request('/hydration', { method: 'POST', body: JSON.stringify({ name: 'Вода', amount: val / 1000, consumedAt: new Date().toISOString() }) });
+                    await request('/hydration', { method: 'POST', body: JSON.stringify({ name: 'Вода', amount: val / 1000, consumedAt: nowLocalISO() }) });
                     waterToday += val;
                     document.getElementById('custom-water').value = '';
                     updateCharts();
@@ -589,7 +589,7 @@
 
     async function loadWeightData() {
         try {
-            const to = new Date().toISOString().split('T')[0];
+            const to = todayLocal();
             const from = subDays(30);
             weightHistory = await request('/body-weight?from=' + encodeURIComponent(from) + '&to=' + encodeURIComponent(to));
             if (weightHistory && weightHistory.length > 0) {
@@ -618,7 +618,7 @@
     function subDays(n) {
         const d = new Date();
         d.setDate(d.getDate() - n);
-        return d.toISOString().split('T')[0];
+        return formatDate(d);
     }
 
     function renderWeightChart(data) {
@@ -684,7 +684,7 @@
         const val = parseFloat(document.getElementById('addWeightInput').value);
         if (!val || val < 5 || val > 500) { alert('Введите вес от 5 до 500 кг'); return; }
         try {
-            await request('/body-weight', { method: 'POST', body: JSON.stringify({ weight: val, measuredAt: new Date().toISOString().split('T')[0] }) });
+            await request('/body-weight', { method: 'POST', body: JSON.stringify({ weight: val, measuredAt: todayLocal() }) });
             closeAddWeightModal();
             document.getElementById('addWeightInput').value = '';
             await loadWeightData();

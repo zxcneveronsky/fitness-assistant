@@ -13,13 +13,17 @@ import com.example.fitness_assistant.web.dto.response.UserProfileResponse;
 import com.example.fitness_assistant.web.mapper.StreakWebMapper;
 import com.example.fitness_assistant.web.mapper.UserProfileWebMapper;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.time.LocalDate;
 @RestController
 @RequestMapping("/api/v1/profile")
 @RequiredArgsConstructor
@@ -43,7 +47,7 @@ public class UserProfileController {
     @ResponseStatus(HttpStatus.CREATED)
     public UserProfileResponse createProfile(@AuthenticationPrincipal UserDetailsAdapter adapter, @Valid @RequestBody CreateUserProfileRequest request) {
         return userProfileWebMapper.toResponse(
-                createUserProfileUseCase.createUserProfile(adapter.getUserId(), userProfileWebMapper.toDomain(request))
+                createUserProfileUseCase.createUserProfile(adapter.getUserId(), userProfileWebMapper.toDomain(request), request.measuredAt())
         );
     }
 
@@ -51,14 +55,19 @@ public class UserProfileController {
     @ResponseStatus(HttpStatus.OK)
     public UserProfileResponse updateProfile(@AuthenticationPrincipal UserDetailsAdapter adapter, @Valid @RequestBody UpdateUserProfileRequest request) {
         return userProfileWebMapper.toResponse(
-                updateUserProfileUseCase.updateUserProfile(adapter.getUserId(), userProfileWebMapper.toDomain(request))
+                updateUserProfileUseCase.updateUserProfile(adapter.getUserId(), userProfileWebMapper.toDomain(request), request.measuredAt())
         );
     }
 
     @PostMapping("/streak")
     @ResponseStatus(HttpStatus.CREATED)
-    public StreakResponse updateStreak(@AuthenticationPrincipal UserDetailsAdapter adapter) {
-        return streakWebMapper.toResponse(updateStreakUseCase.updateStreak(adapter.getUserId()));
+    public StreakResponse updateStreak(
+            @AuthenticationPrincipal UserDetailsAdapter adapter,
+            @RequestParam
+            @NotNull(message = "Дата не может быть пустой")
+            @PastOrPresent(message = "Дата не может быть в будущем")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        return streakWebMapper.toResponse(updateStreakUseCase.updateStreak(adapter.getUserId(), date));
     }
 
     @DeleteMapping

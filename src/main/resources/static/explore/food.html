@@ -231,7 +231,7 @@
         try {
             await request('/meal/auto', {
                 method: 'POST',
-                body: JSON.stringify({ id: foodId, weight, consumedAt: new Date().toISOString() })
+                body: JSON.stringify({ id: foodId, weight, consumedAt: nowLocalISO() })
             });
             btn.className = 'bg-green-100 text-green-700 px-4 py-2 rounded-lg text-xs font-bold w-full';
             btn.textContent = '✅ Сохранено';

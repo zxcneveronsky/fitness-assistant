@@ -132,7 +132,7 @@
     async function endSession(id) {
         if (!confirm('Завершить тренировку?')) return;
         try {
-            await request('/workout/session/end', { method: 'PATCH', body: JSON.stringify({ id, endTime: new Date().toISOString() }) });
+            await request('/workout/session/end', { method: 'PATCH', body: JSON.stringify({ id, endTime: nowLocalISO() }) });
             removeActiveSession();
             loadHistory(currentPage);
         } catch (e) { alert(e.message); }

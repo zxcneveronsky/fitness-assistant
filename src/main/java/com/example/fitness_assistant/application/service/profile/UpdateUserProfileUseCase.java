@@ -1,6 +1,7 @@
 package com.example.fitness_assistant.application.service.profile;
 
 import com.example.fitness_assistant.application.service.targets.TargetCalculationService;
+import com.example.fitness_assistant.core.exception.MeasurementDateRequiredException;
 import com.example.fitness_assistant.core.exception.UserProfileNotFoundException;
 import com.example.fitness_assistant.core.model.BodyWeight;
 import com.example.fitness_assistant.core.model.UserProfile;
@@ -25,7 +26,7 @@ public class UpdateUserProfileUseCase {
     private final BodyWeightRepository bodyWeightRepository;
 
     @Transactional
-    public UserProfile updateUserProfile(Long userId, UserProfile profileUpdate) {
+    public UserProfile updateUserProfile(Long userId, UserProfile profileUpdate, LocalDate measuredAt) {
         UserProfile updatedProfile = userProfileRepository.findById(userId)
                 .map(existingProfile -> {
                     existingProfile.setName(profileUpdate.getName() != null ? profileUpdate.getName() : existingProfile.getName());
@@ -45,7 +46,10 @@ public class UpdateUserProfileUseCase {
         });
 
         if (profileUpdate.getWeight() != null) {
-            bodyWeightRepository.save(new BodyWeight(null, userId, profileUpdate.getWeight(), LocalDate.now()));
+            if (measuredAt == null) {
+                throw new MeasurementDateRequiredException();
+            }
+            bodyWeightRepository.save(new BodyWeight(null, userId, profileUpdate.getWeight(), measuredAt));
         }
 
         log.info("Профиль обновлён | userId={}", updatedProfile.getUserId());

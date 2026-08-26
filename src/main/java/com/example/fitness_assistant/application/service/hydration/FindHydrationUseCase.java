@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
@@ -20,8 +20,8 @@ public class FindHydrationUseCase {
     private final HydrationRepository hydrationRepository;
 
     @Transactional(readOnly = true)
-    public Page<Hydration> searchHydration(Long userId, LocalDateTime consumedAt, Pageable pageable) {
-        Page<Hydration> hydrations = hydrationRepository.searchHydration(userId, consumedAt, pageable);
+    public Page<Hydration> searchHydration(Long userId, LocalDate date, Pageable pageable) {
+        Page<Hydration> hydrations = hydrationRepository.searchHydration(userId, date, pageable);
         log.info("Поиск гидратации завершён | userId={} | найдено={} | страница={}/{}",
                 userId, hydrations.getTotalElements(), hydrations.getNumber() + 1, hydrations.getTotalPages());
         return hydrations;

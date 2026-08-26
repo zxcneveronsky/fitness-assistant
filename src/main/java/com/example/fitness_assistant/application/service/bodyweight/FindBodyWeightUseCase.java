@@ -1,6 +1,7 @@
 package com.example.fitness_assistant.application.service.bodyweight;
 
 import com.example.fitness_assistant.core.exception.BodyWeightNotFoundException;
+import com.example.fitness_assistant.core.exception.InvalidDateRangeException;
 import com.example.fitness_assistant.core.model.BodyWeight;
 import com.example.fitness_assistant.core.repository.BodyWeightRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,9 @@ public class FindBodyWeightUseCase {
 
     @Transactional(readOnly = true)
     public List<BodyWeight> findByDateRange(Long userId, LocalDate from, LocalDate to) {
+        if (from.isAfter(to)) {
+            throw new InvalidDateRangeException();
+        }
         List<BodyWeight> bodyWeights = bodyWeightRepository.findByUserIdAndDateBetween(userId, from, to);
         log.info("Поиск записей веса | userId={} | from={} | to={} | найдено={}", userId, from, to, bodyWeights.size());
         return bodyWeights;

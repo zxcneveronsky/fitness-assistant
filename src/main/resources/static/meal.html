@@ -238,7 +238,7 @@
         } catch (e) { console.error('loadMealData targets error:', e); }
 
         try {
-            const daily = await request(`/meal/daily?localDateTime=${encodeURIComponent(selectedDate())}`);
+            const daily = await request(`/meal/daily?date=${encodeURIComponent(selectedDate())}`);
             if (daily) {
                 kcalToday = daily.kcal || 0;
                 proteinsToday = daily.proteins || 0;
@@ -255,7 +255,7 @@
         try {
             await request('/meal/auto', {
                 method: 'POST',
-                body: JSON.stringify({ id: foodId, weight, consumedAt: new Date().toISOString() })
+                body: JSON.stringify({ id: foodId, weight, consumedAt: nowLocalISO() })
             });
             removeSelectedFood(foodId);
             loadMeals();
@@ -280,7 +280,7 @@
                     proteins: isNaN(proteins) ? 0 : proteins,
                     fats: isNaN(fats) ? 0 : fats,
                     carbs: isNaN(carbs) ? 0 : carbs,
-                    consumedAt: new Date().toISOString()
+                    consumedAt: nowLocalISO()
                 })
             });
             document.getElementById('manualName').value = '';
@@ -302,15 +302,15 @@
     }
 
     function selectedDate() {
-        const d = document.getElementById('mealDate').value;
-        return d ? new Date(d).toISOString() : new Date().toISOString();
+        return document.getElementById('mealDate').value || todayLocal();
     }
 
     async function loadMeals() {
         await loadMealData();
-        const data = await request(`/meal/search?localDateTime=${encodeURIComponent(selectedDate())}&size=50`);
-        const meals = data.content || [];
-        document.getElementById('mealList').innerHTML = meals.length === 0
+        try {
+            const data = await request(`/meal/search?date=${encodeURIComponent(selectedDate())}&size=50`);
+            const meals = data.content || [];
+            document.getElementById('mealList').innerHTML = meals.length === 0
             ? '<p class="text-gray-400 text-center py-8">Сегодня ещё ничего не съедено</p>'
             : meals.map(m => `
                 <div class="bg-white rounded-xl p-4 border border-gray-100 flex items-center justify-between" id="mealRow_${m.id}">
@@ -337,6 +337,9 @@
                     </div>
                 </div>
             `).join('');
+        } catch (e) {
+            showError(e.message);
+        }
     }
 
     function toggleMealEdit(id) {
@@ -363,7 +366,8 @@
     }
 
     async function deleteMeal(id) { await request(`/meal/${id}`, { method: 'DELETE' }); loadMeals(); }
-    document.getElementById('mealDate').value = new Date().toISOString().split('T')[0];
+    document.getElementById('mealDate').max = todayLocal();
+    document.getElementById('mealDate').value = todayLocal();
     renderActiveSessionBanner(); syncActiveSessions(); function logout() { clearToken(); window.location.href = '/index.html'; }
     initKcalChart(); loadMealData(); loadMeals();
     renderSelectedFoods();

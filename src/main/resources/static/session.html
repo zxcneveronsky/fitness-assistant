@@ -134,7 +134,7 @@
 
             const s = await request('/workout/session/start', {
                 method: 'POST',
-                body: JSON.stringify({ workoutId: wid, startTime: new Date().toISOString() })
+                body: JSON.stringify({ workoutId: wid, startTime: nowLocalISO() })
             });
             if (!s) return;
             sessionId = s.id;
@@ -195,7 +195,7 @@
         try {
             await request('/workout/session/set', {
                 method: 'POST',
-                body: JSON.stringify({ sessionId, exerciseId, weight, reps, createdAt: new Date().toISOString() })
+                body: JSON.stringify({ sessionId, exerciseId, weight, reps, createdAt: nowLocalISO() })
             });
             document.getElementById(`weight_${exerciseId}`).value = '';
             document.getElementById(`reps_${exerciseId}`).value = '';
@@ -267,7 +267,7 @@
         try {
             await request('/workout/session/end', {
                 method: 'PATCH',
-                body: JSON.stringify({ id: sessionId, endTime: new Date().toISOString() })
+                body: JSON.stringify({ id: sessionId, endTime: nowLocalISO() })
             });
             stopTimer();
             removeActiveSession();

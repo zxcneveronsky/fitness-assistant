@@ -13,6 +13,7 @@ import com.example.fitness_assistant.web.dto.response.hydration.HydrationRespons
 import com.example.fitness_assistant.web.mapper.DailyHydrationWebMapper;
 import com.example.fitness_assistant.web.mapper.HydrationWebMapper;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.PastOrPresent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +24,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/v1/hydration")
@@ -47,17 +48,17 @@ public class HydrationController {
     @GetMapping("/search")
     public Page<HydrationResponse> searchHydration(
             @AuthenticationPrincipal UserDetailsAdapter adapter,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime localDateTime,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @PastOrPresent LocalDate date,
             @PageableDefault(size = 12) Pageable pageable) {
-        return findHydrationUseCase.searchHydration(adapter.getUserId(), localDateTime, pageable)
+        return findHydrationUseCase.searchHydration(adapter.getUserId(), date, pageable)
                 .map(hydrationWebMapper::toResponse);
     }
 
     @GetMapping("/daily")
     public DailyHydrationResponse getDailyHydration(
             @AuthenticationPrincipal UserDetailsAdapter adapter,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime localDateTime) {
-        return dailyHydrationWebMapper.toResponse(getDailyHydrationUseCase.getDailyHydration(adapter.getUserId(), localDateTime));
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @PastOrPresent LocalDate date) {
+        return dailyHydrationWebMapper.toResponse(getDailyHydrationUseCase.getDailyHydration(adapter.getUserId(), date));
     }
 
     @PostMapping

@@ -98,7 +98,7 @@
     function subDays(n) {
         const d = new Date();
         d.setDate(d.getDate() - n);
-        return d.toISOString();
+        return formatDate(d) + 'T' + localTimePart(d);
     }
 
     function setRange(days, btn) {
@@ -107,6 +107,8 @@
             b.className = 'range-btn text-xs font-bold px-4 py-2 rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200';
         });
         btn.className = 'range-btn text-xs font-bold px-4 py-2 rounded-xl bg-blue-600 text-white';
+        document.getElementById('dateFrom').value = formatDate(subDays(days));
+        document.getElementById('dateTo').value = todayLocal();
         loadHistory();
     }
 
@@ -221,7 +223,7 @@
 
     async function loadHistory() {
         const from = subDays(currentRange);
-        const to = new Date().toISOString();
+        const to = nowLocalISO();
         try {
             const data = await request('/exercise/' + exerciseId + '/history?from=' + encodeURIComponent(from) + '&to=' + encodeURIComponent(to));
             const items = data.content || [];
@@ -274,7 +276,7 @@
 
     async function loadHistoryCustom(from, to) {
         try {
-            const data = await request('/exercise/' + exerciseId + '/history?from=' + encodeURIComponent(from + 'T00:00:00') + '&to=' + encodeURIComponent(to + 'T23:59:59'));
+            const data = await request('/exercise/' + exerciseId + '/history?from=' + encodeURIComponent(from + 'T00:00:00') + '&to=' + encodeURIComponent(to + 'T23:59:59.999999'));
             const items = data.content || [];
             if (items.length === 0) {
                 document.getElementById('historyList').innerHTML = '';
@@ -314,8 +316,12 @@
 
     renderActiveSessionBanner(); syncActiveSessions(); function logout() { clearToken(); window.location.href = '/index.html'; }
 
-    document.getElementById('dateTo').value = new Date().toISOString().split('T')[0];
-    document.getElementById('dateFrom').value = subDays(30).split('T')[0];
+    const dateToEl = document.getElementById('dateTo');
+    const dateFromEl = document.getElementById('dateFrom');
+    dateToEl.max = todayLocal();
+    dateToEl.value = todayLocal();
+    dateFromEl.max = todayLocal();
+    dateFromEl.value = formatDate(subDays(30));
 
     loadHistory();
 </script>

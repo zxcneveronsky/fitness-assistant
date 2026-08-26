@@ -14,8 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.Optional;
 
 @Component
@@ -34,20 +32,15 @@ public class HydrationRepositoryAdapter implements HydrationRepository {
     }
 
     @Override
-    public Page<Hydration> searchHydration(Long userId, LocalDateTime consumedAt, Pageable pageable) {
-        LocalDate date = consumedAt != null ? consumedAt.toLocalDate() : LocalDate.now();
-        LocalDateTime startOfDay = date.atStartOfDay();
-        LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
-        return jpaHydrationRepository.searchHydration(userId, startOfDay, endOfDay, pageable)
+    public Page<Hydration> searchHydration(Long userId, LocalDate date, Pageable pageable) {
+        return jpaHydrationRepository.searchHydration(userId, date.atStartOfDay(), date.plusDays(1).atStartOfDay(), pageable)
                 .map(hydrationMapper::toDomain);
     }
 
     @Override
-    public DailyHydration getDailyHydration(Long userId, LocalDateTime consumedAt) {
-        LocalDate date = consumedAt != null ? consumedAt.toLocalDate() : LocalDate.now();
-        LocalDateTime startOfDay = date.atStartOfDay();
-        LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
-        return dailyHydrationMapper.toDomain(jpaHydrationRepository.getDailyHydration(userId, startOfDay, endOfDay));
+    public DailyHydration getDailyHydration(Long userId, LocalDate date) {
+        return dailyHydrationMapper.toDomain(
+                jpaHydrationRepository.getDailyHydration(userId, date.atStartOfDay(), date.plusDays(1).atStartOfDay()));
     }
 
 

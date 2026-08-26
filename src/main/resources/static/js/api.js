@@ -120,13 +120,35 @@ function renderActiveSessionBanner() {
     }
 }
 
-function formatDate(date) {
-    const d = new Date(date);
-    return d.toISOString().split('T')[0];
+function pad2(n) {
+    return String(n).padStart(2, '0');
 }
 
-function nowISO() {
-    return new Date().toISOString();
+function todayLocal() {
+    const d = new Date();
+    return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
+}
+
+function localTimePart(d) {
+    return pad2(d.getHours()) + ':' + pad2(d.getMinutes()) + ':' + pad2(d.getSeconds());
+}
+
+function nowLocalISO() {
+    const d = new Date();
+    return todayLocal() + 'T' + localTimePart(d);
+}
+
+function withLocalTime(dateStr) {
+    if (!dateStr) return nowLocalISO();
+    return dateStr.split('T')[0] + 'T' + localTimePart(new Date());
+}
+
+// Дата в локальной зоне ('YYYY-MM-DD'), принимает Date | timestamp | 'YYYY-MM-DD'
+function formatDate(date) {
+    if (!date) return todayLocal();
+    if (typeof date === 'string') return date.split('T')[0];
+    const d = new Date(date);
+    return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
 }
 
 let workoutNameCache = {};

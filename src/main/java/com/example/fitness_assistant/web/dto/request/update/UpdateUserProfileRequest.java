@@ -4,6 +4,7 @@ import com.example.fitness_assistant.core.model.UserProfile;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
@@ -23,5 +24,8 @@ public record UpdateUserProfileRequest(
         @Max(value = 300, message = "Рост должен быть не более 300 см")
         Double height,
 
-        UserProfile.Gender gender
+        UserProfile.Gender gender,
+
+        @PastOrPresent(message = "Дата взвешивания не может быть в будущем")
+        LocalDate measuredAt
 ) { }
