@@ -62,18 +62,13 @@ public class SetRepositoryAdapter implements SetRepository {
     }
 
     @Override
-    public Optional<Set> findById(Long id, Long sessionId) {
-        return jpaSetRepository.findByIdAndSessionId(id, sessionId)
+    public Optional<Set> findById(Long id, Long sessionId, Long userId) {
+        return jpaSetRepository.findByIdAndSessionIdAndUserId(id, sessionId, userId)
                 .map(setMapper::toDomain);
     }
 
     @Override
-    public void deleteById(Long id, Long sessionId) {
-        jpaSetRepository.deleteByIdAndSessionId(id, sessionId);
-    }
-
-    @Override
-    public boolean existsById(Long id, Long sessionId) {
-        return jpaSetRepository.existsByIdAndSessionId(id, sessionId);
+    public long deleteById(Long id, Long sessionId, Long userId) {
+        return jpaSetRepository.deleteByIdAndSessionIdAndUserId(id, sessionId, userId);
     }
 }

@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -57,6 +58,7 @@ public class FindExerciseHistoryUseCase {
 
         List<Long> workoutIds = sessions.stream()
                 .map(WorkoutSession::getWorkoutId)
+                .filter(Objects::nonNull)
                 .distinct()
                 .toList();
         Map<Long, String> workoutNameMap = workoutRepository.findAllAccessibleByIdIn(workoutIds, userId).stream()

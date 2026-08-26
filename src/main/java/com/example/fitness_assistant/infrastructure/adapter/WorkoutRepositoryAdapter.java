@@ -1,8 +1,10 @@
 package com.example.fitness_assistant.infrastructure.adapter;
 
+import com.example.fitness_assistant.core.model.WorkoutAccess.AccessLevel;
 import com.example.fitness_assistant.core.model.workout.Workout;
 import com.example.fitness_assistant.core.repository.WorkoutRepository;
 
+import com.example.fitness_assistant.infrastructure.persistence.entity.WorkoutAccessEntity;
 import com.example.fitness_assistant.infrastructure.persistence.entity.WorkoutEntity;
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaUserRepository;
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaWorkoutRepository;
@@ -30,8 +32,14 @@ public class WorkoutRepositoryAdapter implements WorkoutRepository {
     }
 
     @Override
-    public Optional<Workout> findByIdAccessible(Long id) {
-        return jpaWorkoutRepository.findById(id)
+    public Optional<Workout> findAccessibleById(Long id, Long userId) {
+        return jpaWorkoutRepository.findAccessibleById(id, userId)
+                .map(workoutMapper::toDomain);
+    }
+
+    @Override
+    public Optional<Workout> findAccessibleByIdWithLevel(Long id, Long userId, AccessLevel accessLevel) {
+        return jpaWorkoutRepository.findAccessibleByIdWithLevel(id, userId, WorkoutAccessEntity.AccessLevel.valueOf(accessLevel.name()))
                 .map(workoutMapper::toDomain);
     }
 

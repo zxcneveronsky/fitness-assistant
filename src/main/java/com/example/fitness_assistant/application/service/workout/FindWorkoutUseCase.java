@@ -40,10 +40,7 @@ public class FindWorkoutUseCase {
 
     @Transactional(readOnly = true)
     public WorkoutWithExercise findById(Long userId, Long workoutId) {
-        if (!workoutRepository.hasAccess(workoutId, userId)) {
-            throw new WorkoutNotFoundException(workoutId);
-        }
-        Workout workout = workoutRepository.findByIdAccessible(workoutId)
+        Workout workout = workoutRepository.findAccessibleById(workoutId, userId)
                 .orElseThrow(() -> new WorkoutNotFoundException(workoutId));
         List<Long> ids = workout.getExerciseIds();
         WorkoutWithExercise workoutWithExercise = new WorkoutWithExercise(

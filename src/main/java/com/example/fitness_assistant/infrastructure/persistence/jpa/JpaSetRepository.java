@@ -3,8 +3,8 @@ package com.example.fitness_assistant.infrastructure.persistence.jpa;
 import com.example.fitness_assistant.infrastructure.persistence.entity.SetEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -13,10 +13,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface JpaSetRepository extends JpaRepository<SetEntity, Long> {
-    @EntityGraph(attributePaths = {"session", "exercise"})
-    Optional<SetEntity> findByIdAndSessionId(Long id, Long sessionId);
-    void deleteByIdAndSessionId(Long id, Long sessionId);
-    boolean existsByIdAndSessionId(Long id, Long sessionId);
 
     Page<SetEntity> findBySessionIdAndExerciseIdOrderByIdAsc(Long sessionId, Long exerciseId, Pageable pageable);
 
@@ -42,4 +38,27 @@ public interface JpaSetRepository extends JpaRepository<SetEntity, Long> {
             @Param("from") LocalDateTime from,
             @Param("to") LocalDateTime to,
             Pageable pageable);
+
+    @Query("""
+            SELECT s FROM SetEntity s
+            JOIN FETCH s.session sess
+            JOIN FETCH s.exercise ex
+            WHERE s.id = :id
+            AND sess.id = :sessionId
+            AND sess.user.id = :userId
+            """)
+    Optional<SetEntity> findByIdAndSessionIdAndUserId(@Param("id") Long id,
+                                                      @Param("sessionId") Long sessionId,
+                                                      @Param("userId") Long userId);
+
+    @Modifying
+    @Query("""
+            DELETE FROM SetEntity s
+            WHERE s.id = :id
+            AND s.session.id = :sessionId
+            AND s.session.user.id = :userId
+            """)
+    long deleteByIdAndSessionIdAndUserId(@Param("id") Long id,
+                                         @Param("sessionId") Long sessionId,
+                                         @Param("userId") Long userId);
 }

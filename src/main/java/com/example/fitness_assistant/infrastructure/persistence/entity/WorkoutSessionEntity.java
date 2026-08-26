@@ -23,7 +23,7 @@ public class WorkoutSessionEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "workout_id", nullable = false)
+    @JoinColumn(name = "workout_id")
     private WorkoutEntity workout;
 
     @ManyToOne(fetch = FetchType.LAZY)
