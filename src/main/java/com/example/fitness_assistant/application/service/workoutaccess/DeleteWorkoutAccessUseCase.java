@@ -16,10 +16,9 @@ public class DeleteWorkoutAccessUseCase {
 
     @Transactional
     public void deleteWorkoutAccess(Long userId, Long accessId) {
-        if (!workoutAccessRepository.existsByIdAndOwnerId(accessId, userId)) {
+        if (workoutAccessRepository.deleteByIdAndOwnerId(accessId, userId) == 0) {
             throw new WorkoutAccessNotFoundException(accessId);
         }
-        workoutAccessRepository.deleteById(accessId);
         log.info("Доступ к тренировке удалён | id={}", accessId);
     }
 }

@@ -13,6 +13,8 @@ public interface WorkoutRepository {
     Page<Workout> findAllByUserId(Long userId, Pageable pageable);
     Page<Workout> searchWorkout(String name, Long userId, Pageable pageable);
     List<Workout> findAllById(List<Long> ids);
+    boolean hasAccess(Long workoutId, Long userId);
+    List<Workout> findAllAccessibleByIdIn(List<Long> ids, Long userId);
     Workout save(Workout workout);
     void deleteById(Long id, Long userId);
     boolean existsById(Long id, Long userId);

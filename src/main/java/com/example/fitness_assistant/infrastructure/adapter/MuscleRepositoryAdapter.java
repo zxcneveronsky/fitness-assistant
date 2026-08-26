@@ -3,6 +3,7 @@ package com.example.fitness_assistant.infrastructure.adapter;
 import com.example.fitness_assistant.core.model.Muscle;
 import com.example.fitness_assistant.core.repository.MuscleRepository;
 import com.example.fitness_assistant.infrastructure.mapper.MuscleMapper;
+import com.example.fitness_assistant.infrastructure.persistence.entity.MuscleEntity;
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaMuscleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -19,7 +20,6 @@ public class MuscleRepositoryAdapter implements MuscleRepository {
     private final MuscleMapper muscleMapper;
 
     @Override
-    @Cacheable("muscle")
     public boolean existsById(Long id){
         return jpaMuscleRepository.existsById(id);
     }
@@ -32,7 +32,6 @@ public class MuscleRepositoryAdapter implements MuscleRepository {
     }
 
     @Override
-    @Cacheable("muscle")
     public List<Muscle> findAllById(List<Long> ids) {
         return jpaMuscleRepository.findAllById(ids).stream()
                 .map(muscleMapper::toDomain)
@@ -40,21 +39,23 @@ public class MuscleRepositoryAdapter implements MuscleRepository {
     }
 
     @Override
-    @Cacheable("muscle")
     public List<Muscle> searchMuscle(String name) {
-        return jpaMuscleRepository.searchMuscle(name).stream()
+        List<MuscleEntity> muscles = (name == null || name.isBlank())
+                ? jpaMuscleRepository.findAllByOrderByNameAsc()
+                : jpaMuscleRepository.searchByName(name.trim());
+        return muscles.stream()
                 .map(muscleMapper::toDomain)
                 .toList();
     }
 
     @Override
-    @CacheEvict(value = "muscle", allEntries = true)
+    @CacheEvict(value = {"muscle", "exercise"}, allEntries = true)
     public Muscle save(Muscle muscle) {
         return muscleMapper.toDomain(jpaMuscleRepository.save(muscleMapper.toEntity(muscle)));
     }
 
     @Override
-    @CacheEvict(value = "muscle", allEntries = true)
+    @CacheEvict(value = {"muscle", "exercise"}, allEntries = true)
     public void deleteById(Long id) {
         jpaMuscleRepository.deleteById(id);
     }

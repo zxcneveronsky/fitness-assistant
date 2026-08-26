@@ -18,23 +18,27 @@ public interface JpaMealRepository extends JpaRepository<MealEntity, Long> {
     boolean existsByIdAndUserId(Long id, Long userId);
     void deleteByIdAndUserId(Long id, Long userId);
 
-    @Query("SELECT h FROM MealEntity h WHERE h.user.id = :userId " +
-            "AND (CAST(:startOfDay AS timestamp) IS NULL " +
-            "OR (h.consumedAt >= :startOfDay AND h.consumedAt < :endOfDay)) " +
-            "ORDER BY h.consumedAt DESC")
+    @Query("""
+            SELECT m FROM MealEntity m
+            WHERE m.user.id = :userId
+            AND m.consumedAt >= :startOfDay AND m.consumedAt < :endOfDay
+            ORDER BY m.consumedAt DESC
+            """)
     Page<MealEntity> searchMeal(@Param("userId") Long userId,
                             @Param("startOfDay") LocalDateTime startOfDay,
                             @Param("endOfDay") LocalDateTime endOfDay,
                             Pageable pageable);
 
-    @Query("SELECT COALESCE(SUM(m.kcal), 0) AS kcal, " +
-            "COALESCE(SUM(m.proteins), 0) AS proteins, " +
-            "COALESCE(SUM(m.fats), 0) AS fats, " +
-            "COALESCE(SUM(m.carbs), 0) AS carbs " +
-            "FROM MealEntity m " +
-            "WHERE m.user.id = :userId " +
-            "AND m.consumedAt >= :startOfDay " +
-            "AND m.consumedAt < :endOfDay")
+    @Query("""
+            SELECT COALESCE(SUM(m.kcal), 0) AS kcal,
+            COALESCE(SUM(m.proteins), 0) AS proteins,
+            COALESCE(SUM(m.fats), 0) AS fats,
+            COALESCE(SUM(m.carbs), 0) AS carbs
+            FROM MealEntity m
+            WHERE m.user.id = :userId
+            AND m.consumedAt >= :startOfDay
+            AND m.consumedAt < :endOfDay
+            """)
     DailyNutritionProjection getDailyNutrition(@Param("userId") Long userId,
                                                @Param("startOfDay") LocalDateTime startOfDay,
                                                @Param("endOfDay") LocalDateTime endOfDay);

@@ -13,17 +13,11 @@ public interface WorkoutAccessRepository {
 
     List<WorkoutAccess> findAllSharedWithUserId(Long userId);
 
-    Optional<WorkoutAccess> findById(Long id);
-
     Optional<WorkoutAccess> findByIdAndOwnerId(Long id, Long ownerId);
 
-    boolean existsByIdAndOwnerId(Long id, Long ownerId);
-
-    void deleteById(Long id);
+    long deleteByIdAndOwnerId(Long id, Long ownerId);
 
     boolean existsByWorkoutIdAndOwnerIdAndSharedWithUserId(Long workoutId, Long ownerId, Long sharedWithUserId);
 
     boolean existsByWorkoutIdAndSharedWithUserIdAndAccessLevel(Long workoutId, Long userId, AccessLevel accessLevel);
-
-    boolean existsByWorkoutIdAndSharedWithUserId(Long workoutId, Long userId);
 }

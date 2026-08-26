@@ -49,25 +49,14 @@ public class WorkoutAccessRepositoryAdapter implements WorkoutAccessRepository {
     }
 
     @Override
-    public Optional<WorkoutAccess> findById(Long id) {
-        return jpaWorkoutAccessRepository.findById(id)
-                .map(workoutAccessMapper::toDomain);
-    }
-
-    @Override
     public Optional<WorkoutAccess> findByIdAndOwnerId(Long id, Long ownerId) {
         return jpaWorkoutAccessRepository.findByIdAndOwnerId(id, ownerId)
                 .map(workoutAccessMapper::toDomain);
     }
 
     @Override
-    public boolean existsByIdAndOwnerId(Long id, Long ownerId) {
-        return jpaWorkoutAccessRepository.existsByIdAndOwnerId(id, ownerId);
-    }
-
-    @Override
-    public void deleteById(Long id) {
-        jpaWorkoutAccessRepository.deleteById(id);
+    public long deleteByIdAndOwnerId(Long id, Long ownerId) {
+        return jpaWorkoutAccessRepository.deleteByIdAndOwnerId(id, ownerId);
     }
 
     @Override
@@ -79,10 +68,5 @@ public class WorkoutAccessRepositoryAdapter implements WorkoutAccessRepository {
     public boolean existsByWorkoutIdAndSharedWithUserIdAndAccessLevel(Long workoutId, Long userId, AccessLevel accessLevel) {
         return jpaWorkoutAccessRepository.existsByWorkoutIdAndSharedWithUserIdAndAccessLevel(
                 workoutId, userId, WorkoutAccessEntity.AccessLevel.valueOf(accessLevel.name()));
-    }
-
-    @Override
-    public boolean existsByWorkoutIdAndSharedWithUserId(Long workoutId, Long userId) {
-        return jpaWorkoutAccessRepository.existsByWorkoutIdAndSharedWithUserId(workoutId, userId);
     }
 }

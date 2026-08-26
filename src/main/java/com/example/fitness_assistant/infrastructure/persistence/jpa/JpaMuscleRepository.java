@@ -9,6 +9,12 @@ import java.util.List;
 
 public interface JpaMuscleRepository extends JpaRepository<MuscleEntity, Long> {
 
-    @Query("SELECT m FROM MuscleEntity m WHERE cast(:name as text) IS NULL OR LOWER(m.name) LIKE LOWER(CONCAT('%', cast(:name as text), '%')) ORDER BY m.name ASC")
-    List<MuscleEntity> searchMuscle(@Param("name") String name);
+    List<MuscleEntity> findAllByOrderByNameAsc();
+
+    @Query("""
+            SELECT m FROM MuscleEntity m
+            WHERE LOWER(m.name) LIKE LOWER(CONCAT('%', :name, '%'))
+            ORDER BY m.name ASC
+            """)
+    List<MuscleEntity> searchByName(@Param("name") String name);
 }

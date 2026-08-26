@@ -43,13 +43,27 @@ public class WorkoutRepositoryAdapter implements WorkoutRepository {
 
     @Override
     public Page<Workout> searchWorkout(String name, Long userId, Pageable pageable) {
-        return jpaWorkoutRepository.searchWorkout(name, userId, pageable)
-                .map(workoutMapper::toDomain);
+        Page<WorkoutEntity> page = (name == null || name.isBlank())
+                ? jpaWorkoutRepository.findAllByUserId(userId, pageable)
+                : jpaWorkoutRepository.searchByName(name.trim(), userId, pageable);
+        return page.map(workoutMapper::toDomain);
     }
 
     @Override
     public List<Workout> findAllById(List<Long> ids) {
         return jpaWorkoutRepository.findAllById(ids).stream()
+                .map(workoutMapper::toDomain)
+                .toList();
+    }
+
+    @Override
+    public boolean hasAccess(Long workoutId, Long userId) {
+        return jpaWorkoutRepository.existsAccessible(workoutId, userId);
+    }
+
+    @Override
+    public List<Workout> findAllAccessibleByIdIn(List<Long> ids, Long userId) {
+        return jpaWorkoutRepository.findAllAccessibleByIdIn(ids, userId).stream()
                 .map(workoutMapper::toDomain)
                 .toList();
     }

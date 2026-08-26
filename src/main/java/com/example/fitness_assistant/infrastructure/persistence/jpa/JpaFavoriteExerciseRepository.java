@@ -1,6 +1,5 @@
 package com.example.fitness_assistant.infrastructure.persistence.jpa;
 
-import com.example.fitness_assistant.infrastructure.persistence.entity.ExerciseEntity;
 import com.example.fitness_assistant.infrastructure.persistence.entity.FavoriteExerciseEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,27 +15,80 @@ public interface JpaFavoriteExerciseRepository extends JpaRepository<FavoriteExe
 
     void deleteByExerciseIdAndUserId(Long exerciseId, Long userId);
 
-    @Query(value = """
-        SELECT DISTINCT e FROM ExerciseEntity e
-        LEFT JOIN FETCH e.muscles m
-        WHERE e.id IN (SELECT fe.exercise.id FROM FavoriteExerciseEntity fe WHERE fe.user.id = :userId)
-        AND (cast(:name as text) IS NULL
-        OR LOWER(e.name) LIKE LOWER(CONCAT('%', cast(:name as text), '%'))
-        OR LOWER(m.name) LIKE LOWER(CONCAT('%', cast(:name as text), '%')))
-        AND (:muscleId IS NULL OR m.id = :muscleId)
-        ORDER BY e.name ASC
-        """,
-            countQuery = """
-        SELECT COUNT(DISTINCT e) FROM ExerciseEntity e
-        LEFT JOIN e.muscles m
-        WHERE e.id IN (SELECT fe.exercise.id FROM FavoriteExerciseEntity fe WHERE fe.user.id = :userId)
-        AND (cast(:name as text) IS NULL
-        OR LOWER(e.name) LIKE LOWER(CONCAT('%', cast(:name as text), '%'))
-        OR LOWER(m.name) LIKE LOWER(CONCAT('%', cast(:name as text), '%')))
-        AND (:muscleId IS NULL OR m.id = :muscleId)
-        """)
-    Page<ExerciseEntity> searchFavoriteExercises(@Param("name") String name, @Param("muscleId") Long muscleId, @Param("userId") Long userId, Pageable pageable);
-
     @Query("SELECT fe.exercise.id FROM FavoriteExerciseEntity fe WHERE fe.user.id = :userId ORDER BY fe.exercise.id ASC")
     List<Long> findIdsByUserId(@Param("userId") Long userId);
+
+    @Query(value = """
+            SELECT e.id FROM ExerciseEntity e
+            WHERE EXISTS (SELECT 1 FROM FavoriteExerciseEntity fe
+                          WHERE fe.exercise.id = e.id AND fe.user.id = :userId)
+            GROUP BY e.id, e.name
+            ORDER BY e.name ASC
+            """,
+            countQuery = """
+            SELECT COUNT(e.id) FROM ExerciseEntity e
+            WHERE EXISTS (SELECT 1 FROM FavoriteExerciseEntity fe
+                          WHERE fe.exercise.id = e.id AND fe.user.id = :userId)
+            """)
+    Page<Long> findPageIdsByUserId(@Param("userId") Long userId, Pageable pageable);
+
+    @Query(value = """
+            SELECT e.id FROM ExerciseEntity e
+            LEFT JOIN e.muscles m
+            WHERE EXISTS (SELECT 1 FROM FavoriteExerciseEntity fe
+                          WHERE fe.exercise.id = e.id AND fe.user.id = :userId)
+            AND (LOWER(e.name) LIKE LOWER(CONCAT('%', :name, '%'))
+            OR LOWER(m.name) LIKE LOWER(CONCAT('%', :name, '%')))
+            GROUP BY e.id, e.name
+            ORDER BY e.name ASC
+            """,
+            countQuery = """
+            SELECT COUNT(DISTINCT e.id) FROM ExerciseEntity e
+            LEFT JOIN e.muscles m
+            WHERE EXISTS (SELECT 1 FROM FavoriteExerciseEntity fe
+                          WHERE fe.exercise.id = e.id AND fe.user.id = :userId)
+            AND (LOWER(e.name) LIKE LOWER(CONCAT('%', :name, '%'))
+            OR LOWER(m.name) LIKE LOWER(CONCAT('%', :name, '%')))
+            """)
+    Page<Long> findPageIdsByUserIdAndName(@Param("userId") Long userId, @Param("name") String name, Pageable pageable);
+
+    @Query(value = """
+            SELECT e.id FROM ExerciseEntity e
+            JOIN e.muscles m
+            WHERE EXISTS (SELECT 1 FROM FavoriteExerciseEntity fe
+                          WHERE fe.exercise.id = e.id AND fe.user.id = :userId)
+            AND m.id = :muscleId
+            GROUP BY e.id, e.name
+            ORDER BY e.name ASC
+            """,
+            countQuery = """
+            SELECT COUNT(DISTINCT e.id) FROM ExerciseEntity e
+            JOIN e.muscles m
+            WHERE EXISTS (SELECT 1 FROM FavoriteExerciseEntity fe
+                          WHERE fe.exercise.id = e.id AND fe.user.id = :userId)
+            AND m.id = :muscleId
+            """)
+    Page<Long> findPageIdsByUserIdAndMuscleId(@Param("userId") Long userId, @Param("muscleId") Long muscleId, Pageable pageable);
+
+    @Query(value = """
+            SELECT e.id FROM ExerciseEntity e
+            JOIN e.muscles m
+            WHERE EXISTS (SELECT 1 FROM FavoriteExerciseEntity fe
+                          WHERE fe.exercise.id = e.id AND fe.user.id = :userId)
+            AND m.id = :muscleId
+            AND (LOWER(e.name) LIKE LOWER(CONCAT('%', :name, '%'))
+            OR LOWER(m.name) LIKE LOWER(CONCAT('%', :name, '%')))
+            GROUP BY e.id, e.name
+            ORDER BY e.name ASC
+            """,
+            countQuery = """
+            SELECT COUNT(DISTINCT e.id) FROM ExerciseEntity e
+            JOIN e.muscles m
+            WHERE EXISTS (SELECT 1 FROM FavoriteExerciseEntity fe
+                          WHERE fe.exercise.id = e.id AND fe.user.id = :userId)
+            AND m.id = :muscleId
+            AND (LOWER(e.name) LIKE LOWER(CONCAT('%', :name, '%'))
+            OR LOWER(m.name) LIKE LOWER(CONCAT('%', :name, '%')))
+            """)
+    Page<Long> findPageIdsByUserIdAndMuscleIdAndName(@Param("userId") Long userId, @Param("muscleId") Long muscleId, @Param("name") String name, Pageable pageable);
 }

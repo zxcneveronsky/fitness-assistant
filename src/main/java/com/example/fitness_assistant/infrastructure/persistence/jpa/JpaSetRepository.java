@@ -17,27 +17,25 @@ public interface JpaSetRepository extends JpaRepository<SetEntity, Long> {
     Optional<SetEntity> findByIdAndSessionId(Long id, Long sessionId);
     void deleteByIdAndSessionId(Long id, Long sessionId);
     boolean existsByIdAndSessionId(Long id, Long sessionId);
-    @Query("SELECT s FROM SetEntity s WHERE s.session.id = :sessionId AND s.exercise.id = :exerciseId ORDER BY s.id ASC")
-    Page<SetEntity> findBySessionIdAndExerciseId(@Param("sessionId") Long sessionId, @Param("exerciseId") Long exerciseId, Pageable pageable);
 
-    @Query("SELECT s FROM SetEntity s " +
-           "JOIN FETCH s.exercise e " +
-           "WHERE s.session.id = :sessionId " +
-           "ORDER BY e.id ASC, s.id ASC")
+    Page<SetEntity> findBySessionIdAndExerciseIdOrderByIdAsc(Long sessionId, Long exerciseId, Pageable pageable);
+
+    @Query("""
+            SELECT s FROM SetEntity s
+            JOIN FETCH s.exercise e
+            WHERE s.session.id = :sessionId
+            ORDER BY e.id ASC, s.id ASC
+            """)
     List<SetEntity> findAllWithExerciseBySessionId(@Param("sessionId") Long sessionId);
 
-    @Query(value = "SELECT s FROM SetEntity s " +
-           "JOIN FETCH s.session sess " +
-           "JOIN FETCH sess.workout w " +
-           "WHERE s.exercise.id = :exerciseId " +
-           "AND sess.user.id = :userId " +
-           "AND sess.startTime BETWEEN :from AND :to " +
-           "ORDER BY sess.startTime DESC, s.id ASC",
-           countQuery = "SELECT COUNT(s) FROM SetEntity s " +
-           "JOIN s.session sess " +
-           "WHERE s.exercise.id = :exerciseId " +
-           "AND sess.user.id = :userId " +
-           "AND sess.startTime BETWEEN :from AND :to")
+    @Query("""
+            SELECT s FROM SetEntity s
+            JOIN FETCH s.session sess
+            WHERE s.exercise.id = :exerciseId
+            AND sess.user.id = :userId
+            AND sess.startTime BETWEEN :from AND :to
+            ORDER BY sess.startTime DESC, s.id ASC
+            """)
     Page<SetEntity> findByExerciseIdAndUserIdAndStartTimeBetween(
             @Param("exerciseId") Long exerciseId,
             @Param("userId") Long userId,

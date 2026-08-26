@@ -20,19 +20,24 @@ public interface JpaHydrationRepository extends JpaRepository<HydrationEntity, L
 
     void deleteByIdAndUserId(Long id, Long userId);
 
-    @Query("SELECT h FROM HydrationEntity h WHERE h.user.id = :userId " +
-            "AND (CAST(:startOfDay AS timestamp) IS NULL " +
-            "OR (h.consumedAt >= :startOfDay AND h.consumedAt < :endOfDay)) " +
-            "ORDER BY h.consumedAt DESC")
+    @Query("""
+            SELECT h FROM HydrationEntity h
+            WHERE h.user.id = :userId
+            AND h.consumedAt >= :startOfDay AND h.consumedAt < :endOfDay
+            ORDER BY h.consumedAt DESC
+            """)
     Page<HydrationEntity> searchHydration(@Param("userId") Long userId,
                                           @Param("startOfDay") LocalDateTime startOfDay,
                                           @Param("endOfDay") LocalDateTime endOfDay,
                                           Pageable pageable);
-    @Query("SELECT COALESCE(SUM(h.amount), 0) AS totalAmount " +
-            "FROM HydrationEntity h " +
-            "WHERE h.user.id = :userId " +
-            "AND h.consumedAt >= :startOfDay " +
-            "AND h.consumedAt < :endOfDay")
+
+    @Query("""
+            SELECT COALESCE(SUM(h.amount), 0) AS totalAmount
+            FROM HydrationEntity h
+            WHERE h.user.id = :userId
+            AND h.consumedAt >= :startOfDay
+            AND h.consumedAt < :endOfDay
+            """)
     DailyHydrationProjection getDailyHydration(@Param("userId") Long userId,
                                            @Param("startOfDay") LocalDateTime startOfDay,
                                            @Param("endOfDay") LocalDateTime endOfDay);

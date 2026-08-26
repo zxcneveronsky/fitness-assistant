@@ -2,6 +2,7 @@ package com.example.fitness_assistant.infrastructure.adapter;
 
 import com.example.fitness_assistant.core.model.Food;
 import com.example.fitness_assistant.core.repository.FoodRepository;
+import com.example.fitness_assistant.infrastructure.persistence.entity.FoodEntity;
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaFoodRepository;
 import com.example.fitness_assistant.infrastructure.mapper.FoodMapper;
 import lombok.RequiredArgsConstructor;
@@ -29,8 +30,10 @@ public class FoodRepositoryAdapter implements FoodRepository {
 
     @Override
     public Page<Food> searchFood(String name, Pageable pageable) {
-        return jpaFoodRepository.searchFood(name, pageable)
-                .map(foodMapper::toDomain);
+        Page<FoodEntity> page = (name == null || name.isBlank())
+                ? jpaFoodRepository.findAllByOrderByNameAsc(pageable)
+                : jpaFoodRepository.searchByName(name.trim(), pageable);
+        return page.map(foodMapper::toDomain);
     }
 
     @Override

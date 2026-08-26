@@ -36,7 +36,7 @@ public class SetRepositoryAdapter implements SetRepository {
 
     @Override
     public Page<Set> findBySessionIdAndExerciseId(Long sessionId, Long exerciseId, Pageable pageable) {
-        return jpaSetRepository.findBySessionIdAndExerciseId(sessionId, exerciseId, pageable)
+        return jpaSetRepository.findBySessionIdAndExerciseIdOrderByIdAsc(sessionId, exerciseId, pageable)
                 .map(setMapper::toDomain);
     }
 

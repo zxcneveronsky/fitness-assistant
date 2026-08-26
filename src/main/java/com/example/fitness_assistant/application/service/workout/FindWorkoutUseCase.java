@@ -4,7 +4,6 @@ import com.example.fitness_assistant.core.exception.WorkoutNotFoundException;
 import com.example.fitness_assistant.core.model.workout.Workout;
 import com.example.fitness_assistant.core.model.workout.WorkoutWithExercise;
 import com.example.fitness_assistant.core.repository.ExerciseRepository;
-import com.example.fitness_assistant.core.repository.WorkoutAccessRepository;
 import com.example.fitness_assistant.core.repository.WorkoutRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +20,6 @@ import java.util.List;
 public class FindWorkoutUseCase {
 
     private final WorkoutRepository workoutRepository;
-    private final WorkoutAccessRepository workoutAccessRepository;
     private final ExerciseRepository exerciseRepository;
 
     @Transactional(readOnly = true)
@@ -42,14 +40,11 @@ public class FindWorkoutUseCase {
 
     @Transactional(readOnly = true)
     public WorkoutWithExercise findById(Long userId, Long workoutId) {
-        boolean isOwner = workoutRepository.existsById(workoutId, userId);
-        boolean hasAccess = workoutAccessRepository.existsByWorkoutIdAndSharedWithUserId(workoutId, userId);
-        if (!isOwner && !hasAccess) {
+        if (!workoutRepository.hasAccess(workoutId, userId)) {
             throw new WorkoutNotFoundException(workoutId);
         }
-        Workout workout = isOwner
-                ? workoutRepository.findById(workoutId, userId).orElseThrow(() -> new WorkoutNotFoundException(workoutId))
-                : workoutRepository.findByIdAccessible(workoutId).orElseThrow(() -> new WorkoutNotFoundException(workoutId));
+        Workout workout = workoutRepository.findByIdAccessible(workoutId)
+                .orElseThrow(() -> new WorkoutNotFoundException(workoutId));
         List<Long> ids = workout.getExerciseIds();
         WorkoutWithExercise workoutWithExercise = new WorkoutWithExercise(
                 workout.getId(),
@@ -57,7 +52,7 @@ public class FindWorkoutUseCase {
                 workout.getName(),
                 ids != null ? exerciseRepository.findAllByIdIn(ids) : List.of()
         );
-        log.info("Тренировка найдена | id={} | isOwner={}", workoutId, isOwner);
+        log.info("Тренировка найдена | id={} | userId={}", workoutId, userId);
         return workoutWithExercise;
     }
 }

@@ -63,9 +63,4 @@ public class UserRepositoryAdapter implements UserRepository {
     public void deleteById(Long id) {
         jpaUserRepository.deleteById(id);
     }
-
-    @Override
-    public User getReferenceById(Long id) {
-        return userMapper.toDomain(jpaUserRepository.getReferenceById(id));
-    }
 }

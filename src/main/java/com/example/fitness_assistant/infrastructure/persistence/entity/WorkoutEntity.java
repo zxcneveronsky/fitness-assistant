@@ -6,7 +6,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.BatchSize;
 
 import java.util.List;
 
@@ -31,7 +30,6 @@ public class WorkoutEntity {
 
     @ElementCollection
     @OrderColumn(name = "exercise_order")
-    @BatchSize(size = 15)
     @CollectionTable(
             name = "workout_exercises",
             joinColumns = @JoinColumn(name = "workout_id")

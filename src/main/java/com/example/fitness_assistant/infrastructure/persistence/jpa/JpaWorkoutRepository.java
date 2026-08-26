@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface JpaWorkoutRepository extends JpaRepository<WorkoutEntity, Long> {
@@ -19,19 +20,29 @@ public interface JpaWorkoutRepository extends JpaRepository<WorkoutEntity, Long>
     @Query("SELECT w FROM WorkoutEntity w WHERE w.user.id = :userId ORDER BY w.id DESC")
     Page<WorkoutEntity> findAllByUserId(@Param("userId") Long userId, Pageable pageable);
 
-    @Query(
-            value = """
+    @Query("""
             SELECT w FROM WorkoutEntity w
             WHERE w.user.id = :userId
-            AND (cast(:name as text) IS NULL
-                 OR LOWER(w.name) LIKE LOWER(CONCAT('%', cast(:name as text), '%')))
+            AND LOWER(w.name) LIKE LOWER(CONCAT('%', :name, '%'))
             ORDER BY w.id DESC
-            """,
-            countQuery = """
-            SELECT COUNT(w) FROM WorkoutEntity w
-            WHERE w.user.id = :userId
-            AND (cast(:name as text) IS NULL
-                 OR LOWER(w.name) LIKE LOWER(CONCAT('%', cast(:name as text), '%')))
             """)
-    Page<WorkoutEntity> searchWorkout(@Param("name") String name, @Param("userId") Long userId, Pageable pageable);
+    Page<WorkoutEntity> searchByName(@Param("name") String name, @Param("userId") Long userId, Pageable pageable);
+
+    @Query("""
+            SELECT COUNT(w) > 0 FROM WorkoutEntity w
+            WHERE w.id = :workoutId
+            AND (w.user.id = :userId
+                 OR EXISTS (SELECT 1 FROM WorkoutAccessEntity wa
+                            WHERE wa.workout.id = w.id AND wa.sharedWithUser.id = :userId))
+            """)
+    boolean existsAccessible(@Param("workoutId") Long workoutId, @Param("userId") Long userId);
+
+    @Query("""
+            SELECT w FROM WorkoutEntity w
+            WHERE w.id IN :ids
+            AND (w.user.id = :userId
+                 OR EXISTS (SELECT 1 FROM WorkoutAccessEntity wa
+                            WHERE wa.workout.id = w.id AND wa.sharedWithUser.id = :userId))
+            """)
+    List<WorkoutEntity> findAllAccessibleByIdIn(@Param("ids") List<Long> ids, @Param("userId") Long userId);
 }

@@ -7,7 +7,6 @@ import com.example.fitness_assistant.core.model.WorkoutSession;
 import com.example.fitness_assistant.core.model.workout.Workout;
 import com.example.fitness_assistant.core.repository.ExerciseRepository;
 import com.example.fitness_assistant.core.repository.SetRepository;
-import com.example.fitness_assistant.core.repository.WorkoutAccessRepository;
 import com.example.fitness_assistant.core.repository.WorkoutRepository;
 import com.example.fitness_assistant.core.repository.WorkoutSessionRepository;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +32,6 @@ public class FindExerciseHistoryUseCase {
     private final ExerciseRepository exerciseRepository;
     private final WorkoutSessionRepository workoutSessionRepository;
     private final WorkoutRepository workoutRepository;
-    private final WorkoutAccessRepository workoutAccessRepository;
 
     @Transactional(readOnly = true)
     public Page<ExerciseHistory> findExerciseHistory(Long userId, Long exerciseId, LocalDateTime from, LocalDateTime to, Pageable pageable) {
@@ -53,12 +51,11 @@ public class FindExerciseHistoryUseCase {
         Map<Long, WorkoutSession> sessionMap = sessions.stream()
                 .collect(Collectors.toMap(WorkoutSession::getId, s -> s));
 
-        Set<Long> workoutIds = sessions.stream()
+        List<Long> workoutIds = sessions.stream()
                 .map(WorkoutSession::getWorkoutId)
-                .collect(Collectors.toSet());
-        Map<Long, String> workoutNameMap = workoutRepository.findAllById(workoutIds).stream()
-                .filter(w -> workoutRepository.existsById(w.getId(), userId)
-                        || workoutAccessRepository.existsByWorkoutIdAndSharedWithUserId(w.getId(), userId))
+                .distinct()
+                .toList();
+        Map<Long, String> workoutNameMap = workoutRepository.findAllAccessibleByIdIn(workoutIds, userId).stream()
                 .collect(Collectors.toMap(Workout::getId, Workout::getName));
 
         List<ExerciseHistory> history = sessions.stream()

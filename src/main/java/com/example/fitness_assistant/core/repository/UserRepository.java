@@ -17,5 +17,4 @@ public interface UserRepository {
     Page<User> findAll(Pageable pageable);
     User save(User user);
     void deleteById(Long id);
-    User getReferenceById(Long id);
 }

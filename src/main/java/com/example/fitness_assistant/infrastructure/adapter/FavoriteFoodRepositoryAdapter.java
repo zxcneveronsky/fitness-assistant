@@ -6,6 +6,7 @@ import com.example.fitness_assistant.core.repository.FavoriteFoodRepository;
 import com.example.fitness_assistant.infrastructure.mapper.FavoriteFoodMapper;
 import com.example.fitness_assistant.infrastructure.mapper.FoodMapper;
 import com.example.fitness_assistant.infrastructure.persistence.entity.FavoriteFoodEntity;
+import com.example.fitness_assistant.infrastructure.persistence.entity.FoodEntity;
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaFavoriteFoodRepository;
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaFoodRepository;
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaUserRepository;
@@ -46,8 +47,10 @@ public class FavoriteFoodRepositoryAdapter implements FavoriteFoodRepository {
 
     @Override
     public Page<Food> searchFavoriteFood(String name, Long userId, Pageable pageable) {
-        return jpaFavoriteFoodRepository.searchFavoriteFoods(name, userId, pageable)
-                .map(foodMapper::toDomain);
+        Page<FoodEntity> page = (name == null || name.isBlank())
+                ? jpaFavoriteFoodRepository.findByUserIdOrderByNameAsc(userId, pageable)
+                : jpaFavoriteFoodRepository.searchByNameAndUserId(name.trim(), userId, pageable);
+        return page.map(foodMapper::toDomain);
     }
 
     @Override
