@@ -3,6 +3,7 @@ package com.example.fitness_assistant.web.controller;
 import com.example.fitness_assistant.application.service.muscle.FindMuscleUseCase;
 import com.example.fitness_assistant.web.dto.response.MuscleResponse;
 import com.example.fitness_assistant.web.mapper.MuscleWebMapper;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,7 +29,8 @@ public class MuscleController {
     }
 
     @GetMapping("/search")
-    public List<MuscleResponse> searchMuscle(@RequestParam(required = false) String name) {
+    public List<MuscleResponse> searchMuscle(
+            @RequestParam(required = false) @Size(max = 100, message = "Длина поискового запроса не должна превышать 100 символов") String name) {
         return findMuscleUseCase.searchMuscle(name).stream()
                 .map(muscleWebMapper::toResponse)
                 .toList();

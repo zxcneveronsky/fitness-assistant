@@ -1,6 +1,7 @@
 package com.example.fitness_assistant.application.service.user;
 
 import com.example.fitness_assistant.core.exception.AccessDeniedException;
+import com.example.fitness_assistant.core.exception.SelfDeleteException;
 import com.example.fitness_assistant.core.exception.UserNotFoundException;
 import com.example.fitness_assistant.core.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,5 +31,17 @@ public class DeleteUserUseCase {
             throw new AccessDeniedException();
         }
         deleteUser(userId);
+    }
+
+    @Transactional
+    public void deleteUserByAdmin(Long userId, Long currentUserId) {
+        if (currentUserId.equals(userId)) {
+            throw new SelfDeleteException();
+        }
+        if (!userRepository.existsById(userId)) {
+            throw new UserNotFoundException(userId);
+        }
+        userRepository.deleteById(userId);
+        log.info("Пользователь удалён админом | id={} | by={}", userId, currentUserId);
     }
 }

@@ -7,6 +7,7 @@ import com.example.fitness_assistant.web.dto.response.ExerciseHistoryResponse;
 import com.example.fitness_assistant.web.dto.response.ExerciseResponse;
 import com.example.fitness_assistant.web.mapper.ExerciseHistoryWebMapper;
 import com.example.fitness_assistant.web.mapper.ExerciseWebMapper;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -47,7 +48,7 @@ public class ExerciseController {
 
     @GetMapping("/search")
     public Page<ExerciseResponse> searchExercise(
-            @RequestParam(required = false) String name,
+            @RequestParam(required = false) @Size(max = 100, message = "Длина поискового запроса не должна превышать 100 символов") String name,
             @RequestParam(required = false) Long muscleId,
             @PageableDefault(size = 12) Pageable pageable) {
         return findExerciseUseCase.searchExercise(name, muscleId, pageable)

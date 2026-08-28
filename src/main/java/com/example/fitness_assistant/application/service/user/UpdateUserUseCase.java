@@ -1,5 +1,6 @@
 package com.example.fitness_assistant.application.service.user;
 
+import com.example.fitness_assistant.core.exception.SelfDemotionException;
 import com.example.fitness_assistant.core.exception.UserAlreadyExistsException;
 import com.example.fitness_assistant.core.exception.UserNotFoundException;
 import com.example.fitness_assistant.core.model.User;
@@ -19,8 +20,11 @@ public class UpdateUserUseCase {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public User updateUser(User userUpdate) {
+    public User updateUser(User userUpdate, Long currentUserId) {
         Long userId = userUpdate.getId();
+        if (userId.equals(currentUserId) && userUpdate.getRole() != null) {
+            throw new SelfDemotionException();
+        }
         User updatedUser = userRepository.findById(userId)
                 .map(existingUser -> {
                     if (userUpdate.getEmail() != null) {
@@ -39,7 +43,7 @@ public class UpdateUserUseCase {
                     return userRepository.save(existingUser);
                 })
                 .orElseThrow(() -> new UserNotFoundException(userId));
-        log.info("Пользователь обновлён | id={}", userId);
+        log.info("Пользователь обновлён | id={} | by={}", userId, currentUserId);
         return updatedUser;
     }
 }

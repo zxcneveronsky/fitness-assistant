@@ -39,6 +39,14 @@ jwt:
   secret: ${JWT_SECRET}
   expiration: 86400000
 
+app:
+  seed:
+    csv: true
+    create-demo: true
+    create-admin: false
+  swagger:
+    enabled: false
+
 
 logging:
   level:

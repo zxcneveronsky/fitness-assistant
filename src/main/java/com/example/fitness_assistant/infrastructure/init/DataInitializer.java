@@ -12,6 +12,7 @@ import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,6 +36,15 @@ public class DataInitializer implements CommandLineRunner {
     private final JpaUserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Value("${app.seed.csv:true}")
+    private boolean loadCsv;
+
+    @Value("${app.seed.create-demo:true}")
+    private boolean createDemo;
+
+    @Value("${app.seed.create-admin:false}")
+    private boolean createAdmin;
+
     @Override
     public void run(String... args) {
         if (foodRepository.count() > 0) {
@@ -42,10 +52,17 @@ public class DataInitializer implements CommandLineRunner {
             return;
         }
 
-        loadFood();
-        loadMuscles();
-        loadExercises();
-        createDemoUser();
+        if (loadCsv) {
+            loadFood();
+            loadMuscles();
+            loadExercises();
+        }
+        if (createDemo) {
+            createDemoUser();
+        }
+        if (createAdmin) {
+            createAdminUser();
+        }
         log.info("Инициализация данных завершена");
     }
 
@@ -61,6 +78,20 @@ public class DataInitializer implements CommandLineRunner {
         );
         userRepository.save(demo);
         log.info("Демо-пользователь создан: user@example.com / password123");
+    }
+
+    private void createAdminUser() {
+        if (userRepository.existsByEmail("admin@example.com")) {
+            return;
+        }
+        UserEntity admin = new UserEntity(
+                null,
+                "admin@example.com",
+                passwordEncoder.encode("admin123"),
+                UserEntity.Role.ADMIN
+        );
+        userRepository.save(admin);
+        log.info("Админ-пользователь создан: admin@example.com / admin123");
     }
 
     private void loadFood() {

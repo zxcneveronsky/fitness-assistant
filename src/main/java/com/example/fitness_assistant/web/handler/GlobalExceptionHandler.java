@@ -61,6 +61,21 @@ public class GlobalExceptionHandler {
         return buildResponse(ex.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
+    @ExceptionHandler(JwtExpiredException.class)
+    public ResponseEntity<Object> handleJwtExpired(JwtExpiredException ex) {
+        return buildResponse(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(InvalidJwtException.class)
+    public ResponseEntity<Object> handleInvalidJwt(InvalidJwtException ex) {
+        return buildResponse(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(JwtUserNotFoundException.class)
+    public ResponseEntity<Object> handleJwtUserNotFound(JwtUserNotFoundException ex) {
+        return buildResponse(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+
     @ExceptionHandler(InvalidDateRangeException.class)
     public ResponseEntity<Object> handleInvalidDateRange(InvalidDateRangeException ex) {
         return buildResponse(ex.getMessage(), HttpStatus.BAD_REQUEST);
@@ -79,6 +94,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<Object> handleAccessDenied(AccessDeniedException ex) {
+        return buildResponse(ex.getMessage(), HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(SelfDemotionException.class)
+    public ResponseEntity<Object> handleSelfDemotion(SelfDemotionException ex) {
+        return buildResponse(ex.getMessage(), HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(SelfDeleteException.class)
+    public ResponseEntity<Object> handleSelfDelete(SelfDeleteException ex) {
         return buildResponse(ex.getMessage(), HttpStatus.FORBIDDEN);
     }
 

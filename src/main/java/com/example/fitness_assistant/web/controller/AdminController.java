@@ -27,12 +27,14 @@ import com.example.fitness_assistant.web.mapper.ExerciseWebMapper;
 import com.example.fitness_assistant.web.mapper.FoodWebMapper;
 import com.example.fitness_assistant.web.mapper.MuscleWebMapper;
 import com.example.fitness_assistant.web.mapper.UserWebMapper;
+import com.example.fitness_assistant.infrastructure.security.UserDetailsAdapter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -73,16 +75,22 @@ public class AdminController {
 
     @PatchMapping("/users")
     @ResponseStatus(HttpStatus.OK)
-    public UserResponse updateUser(@Valid @RequestBody UpdateUserRequest request) {
+    public UserResponse updateUser(
+            @AuthenticationPrincipal UserDetailsAdapter adapter,
+            @Valid @RequestBody UpdateUserRequest request) {
         return userWebMapper.toResponse(
-                updateUserUseCase.updateUser(userWebMapper.toDomain(request))
+                updateUserUseCase.updateUser(
+                        userWebMapper.toDomain(request),
+                        adapter.getUserId())
         );
     }
 
     @DeleteMapping("/users/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUser(@PathVariable("id") Long userId) {
-        deleteUserUseCase.deleteUser(userId);
+    public void deleteUser(
+            @AuthenticationPrincipal UserDetailsAdapter adapter,
+            @PathVariable("id") Long userId) {
+        deleteUserUseCase.deleteUserByAdmin(userId, adapter.getUserId());
     }
 
     @PostMapping("/food")

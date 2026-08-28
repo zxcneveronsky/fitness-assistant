@@ -1,6 +1,8 @@
 package com.example.fitness_assistant.infrastructure.security;
 
-import io.jsonwebtoken.JwtException;
+import com.example.fitness_assistant.core.exception.InvalidJwtException;
+import com.example.fitness_assistant.core.exception.JwtExpiredException;
+import com.example.fitness_assistant.core.exception.JwtUserNotFoundException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,30 +42,39 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
+        final String jwt = authHeader.substring(7);
+
         try {
-            final String jwt = authHeader.substring(7);
             final String userEmail = jwtService.extractUsername(jwt);
 
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-
-                UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
-
-                if (jwtService.isTokenValid(jwt, userDetails)) {
-
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                            userDetails,
-                            null,
-                            userDetails.getAuthorities()
-                    );
-
-                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                final UserDetails userDetails;
+                try {
+                    userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+                } catch (UsernameNotFoundException e) {
+                    throw new JwtUserNotFoundException(userEmail);
                 }
+
+                jwtService.isTokenValid(jwt, userDetails);
+
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                        userDetails,
+                        null,
+                        userDetails.getAuthorities()
+                );
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authToken);
             }
-        } catch (JwtException | IllegalArgumentException | UsernameNotFoundException e) {
-            log.warn("Невалидный JWT | IP={} | URI={} | ошибка={}",
+        } catch (JwtExpiredException | InvalidJwtException | JwtUserNotFoundException e) {
+            log.warn("401 Unauthorized | IP={} | URI={} | message={}",
                     request.getRemoteAddr(), request.getRequestURI(), e.getMessage());
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().write(
+                    "{\"timestamp\":\"" + java.time.LocalDateTime.now()
+                            + "\",\"status\":401,\"error\":\"Unauthorized\",\"message\":\""
+                            + e.getMessage() + "\"}");
+            return;
         }
 
         filterChain.doFilter(request, response);

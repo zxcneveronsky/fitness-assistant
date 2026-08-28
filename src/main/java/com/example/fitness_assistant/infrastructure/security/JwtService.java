@@ -1,8 +1,12 @@
 package com.example.fitness_assistant.infrastructure.security;
 
+import com.example.fitness_assistant.core.exception.InvalidJwtException;
+import com.example.fitness_assistant.core.exception.JwtExpiredException;
 import com.example.fitness_assistant.core.model.User;
 import com.example.fitness_assistant.core.security.TokenProvider;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -50,7 +54,13 @@ public class JwtService implements TokenProvider {
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+        if (!username.equals(userDetails.getUsername())) {
+            throw new InvalidJwtException();
+        }
+        if (isTokenExpired(token)) {
+            throw new JwtExpiredException();
+        }
+        return true;
     }
 
     private boolean isTokenExpired(String token) {
@@ -58,15 +68,34 @@ public class JwtService implements TokenProvider {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parser()
-                .verifyWith(getSignInKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+        try {
+            return Jwts.parser()
+                    .verifyWith(getSignInKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (ExpiredJwtException e) {
+            throw new JwtExpiredException();
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new InvalidJwtException();
+        }
     }
 
     private SecretKey getSignInKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        byte[] keyBytes;
+        try {
+            keyBytes = Decoders.BASE64.decode(secretKey);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalStateException(
+                    "jwt.secret не является валидной Base64-строкой. Сгенерируйте ключ: "
+                            + "openssl rand -base64 48", e);
+        }
+        if (keyBytes.length < 32) {
+            throw new IllegalStateException(
+                    "jwt.secret слишком короткий: " + keyBytes.length
+                            + " байт. Для HS256 нужно минимум 32 байта. Сгенерируйте: "
+                            + "openssl rand -base64 48");
+        }
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }

@@ -6,6 +6,7 @@ import com.example.fitness_assistant.web.dto.response.FoodResponse;
 import com.example.fitness_assistant.web.mapper.FoodWebMapper;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,7 +31,7 @@ public class FoodController {
 
     @GetMapping("/search")
     public Page<FoodResponse> searchFood(
-            @RequestParam(required = false) String name,
+            @RequestParam(required = false) @Size(max = 100, message = "Длина поискового запроса не должна превышать 100 символов") String name,
             @PageableDefault(size = 12) Pageable pageable) {
         return findFoodUseCase.searchFood(name, pageable)
                 .map(foodWebMapper::toResponse);
