@@ -35,12 +35,15 @@ public interface JpaFavoriteExerciseRepository extends JpaRepository<FavoriteExe
     Page<Long> findPageIdsByUserId(@Param("userId") Long userId, Pageable pageable);
 
     @Query(value = """
-            SELECT DISTINCT e.id FROM ExerciseEntity e
-            LEFT JOIN e.muscles m
-            WHERE EXISTS (SELECT 1 FROM FavoriteExerciseEntity fe
-                          WHERE fe.exercise.id = e.id AND fe.user.id = :userId)
-              AND (LOWER(e.name) LIKE LOWER(CONCAT('%', :name, '%'))
-                OR LOWER(m.name) LIKE LOWER(CONCAT('%', :name, '%')))
+            SELECT e.id FROM ExerciseEntity e
+            WHERE e.id IN (
+                SELECT DISTINCT e2.id FROM ExerciseEntity e2
+                LEFT JOIN e2.muscles m
+                WHERE EXISTS (SELECT 1 FROM FavoriteExerciseEntity fe
+                              WHERE fe.exercise.id = e2.id AND fe.user.id = :userId)
+                  AND (LOWER(e2.name) LIKE LOWER(CONCAT('%', :name, '%'))
+                    OR LOWER(m.name)  LIKE LOWER(CONCAT('%', :name, '%')))
+            )
             ORDER BY e.name ASC
             """,
             countQuery = """
@@ -49,18 +52,21 @@ public interface JpaFavoriteExerciseRepository extends JpaRepository<FavoriteExe
             WHERE EXISTS (SELECT 1 FROM FavoriteExerciseEntity fe
                           WHERE fe.exercise.id = e.id AND fe.user.id = :userId)
               AND (LOWER(e.name) LIKE LOWER(CONCAT('%', :name, '%'))
-                OR LOWER(m.name) LIKE LOWER(CONCAT('%', :name, '%')))
+                OR LOWER(m.name)  LIKE LOWER(CONCAT('%', :name, '%')))
             """)
     Page<Long> findPageIdsByUserIdAndName(@Param("userId") Long userId,
                                           @Param("name") String name,
                                           Pageable pageable);
 
     @Query(value = """
-            SELECT DISTINCT e.id FROM ExerciseEntity e
-            JOIN e.muscles m
-            WHERE EXISTS (SELECT 1 FROM FavoriteExerciseEntity fe
-                          WHERE fe.exercise.id = e.id AND fe.user.id = :userId)
-              AND m.id = :muscleId
+            SELECT e.id FROM ExerciseEntity e
+            WHERE e.id IN (
+                SELECT DISTINCT e2.id FROM ExerciseEntity e2
+                JOIN e2.muscles m
+                WHERE EXISTS (SELECT 1 FROM FavoriteExerciseEntity fe
+                              WHERE fe.exercise.id = e2.id AND fe.user.id = :userId)
+                  AND m.id = :muscleId
+            )
             ORDER BY e.name ASC
             """,
             countQuery = """
@@ -75,12 +81,15 @@ public interface JpaFavoriteExerciseRepository extends JpaRepository<FavoriteExe
                                               Pageable pageable);
 
     @Query(value = """
-            SELECT DISTINCT e.id FROM ExerciseEntity e
-            JOIN e.muscles m
-            WHERE EXISTS (SELECT 1 FROM FavoriteExerciseEntity fe
-                          WHERE fe.exercise.id = e.id AND fe.user.id = :userId)
-              AND m.id = :muscleId
-              AND LOWER(e.name) LIKE LOWER(CONCAT('%', :name, '%'))
+            SELECT e.id FROM ExerciseEntity e
+            WHERE e.id IN (
+                SELECT DISTINCT e2.id FROM ExerciseEntity e2
+                JOIN e2.muscles m
+                WHERE EXISTS (SELECT 1 FROM FavoriteExerciseEntity fe
+                              WHERE fe.exercise.id = e2.id AND fe.user.id = :userId)
+                  AND m.id = :muscleId
+                  AND LOWER(e2.name) LIKE LOWER(CONCAT('%', :name, '%'))
+            )
             ORDER BY e.name ASC
             """,
             countQuery = """

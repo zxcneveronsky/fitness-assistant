@@ -25,10 +25,13 @@ public interface JpaExerciseRepository extends JpaRepository<ExerciseEntity, Lon
     Page<Long> findPageIds(Pageable pageable);
 
     @Query(value = """
-            SELECT DISTINCT e.id FROM ExerciseEntity e
-            LEFT JOIN e.muscles m
-            WHERE LOWER(e.name) LIKE LOWER(CONCAT('%', :name, '%'))
-               OR LOWER(m.name) LIKE LOWER(CONCAT('%', :name, '%'))
+            SELECT e.id FROM ExerciseEntity e
+            WHERE e.id IN (
+                SELECT DISTINCT e2.id FROM ExerciseEntity e2
+                LEFT JOIN e2.muscles m
+                WHERE LOWER(e2.name) LIKE LOWER(CONCAT('%', :name, '%'))
+                   OR LOWER(m.name) LIKE LOWER(CONCAT('%', :name, '%'))
+            )
             ORDER BY e.name ASC
             """,
             countQuery = """
@@ -40,9 +43,12 @@ public interface JpaExerciseRepository extends JpaRepository<ExerciseEntity, Lon
     Page<Long> findPageIdsByName(@Param("name") String name, Pageable pageable);
 
     @Query(value = """
-            SELECT DISTINCT e.id FROM ExerciseEntity e
-            JOIN e.muscles m
-            WHERE m.id = :muscleId
+            SELECT e.id FROM ExerciseEntity e
+            WHERE e.id IN (
+                SELECT DISTINCT e2.id FROM ExerciseEntity e2
+                JOIN e2.muscles m
+                WHERE m.id = :muscleId
+            )
             ORDER BY e.name ASC
             """,
             countQuery = """
@@ -53,10 +59,13 @@ public interface JpaExerciseRepository extends JpaRepository<ExerciseEntity, Lon
     Page<Long> findPageIdsByMuscleId(@Param("muscleId") Long muscleId, Pageable pageable);
 
     @Query(value = """
-            SELECT DISTINCT e.id FROM ExerciseEntity e
-            JOIN e.muscles m
-            WHERE m.id = :muscleId
-              AND LOWER(e.name) LIKE LOWER(CONCAT('%', :name, '%'))
+            SELECT e.id FROM ExerciseEntity e
+            WHERE e.id IN (
+                SELECT DISTINCT e2.id FROM ExerciseEntity e2
+                JOIN e2.muscles m
+                WHERE m.id = :muscleId
+                  AND LOWER(e2.name) LIKE LOWER(CONCAT('%', :name, '%'))
+            )
             ORDER BY e.name ASC
             """,
             countQuery = """
