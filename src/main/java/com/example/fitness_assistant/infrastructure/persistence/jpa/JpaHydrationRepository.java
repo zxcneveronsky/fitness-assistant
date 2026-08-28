@@ -23,6 +23,7 @@ public interface JpaHydrationRepository extends JpaRepository<HydrationEntity, L
     @Query("DELETE FROM HydrationEntity h WHERE h.id = :id AND h.user.id = :userId")
     long deleteByIdAndUserId(@Param("id") Long id, @Param("userId") Long userId);
 
+    @EntityGraph(attributePaths = "user")
     @Query("""
             SELECT h FROM HydrationEntity h
             WHERE h.user.id = :userId

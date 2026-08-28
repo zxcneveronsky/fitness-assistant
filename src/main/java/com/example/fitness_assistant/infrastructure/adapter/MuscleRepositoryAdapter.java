@@ -5,7 +5,6 @@ import com.example.fitness_assistant.core.repository.MuscleRepository;
 import com.example.fitness_assistant.infrastructure.mapper.MuscleMapper;
 import com.example.fitness_assistant.infrastructure.persistence.entity.MuscleEntity;
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaMuscleRepository;
-import com.example.fitness_assistant.infrastructure.util.LikePattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -43,7 +42,7 @@ public class MuscleRepositoryAdapter implements MuscleRepository {
     public List<Muscle> searchMuscle(String name) {
         List<MuscleEntity> muscles = (name == null || name.isBlank())
                 ? jpaMuscleRepository.findAllByOrderByNameAsc()
-                : jpaMuscleRepository.searchByName(LikePattern.escape(name.trim()));
+                : jpaMuscleRepository.findByNameContainingIgnoreCaseOrderByNameAsc(name.trim());
         return muscles.stream()
                 .map(muscleMapper::toDomain)
                 .toList();

@@ -21,9 +21,9 @@ public interface JpaFavoriteFoodRepository extends JpaRepository<FavoriteFoodEnt
 
     @Query("""
             SELECT f FROM FoodEntity f
-            WHERE EXISTS (SELECT 1 FROM FavoriteFoodEntity ff
-                          WHERE ff.food.id = f.id AND ff.user.id = :userId)
-            ORDER BY f.name ASC
+                JOIN FavoriteFoodEntity ff ON ff.food = f
+                WHERE ff.user.id = :userId
+                ORDER BY f.name ASC
             """)
     Page<FoodEntity> findByUserIdOrderByNameAsc(@Param("userId") Long userId, Pageable pageable);
 
@@ -31,8 +31,8 @@ public interface JpaFavoriteFoodRepository extends JpaRepository<FavoriteFoodEnt
             SELECT f FROM FoodEntity f
             WHERE EXISTS (SELECT 1 FROM FavoriteFoodEntity ff
                           WHERE ff.food.id = f.id AND ff.user.id = :userId)
-            AND (LOWER(f.name) LIKE LOWER(CONCAT('%', :name, '%')) ESCAPE '\\'
-            OR LOWER(f.brands) LIKE LOWER(CONCAT('%', :name, '%')) ESCAPE '\\')
+                AND (LOWER(f.name) LIKE LOWER(CONCAT('%', :name, '%'))
+                OR LOWER(f.brands) LIKE LOWER(CONCAT('%', :name, '%')))
             ORDER BY f.name ASC
             """)
     Page<FoodEntity> searchByNameAndUserId(@Param("name") String name, @Param("userId") Long userId, Pageable pageable);

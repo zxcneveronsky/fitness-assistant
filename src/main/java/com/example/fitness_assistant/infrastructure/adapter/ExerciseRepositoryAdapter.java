@@ -5,7 +5,6 @@ import com.example.fitness_assistant.core.repository.ExerciseRepository;
 import com.example.fitness_assistant.infrastructure.persistence.entity.ExerciseEntity;
 import com.example.fitness_assistant.infrastructure.persistence.jpa.JpaExerciseRepository;
 import com.example.fitness_assistant.infrastructure.mapper.ExerciseMapper;
-import com.example.fitness_assistant.infrastructure.util.LikePattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -46,7 +45,6 @@ public class ExerciseRepositoryAdapter implements ExerciseRepository {
 
     private Page<Long> findIdPage(String name, Long muscleId, Pageable pageable) {
         boolean hasName = name != null && !name.isBlank();
-        String trimmed = hasName ? name.trim() : null;
         if (!hasName && muscleId == null) {
             return jpaExerciseRepository.findPageIds(pageable);
         }
@@ -54,9 +52,9 @@ public class ExerciseRepositoryAdapter implements ExerciseRepository {
             return jpaExerciseRepository.findPageIdsByMuscleId(muscleId, pageable);
         }
         if (muscleId == null) {
-            return jpaExerciseRepository.findPageIdsByName(LikePattern.escape(trimmed), pageable);
+            return jpaExerciseRepository.findPageIdsByName(name.trim(), pageable);
         }
-        return jpaExerciseRepository.findPageIdsByMuscleIdAndName(muscleId, LikePattern.escape(trimmed), pageable);
+        return jpaExerciseRepository.findPageIdsByMuscleIdAndName(muscleId, name.trim(), pageable);
     }
 
     private Page<Exercise> fetchExercisesPage(Page<Long> idPage, Pageable pageable) {

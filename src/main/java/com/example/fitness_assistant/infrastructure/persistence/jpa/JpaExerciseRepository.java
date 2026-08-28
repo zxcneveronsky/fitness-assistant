@@ -17,31 +17,32 @@ public interface JpaExerciseRepository extends JpaRepository<ExerciseEntity, Lon
     @Query("SELECT COUNT(e) FROM ExerciseEntity e WHERE e.id IN :ids")
     long countAllByIdIn(@Param("ids") List<Long> ids);
 
-    @Query(value = "SELECT e.id FROM ExerciseEntity e GROUP BY e.id, e.name ORDER BY e.name ASC",
+    @Query(value = """
+            SELECT e.id FROM ExerciseEntity e
+            ORDER BY e.name ASC
+            """,
             countQuery = "SELECT COUNT(e) FROM ExerciseEntity e")
     Page<Long> findPageIds(Pageable pageable);
 
     @Query(value = """
-            SELECT e.id FROM ExerciseEntity e
+            SELECT DISTINCT e.id FROM ExerciseEntity e
             LEFT JOIN e.muscles m
-            WHERE LOWER(e.name) LIKE LOWER(CONCAT('%', :name, '%')) ESCAPE '\\'
-            OR LOWER(m.name) LIKE LOWER(CONCAT('%', :name, '%')) ESCAPE '\\'
-            GROUP BY e.id, e.name
+            WHERE LOWER(e.name) LIKE LOWER(CONCAT('%', :name, '%'))
+               OR LOWER(m.name) LIKE LOWER(CONCAT('%', :name, '%'))
             ORDER BY e.name ASC
             """,
             countQuery = """
             SELECT COUNT(DISTINCT e.id) FROM ExerciseEntity e
             LEFT JOIN e.muscles m
-            WHERE LOWER(e.name) LIKE LOWER(CONCAT('%', :name, '%')) ESCAPE '\\'
-            OR LOWER(m.name) LIKE LOWER(CONCAT('%', :name, '%')) ESCAPE '\\'
+            WHERE LOWER(e.name) LIKE LOWER(CONCAT('%', :name, '%'))
+               OR LOWER(m.name) LIKE LOWER(CONCAT('%', :name, '%'))
             """)
     Page<Long> findPageIdsByName(@Param("name") String name, Pageable pageable);
 
     @Query(value = """
-            SELECT e.id FROM ExerciseEntity e
+            SELECT DISTINCT e.id FROM ExerciseEntity e
             JOIN e.muscles m
             WHERE m.id = :muscleId
-            GROUP BY e.id, e.name
             ORDER BY e.name ASC
             """,
             countQuery = """
@@ -52,20 +53,19 @@ public interface JpaExerciseRepository extends JpaRepository<ExerciseEntity, Lon
     Page<Long> findPageIdsByMuscleId(@Param("muscleId") Long muscleId, Pageable pageable);
 
     @Query(value = """
-            SELECT e.id FROM ExerciseEntity e
+            SELECT DISTINCT e.id FROM ExerciseEntity e
             JOIN e.muscles m
             WHERE m.id = :muscleId
-            AND (LOWER(e.name) LIKE LOWER(CONCAT('%', :name, '%')) ESCAPE '\\'
-            OR LOWER(m.name) LIKE LOWER(CONCAT('%', :name, '%')) ESCAPE '\\')
-            GROUP BY e.id, e.name
+              AND LOWER(e.name) LIKE LOWER(CONCAT('%', :name, '%'))
             ORDER BY e.name ASC
             """,
             countQuery = """
             SELECT COUNT(DISTINCT e.id) FROM ExerciseEntity e
             JOIN e.muscles m
             WHERE m.id = :muscleId
-            AND (LOWER(e.name) LIKE LOWER(CONCAT('%', :name, '%')) ESCAPE '\\'
-            OR LOWER(m.name) LIKE LOWER(CONCAT('%', :name, '%')) ESCAPE '\\')
+              AND LOWER(e.name) LIKE LOWER(CONCAT('%', :name, '%'))
             """)
-    Page<Long> findPageIdsByMuscleIdAndName(@Param("muscleId") Long muscleId, @Param("name") String name, Pageable pageable);
+    Page<Long> findPageIdsByMuscleIdAndName(@Param("muscleId") Long muscleId,
+                                            @Param("name") String name,
+                                            Pageable pageable);
 }

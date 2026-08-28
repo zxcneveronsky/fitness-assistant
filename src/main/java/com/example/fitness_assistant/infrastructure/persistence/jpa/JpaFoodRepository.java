@@ -13,8 +13,8 @@ public interface JpaFoodRepository extends JpaRepository<FoodEntity, Long> {
 
     @Query("""
         SELECT f FROM FoodEntity f
-        WHERE LOWER(f.name) LIKE LOWER(CONCAT('%', :name, '%')) ESCAPE '\\'
-        OR LOWER(f.brands) LIKE LOWER(CONCAT('%', :name, '%')) ESCAPE '\\'
+        WHERE LOWER(f.name) LIKE LOWER(CONCAT('%', :name, '%'))
+        OR LOWER(f.brands) LIKE LOWER(CONCAT('%', :name, '%'))
         ORDER BY f.name ASC
         """)
     Page<FoodEntity> searchByName(@Param("name") String name, Pageable pageable);

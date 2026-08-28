@@ -3,6 +3,7 @@ package com.example.fitness_assistant.infrastructure.persistence.jpa;
 import com.example.fitness_assistant.infrastructure.persistence.entity.SetEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -16,12 +17,14 @@ public interface JpaSetRepository extends JpaRepository<SetEntity, Long> {
 
     Page<SetEntity> findBySessionIdAndExerciseIdOrderByIdAsc(Long sessionId, Long exerciseId, Pageable pageable);
 
+    @EntityGraph(attributePaths = {"session", "exercise"})
     @Query("""
-            SELECT s FROM SetEntity s
-            JOIN FETCH s.exercise e
-            WHERE s.session.id = :sessionId
-            ORDER BY e.id ASC, s.id ASC
-            """)
+        SELECT s FROM SetEntity s
+        WHERE s.exercise.id = :exerciseId
+        AND s.session.user.id = :userId
+        AND s.session.startTime BETWEEN :from AND :to
+        ORDER BY s.session.startTime DESC, s.id ASC
+        """)
     List<SetEntity> findAllWithExerciseBySessionId(@Param("sessionId") Long sessionId);
 
     @Query("""

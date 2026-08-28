@@ -25,11 +25,11 @@ public interface JpaWorkoutRepository extends JpaRepository<WorkoutEntity, Long>
     Page<WorkoutEntity> findAllByUserId(@Param("userId") Long userId, Pageable pageable);
 
     @Query("""
-            SELECT w FROM WorkoutEntity w
-            WHERE w.user.id = :userId
-            AND LOWER(w.name) LIKE LOWER(CONCAT('%', :name, '%')) ESCAPE '\\'
-            ORDER BY w.id DESC
-            """)
+        SELECT w FROM WorkoutEntity w
+        WHERE w.user.id = :userId
+        AND LOWER(w.name) LIKE LOWER(CONCAT('%', :name, '%'))
+        ORDER BY w.id DESC
+        """)
     Page<WorkoutEntity> searchByName(@Param("name") String name, @Param("userId") Long userId, Pageable pageable);
 
     @Query("""

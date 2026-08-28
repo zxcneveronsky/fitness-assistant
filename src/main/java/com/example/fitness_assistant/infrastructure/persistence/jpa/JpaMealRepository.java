@@ -22,6 +22,7 @@ public interface JpaMealRepository extends JpaRepository<MealEntity, Long> {
     @Query("DELETE FROM MealEntity m WHERE m.id = :id AND m.user.id = :userId")
     long deleteByIdAndUserId(@Param("id") Long id, @Param("userId") Long userId);
 
+    @EntityGraph(attributePaths = "user")
     @Query("""
             SELECT m FROM MealEntity m
             WHERE m.user.id = :userId

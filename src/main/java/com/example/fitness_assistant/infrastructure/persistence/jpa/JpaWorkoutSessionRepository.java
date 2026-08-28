@@ -15,11 +15,14 @@ import java.util.Optional;
 public interface JpaWorkoutSessionRepository extends JpaRepository<WorkoutSessionEntity, Long> {
     @EntityGraph(attributePaths = "user")
     Optional<WorkoutSessionEntity> findByIdAndUserId(Long id, Long userId);
-    @Query("SELECT w FROM WorkoutSessionEntity w WHERE w.user.id = :userId ORDER BY w.startTime DESC")
+
     @EntityGraph(attributePaths = "user")
+    @Query("SELECT w FROM WorkoutSessionEntity w WHERE w.user.id = :userId ORDER BY w.startTime DESC")
     Page<WorkoutSessionEntity> findAllByUserId(@Param("userId") Long userId, Pageable pageable);
+
     @Modifying
     @Query("DELETE FROM WorkoutSessionEntity w WHERE w.id = :id AND w.user.id = :userId")
     long deleteByIdAndUserId(@Param("id") Long id, @Param("userId") Long userId);
+    
     boolean existsByIdAndUserId(Long id, Long userId);
 }
